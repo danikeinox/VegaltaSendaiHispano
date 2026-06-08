@@ -12,7 +12,7 @@
     "build:cf": "opennextjs-cloudflare build",
     "start": "next start",
     "lint": "eslint",
-    "appwrite:setup": "node scripts/setup-appwrite.mjs",
+    "appwrite:setup": "node --env-file=.env scripts/setup-appwrite.mjs",
     "wallet:assets": "node scripts/generate-wallet-assets.mjs",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
