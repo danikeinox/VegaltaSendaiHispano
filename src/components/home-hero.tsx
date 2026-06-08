@@ -16,7 +16,14 @@ export async function HomeHero({ locale: rawLocale }: HomeHeroProps) {
 
   return (
     <section className="relative flex h-[100dvh] min-h-0 flex-col overflow-hidden pt-[var(--header-height)]">
-      <div className="vegalta-official-hero-bg absolute inset-0" aria-hidden />
+      <div className="vegalta-official-hero-bg absolute inset-0" aria-hidden>
+        <div className="vegalta-hero-flag-stripes" aria-hidden>
+          <div className="vegalta-hero-flag-stripe vegalta-hero-flag-stripe--red" />
+          <div className="vegalta-hero-flag-stripe vegalta-hero-flag-stripe--yellow" />
+          <div className="vegalta-hero-flag-stripe vegalta-hero-flag-stripe--red" />
+        </div>
+        <div className="vegalta-hero-flag-overlay" aria-hidden />
+      </div>
 
       {/* Watermark — centrado en móvil, lateral en desktop */}
       <div
@@ -36,10 +43,10 @@ export async function HomeHero({ locale: rawLocale }: HomeHeroProps) {
           <div className="w-full min-w-0 text-center md:pl-32 md:text-left lg:pl-36 xl:pl-40">
             <div className="inline-flex max-w-full flex-col items-center md:items-start">
               <h1 className="flex flex-col leading-[0.92]">
-                <span className="vegalta-brand-text text-[1.65rem] text-white drop-shadow-[0_2px_0_rgba(26,61,124,0.35)] min-[360px]:text-3xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl">
+                <span className="vegalta-brand-text text-[1.65rem] text-white drop-shadow-[0_2px_0_rgba(26,61,124,0.35),0_2px_12px_rgba(15,45,92,0.35)] min-[360px]:text-3xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl">
                   {dict.hero.titleLine1}
                 </span>
-                <span className="vegalta-brand-text text-[1.65rem] text-white drop-shadow-[0_2px_0_rgba(26,61,124,0.35)] min-[360px]:text-3xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl">
+                <span className="vegalta-brand-text text-[1.65rem] text-white drop-shadow-[0_2px_0_rgba(26,61,124,0.35),0_2px_12px_rgba(15,45,92,0.35)] min-[360px]:text-3xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl">
                   {dict.hero.titleLine2}
                 </span>
               </h1>

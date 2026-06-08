@@ -75,22 +75,76 @@ body {
   );
 }
 
-/* Hero dorado estilo vegalta.co.jp */
+/* Hero bandera España — 3 franjas diagonales /// difuminadas */
 .vegalta-official-hero-bg {
-  background-color: var(--vegalta-gold-light);
-  background-image:
+  background-color: var(--vegalta-red-dark);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.vegalta-hero-flag-stripes {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  z-index: 0;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 260%;
+  transform: translateY(-50%) rotate(-34deg);
+  transform-origin: center center;
+}
+
+.vegalta-hero-flag-stripe--red {
+  flex: 1;
+}
+
+.vegalta-hero-flag-stripe--red:first-child {
+  background: linear-gradient(
+    to right,
+    var(--vegalta-red-dark) 0%,
+    var(--vegalta-red) 55%,
+    #c42838 100%
+  );
+}
+
+.vegalta-hero-flag-stripe--red:last-child {
+  background: linear-gradient(
+    to right,
+    #c42838 0%,
+    var(--vegalta-red) 45%,
+    var(--vegalta-red-dark) 100%
+  );
+}
+
+.vegalta-hero-flag-stripe--yellow {
+  flex: 2;
+  background: linear-gradient(
+    to right,
+    #c42838 0%,
+    var(--vegalta-gold-light) 12%,
+    var(--vegalta-gold) 88%,
+    #c42838 100%
+  );
+}
+
+.vegalta-official-hero-bg .vegalta-hero-flag-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
     radial-gradient(
-      ellipse 80% 60% at 15% 50%,
-      rgba(255, 255, 255, 0.35) 0%,
-      transparent 65%
+      ellipse 90% 70% at 18% 42%,
+      rgba(255, 255, 255, 0.22) 0%,
+      transparent 58%
     ),
     linear-gradient(
-      145deg,
-      #f8d654 0%,
-      var(--vegalta-gold-light) 35%,
-      var(--vegalta-gold) 70%,
-      #c99200 100%
+      180deg,
+      rgba(255, 255, 255, 0.08) 0%,
+      transparent 45%,
+      rgba(15, 45, 92, 0.05) 100%
     );
+  pointer-events: none;
 }
 
 .vegalta-nav-badge {
