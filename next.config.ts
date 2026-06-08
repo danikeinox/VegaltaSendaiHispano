@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
 
 const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
@@ -8,7 +9,7 @@ const ContentSecurityPolicy = `
   style-src 'self' 'unsafe-inline';
   img-src 'self' data: blob:;
   font-src 'self' data: https://fonts.gstatic.com;
-  connect-src 'self' https://pay.google.com;
+  connect-src 'self' https://pay.google.com https://fra.cloud.appwrite.io;
   frame-ancestors 'none';
   base-uri 'self';
   form-action 'self';
@@ -49,5 +50,7 @@ const nextConfig: NextConfig = {
     NEXT_PUBLIC_APP_URL: appUrl,
   },
 };
+
+initOpenNextCloudflareForDev();
 
 export default nextConfig;

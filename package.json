@@ -4,30 +4,28 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && next build",
+    "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "postinstall": "prisma generate",
-    "db:migrate": "prisma migrate dev",
-    "db:deploy": "prisma migrate deploy",
-    "db:push": "prisma db push",
-    "db:seed": "npx tsx prisma/seed.ts",
-    "wallet:assets": "node scripts/generate-wallet-assets.mjs"
-  },
-  "prisma": {
-    "seed": "npx tsx prisma/seed.ts"
+    "appwrite:setup": "node scripts/setup-appwrite.mjs",
+    "wallet:assets": "node scripts/generate-wallet-assets.mjs",
+    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",
-    "@prisma/client": "^6.19.3",
+    "@opennextjs/cloudflare": "^1.19.11",
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.38.0",
+    "appwrite": "^26.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "google-auth-library": "^10.7.0",
     "jsonwebtoken": "^9.0.3",
     "lucide-react": "^1.17.0",
     "next": "16.2.7",
+    "node-appwrite": "^26.1.0",
     "passkit-generator": "^3.5.7",
     "react": "19.2.4",
     "react-dom": "19.2.4",
@@ -44,9 +42,8 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.7",
-    "prisma": "^6.19.3",
     "tailwindcss": "^4",
-    "tsx": "^4.22.4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wrangler": "^4.98.0"
   }
 }

@@ -10,16 +10,6 @@ const WALLET_ASSETS_DIR = path.join(
   "wallet"
 );
 
-function loadAsset(filename: string): Buffer {
-  const filePath = path.join(WALLET_ASSETS_DIR, filename);
-  if (!fs.existsSync(filePath)) {
-    throw new Error(
-      `Wallet asset missing: ${filename}. Run: node scripts/generate-wallet-assets.mjs`
-    );
-  }
-  return fs.readFileSync(filePath);
-}
-
 export type PassMemberData = {
   displayId: string;
   firstName: string;
@@ -28,32 +18,70 @@ export type PassMemberData = {
   memberNumber: number;
 };
 
+function readPemFromEnvOrFile(
+  envVar: string | undefined,
+  filePathEnv: string | undefined
+): Buffer | null {
+  if (envVar?.trim()) {
+    return Buffer.from(envVar.replace(/\\n/g, "\n"), "utf-8");
+  }
+
+  if (!filePathEnv) return null;
+
+  const resolved = path.isAbsolute(filePathEnv)
+    ? filePathEnv
+    : path.resolve(process.cwd(), filePathEnv);
+
+  if (!fs.existsSync(resolved)) return null;
+  return fs.readFileSync(resolved);
+}
+
 function getCertBuffers() {
-  const certPath = process.env.APPLE_PASS_CERT_PATH;
-  const keyPath = process.env.APPLE_PASS_KEY_PATH;
-  const wwdrPath = process.env.APPLE_WWDR_CERT_PATH;
+  const signerCert = readPemFromEnvOrFile(
+    process.env.APPLE_PASS_CERT,
+    process.env.APPLE_PASS_CERT_PATH
+  );
+  const signerKey = readPemFromEnvOrFile(
+    process.env.APPLE_PASS_KEY,
+    process.env.APPLE_PASS_KEY_PATH
+  );
+  const wwdr = readPemFromEnvOrFile(
+    process.env.APPLE_WWDR_CERT,
+    process.env.APPLE_WWDR_CERT_PATH
+  );
 
-  if (!certPath || !keyPath || !wwdrPath) {
-    return null;
-  }
+  if (!signerCert || !signerKey || !wwdr) return null;
 
-  const resolve = (p: string) =>
-    fs.existsSync(p) ? fs.readFileSync(p) : fs.readFileSync(path.resolve(process.cwd(), p));
-
-  try {
-    return {
-      signerCert: resolve(certPath),
-      signerKey: resolve(keyPath),
-      wwdr: resolve(wwdrPath),
-      signerKeyPassphrase: process.env.APPLE_PASS_KEY_PASSPHRASE || undefined,
-    };
-  } catch {
-    return null;
-  }
+  return {
+    signerCert,
+    signerKey,
+    wwdr,
+    signerKeyPassphrase: process.env.APPLE_PASS_KEY_PASSPHRASE || undefined,
+  };
 }
 
 export function isAppleWalletConfigured(): boolean {
   return getCertBuffers() !== null;
+}
+
+async function loadAsset(filename: string): Promise<Buffer> {
+  const filePath = path.join(WALLET_ASSETS_DIR, filename);
+
+  if (fs.existsSync(filePath)) {
+    return fs.readFileSync(filePath);
+  }
+
+  const baseUrl =
+    process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  const response = await fetch(`${baseUrl}/assets/wallet/${filename}`);
+
+  if (!response.ok) {
+    throw new Error(
+      `Wallet asset missing: ${filename}. Run: npm run wallet:assets`
+    );
+  }
+
+  return Buffer.from(await response.arrayBuffer());
 }
 
 export async function generateApplePass(
@@ -70,11 +98,17 @@ export async function generateApplePass(
   const appUrl =
     process.env.NEXT_PUBLIC_APP_URL ?? "https://vegalta-hispano.example.com";
 
+  const [icon, logo, strip] = await Promise.all([
+    loadAsset("icon.png"),
+    loadAsset("logo.png"),
+    loadAsset("strip.png"),
+  ]);
+
   const pass = new PKPass(
     {
-      "icon.png": loadAsset("icon.png"),
-      "logo.png": loadAsset("logo.png"),
-      "strip.png": loadAsset("strip.png"),
+      "icon.png": icon,
+      "logo.png": logo,
+      "strip.png": strip,
     },
     {
       wwdr: certs.wwdr,
@@ -126,4 +160,3 @@ export async function generateApplePass(
 
   return pass.getAsBuffer();
 }
-
