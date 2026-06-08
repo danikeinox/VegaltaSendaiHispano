@@ -35,7 +35,7 @@ function applySecurityHeaders(response: NextResponse, request: NextRequest) {
   return response;
 }
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (pathname === "/ja" || pathname.startsWith("/ja/")) {

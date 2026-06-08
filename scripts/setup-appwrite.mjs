@@ -4,7 +4,7 @@
  *
  * Uso: node scripts/setup-appwrite.mjs
  */
-import { Client, Databases, ID, Permission, Role } from "node-appwrite";
+import { Client, Databases, Permission, Role } from "node-appwrite";
 
 const endpoint =
   process.env.APPWRITE_ENDPOINT ??

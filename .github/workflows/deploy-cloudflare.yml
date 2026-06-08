@@ -10,6 +10,9 @@ concurrency:
   group: cloudflare-deploy-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   deploy:
     name: Build and deploy Worker
@@ -18,10 +21,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version-file: .nvmrc
           cache: npm
@@ -29,12 +32,22 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Generate wallet assets
+        run: npm run wallet:assets
+
+      - name: Cache Next.js build
+        uses: actions/cache@v4
+        with:
+          path: .next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('package-lock.json') }}-${{ hashFiles('src/**', 'public/**') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('package-lock.json') }}-
+
       - name: Build and deploy
         run: npm run deploy
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          # Públicas — necesarias en build para SSG/SEO (valores de producción)
           NEXT_PUBLIC_APP_URL: https://vegalta.es
           NEXT_PUBLIC_SITE_URL: https://vegalta.es
           NEXT_PUBLIC_APPWRITE_PROJECT_ID: 6a2702ec000b42a91782
