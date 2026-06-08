@@ -181,6 +181,7 @@ const jp: Dictionary = {
     about: "コミュニティについて",
     getCard: "会員証を取得",
     officialWeb: "ベガルタ仙台公式サイト",
+    github: "GitHubでコラボレーション",
     telegramMembers: "Peña Ibérica Vegalta Sendai — 500人以上のメンバー",
     legal: "免責事項",
     legalText:

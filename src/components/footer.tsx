@@ -6,6 +6,7 @@ import { useLocale } from "@/components/locale-provider";
 import { SupportCallout } from "@/components/support-callout";
 import { TelegramJoinButton } from "@/components/telegram-join-button";
 import { VegaltaLogo } from "@/components/vegalta-logo";
+import { GITHUB_REPO_URL } from "@/lib/site-links";
 import { localizedPath } from "@/i18n/navigation";
 
 export function Footer() {
@@ -67,6 +68,16 @@ export function Footer() {
                   className="hover:text-vegalta-gold-light transition-colors"
                 >
                   {dict.footer.officialWeb}
+                </a>
+              </li>
+              <li>
+                <a
+                  href={GITHUB_REPO_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-vegalta-gold-light transition-colors"
+                >
+                  {dict.footer.github}
                 </a>
               </li>
             </ul>

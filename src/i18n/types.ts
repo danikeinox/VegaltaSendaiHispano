@@ -99,6 +99,7 @@ export type Dictionary = {
     about: string;
     getCard: string;
     officialWeb: string;
+    github: string;
     telegramMembers: string;
     legal: string;
     legalText: string;

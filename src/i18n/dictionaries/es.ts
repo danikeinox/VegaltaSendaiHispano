@@ -183,6 +183,7 @@ const es: Dictionary = {
     about: "Sobre la comunidad",
     getCard: "Obtener carnet",
     officialWeb: "Web oficial Vegalta Sendai",
+    github: "Colaborar en GitHub",
     telegramMembers: "Peña Ibérica Vegalta Sendai — más de 500 miembros",
     legal: "Aviso legal",
     legalText:
