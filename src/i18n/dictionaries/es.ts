@@ -98,7 +98,7 @@ const es: Dictionary = {
     titleLine2: "Hispana",
     displayTitle: "HISPANO",
     description:
-      "Tu carnet digital de socio de la comunidad hispana del equipo japonés Vegalta Sendai. Gratuito, compatible con Cartera de Apple y Cartera de Google próximamente.",
+      "Tu carnet digital de socio de la comunidad hispana del equipo japonés Vegalta Sendai. Gratuito, compatible con Apple Wallet y Google Wallet próximamente.",
     unofficial: "No oficial · Sin fines de lucro",
     communityBarLabel: "Comunidad",
     communityBarRegister: "Obtener carnet gratuito",
