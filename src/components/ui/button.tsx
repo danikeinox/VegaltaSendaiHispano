@@ -3,22 +3,22 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-vegalta-gold disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-vegalta-gold disabled:pointer-events-none disabled:opacity-50 vegalta-section-title tracking-wider",
   {
     variants: {
       variant: {
         default:
-          "bg-vegalta-gold text-vegalta-blue hover:bg-vegalta-yellow shadow-md",
+          "bg-vegalta-gold text-vegalta-blue hover:bg-vegalta-gold-light shadow-md",
         secondary:
-          "bg-vegalta-blue text-white hover:bg-vegalta-blue-light border border-vegalta-gold/30",
+          "bg-vegalta-royal-blue text-white hover:bg-vegalta-blue-light border border-white/20",
         outline:
-          "border-2 border-vegalta-gold text-vegalta-gold hover:bg-vegalta-gold/10",
-        ghost: "text-white hover:bg-white/10",
-        destructive: "bg-vegalta-red text-white hover:bg-red-700",
+          "border-2 border-vegalta-royal-blue text-vegalta-royal-blue hover:bg-vegalta-royal-blue/5 bg-white",
+        ghost: "text-vegalta-royal-blue hover:bg-vegalta-royal-blue/5",
+        destructive: "bg-vegalta-red text-white hover:bg-vegalta-red-dark",
       },
       size: {
         default: "h-11 px-6 py-2",
-        sm: "h-9 px-4",
+        sm: "h-9 px-4 text-xs",
         lg: "h-12 px-8 text-base",
         icon: "h-10 w-10",
       },

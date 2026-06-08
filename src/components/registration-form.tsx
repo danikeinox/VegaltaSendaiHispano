@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FaApple, FaGoogle } from "react-icons/fa";
@@ -8,8 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MembershipCard } from "@/components/membership-card";
+import { useLocale } from "@/components/locale-provider";
 import {
-  registrationSchema,
+  createRegistrationSchema,
   type RegistrationInput,
 } from "@/lib/validations";
 
@@ -29,9 +30,15 @@ type RegisterResponse = {
 };
 
 export function RegistrationForm() {
+  const { locale, dict } = useLocale();
   const [result, setResult] = useState<RegisterResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [googleUrl, setGoogleUrl] = useState<string | null>(null);
+
+  const registrationSchema = useMemo(
+    () => createRegistrationSchema(dict.validation),
+    [dict.validation]
+  );
 
   const {
     register,
@@ -50,26 +57,31 @@ export function RegistrationForm() {
     try {
       const res = await fetch("/api/register", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "X-Locale": locale,
+        },
         body: JSON.stringify(data),
       });
 
       const json = await res.json();
 
       if (!res.ok) {
-        setError(json.error ?? "Error al registrar");
+        setError(json.error ?? dict.register.registerError);
         return;
       }
 
       setResult(json);
 
-      const googleRes = await fetch(json.wallet.google);
+      const googleRes = await fetch(json.wallet.google, {
+        headers: { "X-Locale": locale },
+      });
       const googleJson = await googleRes.json();
       if (googleJson.saveUrl) {
         setGoogleUrl(googleJson.saveUrl);
       }
     } catch {
-      setError("Error de conexión. Inténtalo de nuevo.");
+      setError(dict.register.connectionError);
     }
   }
 
@@ -80,21 +92,22 @@ export function RegistrationForm() {
           displayId={result.member.displayId}
           firstName={result.member.firstName}
           lastName={result.member.lastName}
+          officialCardLabel={dict.carnet.officialCard}
         />
 
-        <p className="text-center text-white/80 text-sm max-w-md">
+        <p className="text-center text-vegalta-blue/70 text-sm max-w-md">
           {result.isNew
-            ? "¡Bienvenido a la comunidad! Tu carnet digital está listo."
-            : "Ya tenías un carnet registrado con este correo."}
+            ? dict.register.welcomeNew
+            : dict.register.welcomeExisting}
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md">
           <a
             href={result.wallet.apple}
-            className="inline-flex flex-1 h-11 items-center justify-center gap-2 rounded-md bg-vegalta-blue text-white border border-vegalta-gold/30 hover:bg-vegalta-blue-light text-sm font-semibold transition-colors"
+            className="inline-flex flex-1 h-11 items-center justify-center gap-2 bg-vegalta-royal-blue text-white hover:bg-vegalta-blue-light text-xs vegalta-section-title tracking-wider transition-colors"
           >
             <FaApple className="text-lg" />
-            Añadir a Apple Wallet
+            {dict.register.addAppleWallet}
           </a>
 
           {googleUrl ? (
@@ -102,24 +115,24 @@ export function RegistrationForm() {
               href={googleUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex flex-1 h-11 items-center justify-center gap-2 rounded-md border-2 border-vegalta-gold text-vegalta-gold hover:bg-vegalta-gold/10 text-sm font-semibold transition-colors"
+              className="inline-flex flex-1 h-11 items-center justify-center gap-2 border-2 border-vegalta-royal-blue text-vegalta-royal-blue hover:bg-vegalta-royal-blue/5 text-xs vegalta-section-title tracking-wider transition-colors bg-white"
             >
               <FaGoogle className="text-lg" />
-              Añadir a Google Wallet
+              {dict.register.addGoogleWallet}
             </a>
           ) : (
             <a
               href={result.wallet.apple}
-              className="inline-flex flex-1 h-11 items-center justify-center gap-2 rounded-md border-2 border-vegalta-gold text-vegalta-gold hover:bg-vegalta-gold/10 text-sm font-semibold transition-colors"
+              className="inline-flex flex-1 h-11 items-center justify-center gap-2 border-2 border-vegalta-royal-blue text-vegalta-royal-blue hover:bg-vegalta-royal-blue/5 text-xs vegalta-section-title tracking-wider transition-colors bg-white"
             >
               <FaGoogle className="text-lg" />
-              Descargar para Android
+              {dict.register.downloadAndroid}
             </a>
           )}
         </div>
 
         <Button variant="ghost" onClick={() => setResult(null)}>
-          Registrar otro socio
+          {dict.register.registerAnother}
         </Button>
       </div>
     );
@@ -128,11 +141,11 @@ export function RegistrationForm() {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="flex flex-col gap-5 w-full max-w-md"
+      className="flex flex-col gap-5 w-full max-w-md bg-white border border-vegalta-royal-blue/10 shadow-sm p-5 sm:p-6 md:p-8"
       noValidate
     >
       <div className="space-y-2">
-        <Label htmlFor="firstName">Nombre</Label>
+        <Label htmlFor="firstName">{dict.register.firstName}</Label>
         <Input id="firstName" autoComplete="given-name" {...register("firstName")} />
         {errors.firstName && (
           <p className="text-vegalta-red text-xs">{errors.firstName.message}</p>
@@ -140,7 +153,7 @@ export function RegistrationForm() {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="lastName">Apellidos</Label>
+        <Label htmlFor="lastName">{dict.register.lastName}</Label>
         <Input id="lastName" autoComplete="family-name" {...register("lastName")} />
         {errors.lastName && (
           <p className="text-vegalta-red text-xs">{errors.lastName.message}</p>
@@ -148,7 +161,7 @@ export function RegistrationForm() {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="email">Correo electrónico</Label>
+        <Label htmlFor="email">{dict.register.email}</Label>
         <Input id="email" type="email" autoComplete="email" {...register("email")} />
         {errors.email && (
           <p className="text-vegalta-red text-xs">{errors.email.message}</p>
@@ -156,7 +169,7 @@ export function RegistrationForm() {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="country">País (opcional)</Label>
+        <Label htmlFor="country">{dict.register.countryOptional}</Label>
         <Input id="country" autoComplete="country-name" {...register("country")} />
         {errors.country && (
           <p className="text-vegalta-red text-xs">{errors.country.message}</p>
@@ -164,18 +177,17 @@ export function RegistrationForm() {
       </div>
 
       {error && (
-        <p className="text-vegalta-red text-sm text-center bg-red-900/30 rounded-md p-3">
+        <p className="text-vegalta-red text-sm text-center bg-vegalta-red/10 border border-vegalta-red/20 p-3">
           {error}
         </p>
       )}
 
       <Button type="submit" size="lg" disabled={isSubmitting} className="w-full">
-        {isSubmitting ? "Registrando..." : "Obtener mi carnet gratuito"}
+        {isSubmitting ? dict.register.submitting : dict.register.submit}
       </Button>
 
-      <p className="text-xs text-white/50 text-center leading-relaxed">
-        Carnet digital no oficial de la comunidad hispana de fans del Vegalta Sendai.
-        Sin fines de lucro. Tus datos se usan únicamente para generar tu carnet.
+      <p className="text-xs text-vegalta-blue/50 text-center leading-relaxed">
+        {dict.register.disclaimer}
       </p>
     </form>
   );

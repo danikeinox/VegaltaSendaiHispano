@@ -1,29 +1,100 @@
-import Link from "next/link";
+"use client";
+
+import { useEffect } from "react";
+import { ClubLogo } from "@/components/club-logo";
+import { LanguageSwitcher } from "@/components/language-switcher";
+import { MobileNav } from "@/components/mobile-nav";
+import { SectionNavLink } from "@/components/section-nav-link";
+import { TelegramJoinButton } from "@/components/telegram-join-button";
+import { useLocale } from "@/components/locale-provider";
+import { VegaltaLogo } from "@/components/vegalta-logo";
+import { localizedPath } from "@/i18n/navigation";
 
 export function Header() {
+  const { locale, dict } = useLocale();
+  const homePath = localizedPath(locale);
+
+  const navItems = [
+    { href: homePath, label: dict.nav.home },
+    { href: `${homePath}#registro`, label: dict.nav.register },
+    { href: `${homePath}#beneficios`, label: dict.nav.benefits },
+    { href: `${homePath}/sobre`, label: dict.nav.about },
+  ];
+
+  useEffect(() => {
+    const header = document.getElementById("site-header");
+    const spacer = document.getElementById("site-header-spacer");
+    if (!header || !spacer) return;
+
+    const syncHeaderHeight = () => {
+      const height = header.offsetHeight;
+      spacer.style.height = `${height}px`;
+      document.documentElement.style.setProperty(
+        "--header-scroll-offset",
+        `${height + 12}px`
+      );
+    };
+
+    syncHeaderHeight();
+    const observer = new ResizeObserver(syncHeaderHeight);
+    observer.observe(header);
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <header className="w-full border-b border-vegalta-gold/20 bg-vegalta-blue/90 backdrop-blur-md sticky top-0 z-50">
-      <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-3 group">
-          <div className="w-10 h-10 rounded-full bg-vegalta-gold/20 border-2 border-vegalta-gold flex items-center justify-center">
-            <span className="text-vegalta-gold font-black text-sm">VS</span>
+    <>
+      <header
+        id="site-header"
+        className="fixed top-0 left-0 right-0 z-50 w-full shadow-md"
+      >
+        <div className="h-1 bg-gradient-to-r from-vegalta-gold via-vegalta-gold-light to-vegalta-gold" />
+
+        <div className="bg-vegalta-royal-blue border-b border-white/10 relative">
+          <div className="container mx-auto px-4 py-2.5 sm:py-3 flex items-center justify-between gap-3">
+          <SectionNavLink
+            href={homePath}
+            className="flex items-center gap-2 sm:gap-3 min-w-0 shrink"
+          >
+            <ClubLogo size="sm" priority />
+            <span className="hidden sm:block min-w-0">
+              <VegaltaLogo variant="light" size="sm" showSubtitle={false} />
+            </span>
+          </SectionNavLink>
+
+          <nav className="hidden lg:flex items-center gap-1 shrink-0">
+            {navItems.map((item) => (
+              <SectionNavLink
+                key={item.label}
+                href={item.href}
+                className="vegalta-section-title px-3 xl:px-4 py-2 text-xs text-white/80 hover:text-vegalta-gold-light hover:bg-white/5 transition-colors whitespace-nowrap"
+              >
+                {item.label}
+              </SectionNavLink>
+            ))}
+            <TelegramJoinButton variant="nav" />
+            <LanguageSwitcher className="ml-1" />
+          </nav>
+
+          <div className="flex items-center gap-1 sm:gap-2 lg:hidden shrink-0">
+            <LanguageSwitcher />
+            <SectionNavLink
+              href={`${homePath}#registro`}
+              className="vegalta-section-title text-[10px] sm:text-xs bg-vegalta-gold text-vegalta-blue px-2.5 sm:px-3 py-1.5 font-bold whitespace-nowrap"
+            >
+              {dict.nav.register}
+            </SectionNavLink>
+            <MobileNav />
           </div>
-          <div>
-            <p className="font-bold text-vegalta-gold text-sm tracking-wider">
-              VEGALTA SENDAI
-            </p>
-            <p className="text-white/60 text-xs">Comunidad Hispana</p>
           </div>
-        </Link>
-        <nav className="hidden sm:flex gap-6 text-sm text-white/80">
-          <Link href="/" className="hover:text-vegalta-gold transition-colors">
-            Inicio
-          </Link>
-          <Link href="/#registro" className="hover:text-vegalta-gold transition-colors">
-            Registro
-          </Link>
-        </nav>
-      </div>
-    </header>
+        </div>
+      </header>
+      <div
+        id="site-header-spacer"
+        className="shrink-0 pointer-events-none"
+        style={{ height: "var(--header-scroll-offset)" }}
+        aria-hidden="true"
+      />
+    </>
   );
 }

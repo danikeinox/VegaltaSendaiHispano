@@ -6,9 +6,11 @@ import {
   getAndroidPkpassFallbackUrl,
   isGoogleWalletConfigured,
 } from "@/lib/wallet/google-wallet";
-import { memberLookupSchema } from "@/lib/validations";
+import { getSchemasForRequest } from "@/i18n/schemas";
 
 export async function GET(request: Request) {
+  const { dict, memberLookupSchema } = await getSchemasForRequest(request);
+
   try {
     const { searchParams } = new URL(request.url);
     const displayId = searchParams.get("displayId");
@@ -57,11 +59,13 @@ export async function GET(request: Request) {
       request
     );
   } catch (error) {
-    return handleApiError(error, request);
+    return handleApiError(error, request, dict.api);
   }
 }
 
 export async function POST(request: Request) {
+  const { dict, memberLookupSchema } = await getSchemasForRequest(request);
+
   try {
     const body = await request.json();
     const parsed = memberLookupSchema.parse(body);
@@ -95,7 +99,7 @@ export async function POST(request: Request) {
 
     return jsonSuccess({ configured: true, saveUrl }, 200, request);
   } catch (error) {
-    return handleApiError(error, request);
+    return handleApiError(error, request, dict.api);
   }
 }
 

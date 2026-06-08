@@ -5,9 +5,11 @@ import {
   generateApplePass,
   isAppleWalletConfigured,
 } from "@/lib/wallet/apple-pass";
-import { memberLookupSchema } from "@/lib/validations";
+import { getSchemasForRequest } from "@/i18n/schemas";
 
 export async function GET(request: Request) {
+  const { dict, memberLookupSchema } = await getSchemasForRequest(request);
+
   try {
     const { searchParams } = new URL(request.url);
     const displayId = searchParams.get("displayId");
@@ -50,6 +52,6 @@ export async function GET(request: Request) {
       },
     });
   } catch (error) {
-    return handleApiError(error, request);
+    return handleApiError(error, request, dict.api);
   }
 }

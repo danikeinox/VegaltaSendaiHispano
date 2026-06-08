@@ -1,27 +1,86 @@
 @import "tailwindcss";
 
 :root {
-  --vegalta-blue: #0b2545;
-  --vegalta-blue-light: #123a6b;
-  --vegalta-gold: #e6b800;
-  --vegalta-yellow: #f5c518;
-  --vegalta-red: #c8102e;
-  --background: var(--vegalta-blue);
-  --foreground: #ffffff;
+  --header-scroll-offset: 5.5rem;
+  --vegalta-royal-blue: #1a3d7c;
+  --vegalta-blue: #0f2d5c;
+  --vegalta-blue-light: #244a8a;
+  --vegalta-gold: #e8a800;
+  --vegalta-gold-light: #f5c842;
+  --vegalta-yellow: #f5c842;
+  --vegalta-red: #d41e36;
+  --vegalta-red-dark: #b01830;
+  --background: #f4f6fa;
+  --foreground: #0f2d5c;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-vegalta-royal-blue: var(--vegalta-royal-blue);
   --color-vegalta-blue: var(--vegalta-blue);
   --color-vegalta-blue-light: var(--vegalta-blue-light);
   --color-vegalta-gold: var(--vegalta-gold);
+  --color-vegalta-gold-light: var(--vegalta-gold-light);
   --color-vegalta-yellow: var(--vegalta-yellow);
   --color-vegalta-red: var(--vegalta-red);
-  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --color-vegalta-red-dark: var(--vegalta-red-dark);
+  --font-sans: var(--font-noto), var(--font-noto-jp), system-ui, sans-serif;
+  --font-display: var(--font-oswald), system-ui, sans-serif;
+  --font-brand: var(--font-bebas), system-ui, sans-serif;
+}
+
+html {
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  scroll-padding-top: var(--header-scroll-offset);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+section[id] {
+  scroll-margin-top: var(--header-scroll-offset);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
+  overflow-x: hidden;
+}
+
+/* Gradiente diagonal estilo tarjeta oficial */
+.vegalta-card-gradient {
+  background: linear-gradient(
+    135deg,
+    var(--vegalta-blue) 0%,
+    var(--vegalta-blue) 28%,
+    var(--vegalta-red) 48%,
+    var(--vegalta-gold-light) 72%,
+    var(--vegalta-gold-light) 100%
+  );
+}
+
+.vegalta-hero-gradient {
+  background: linear-gradient(
+    160deg,
+    var(--vegalta-blue) 0%,
+    #163566 35%,
+    var(--vegalta-red-dark) 55%,
+    var(--vegalta-gold) 85%
+  );
+}
+
+.vegalta-section-title {
+  font-family: var(--font-oswald), system-ui, sans-serif;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.vegalta-brand-text {
+  font-family: var(--font-bebas), system-ui, sans-serif;
+  letter-spacing: 0.06em;
 }

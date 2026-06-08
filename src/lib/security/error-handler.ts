@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
+import type { Dictionary } from "@/i18n/types";
 import { corsHeaders } from "@/lib/security/cors";
 
 export class ApiError extends Error {
@@ -23,9 +24,14 @@ export function getClientIp(request: Request): string {
 
 export function handleApiError(
   error: unknown,
-  request?: Request
+  request?: Request,
+  apiMessages?: Dictionary["api"]
 ): NextResponse {
   const headers = corsHeaders(request);
+  const messages = apiMessages ?? {
+    validationError: "Datos de entrada no válidos",
+    internalError: "Error interno del servidor",
+  };
 
   if (error instanceof ApiError) {
     return NextResponse.json(
@@ -37,7 +43,7 @@ export function handleApiError(
   if (error instanceof ZodError) {
     return NextResponse.json(
       {
-        error: "Datos de entrada no válidos",
+        error: messages.validationError,
         code: "VALIDATION_ERROR",
         details: error.flatten().fieldErrors,
       },
@@ -52,7 +58,7 @@ export function handleApiError(
   }
 
   return NextResponse.json(
-    { error: "Error interno del servidor", code: "INTERNAL_ERROR" },
+    { error: messages.internalError, code: "INTERNAL_ERROR" },
     { status: 500, headers }
   );
 }

@@ -1,7 +1,7 @@
 import { findMemberByDisplayId } from "@/lib/members";
 import { corsHeaders } from "@/lib/security/cors";
 import { ApiError, handleApiError, jsonSuccess } from "@/lib/security/error-handler";
-import { memberLookupSchema } from "@/lib/validations";
+import { getSchemasForRequest } from "@/i18n/schemas";
 
 type RouteContext = { params: Promise<{ displayId: string }> };
 
@@ -10,6 +10,8 @@ export async function OPTIONS(request: Request) {
 }
 
 export async function GET(request: Request, context: RouteContext) {
+  const { dict, memberLookupSchema } = await getSchemasForRequest(request);
+
   try {
     const { displayId: rawId } = await context.params;
     const { displayId } = memberLookupSchema.parse({ displayId: rawId });
@@ -34,6 +36,6 @@ export async function GET(request: Request, context: RouteContext) {
       request
     );
   } catch (error) {
-    return handleApiError(error, request);
+    return handleApiError(error, request, dict.api);
   }
 }
