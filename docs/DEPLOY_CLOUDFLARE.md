@@ -107,49 +107,45 @@ npm run preview
 
 Abre `http://localhost:8787`.
 
-## 4. Despliegue automático (GitHub + Workers Builds)
+## 4. Despliegue automático en cada push a `main`
 
-> **IMPORTANTE:** Este proyecto usa **Cloudflare Workers + OpenNext**, NO Cloudflare Pages con `@cloudflare/next-on-pages`.
+El repo incluye **GitHub Actions** (`.github/workflows/deploy-cloudflare.yml`) que publica el Worker en cada push a `main` o `master`.
+
+### Secrets en GitHub (obligatorios)
+
+En **GitHub → Settings → Secrets and variables → Actions → New repository secret**:
+
+| Secret | Cómo obtenerlo |
+|--------|----------------|
+| `CLOUDFLARE_API_TOKEN` | Cloudflare Dashboard → My Profile → API Tokens → Create Token → plantilla **Edit Cloudflare Workers** |
+| `CLOUDFLARE_ACCOUNT_ID` | Cloudflare Dashboard → página principal de la cuenta (columna derecha) |
+
+### Secrets en Cloudflare Worker (runtime)
+
+Los secretos de runtime (Appwrite, Upstash, certificados Apple, etc.) se configuran **una vez** en el Worker de Cloudflare, no en GitHub:
+
+Workers & Pages → `vegalta-endai-hispano` → Settings → Variables and Secrets
+
+El workflow solo inyecta variables `NEXT_PUBLIC_*` públicas necesarias durante el build.
+
+### Evitar despliegues duplicados
+
+Si también tienes **Workers Builds** conectado al mismo repo en Cloudflare, **desactívalo** o desconecta el repositorio. Si no, cada push desplegará dos veces (GitHub Actions + Cloudflare Builds).
+
+### Alternativa: Workers Builds (solo Cloudflare)
+
+> **IMPORTANTE:** Usa **Cloudflare Workers + OpenNext**, NO Cloudflare Pages con `@cloudflare/next-on-pages`.
 >
-> Si en los logs ves `npx @cloudflare/next-on-pages@1` o errores de `export const runtime = 'edge'`, tu proyecto está configurado como **Pages** con el adaptador obsoleto. Debes cambiarlo a **Workers Builds**.
-
-1. En Cloudflare Dashboard → **Workers & Pages** → **Create** → **Workers** → **Connect to Git**
-   - No uses el preset "Next.js" de **Pages** (fuerza `next-on-pages`, deprecado).
-2. Selecciona el repo `danikeinox/VegaltaSendaiHispano`
-3. Configura el build (raíz del repo = raíz de `vegalta-app`):
+> Si en los logs ves `npx @cloudflare/next-on-pages@1` o errores de `export const runtime = 'edge'`, tu proyecto está configurado como **Pages** con el adaptador obsoleto.
 
 | Campo | Valor |
 |-------|-------|
-| Root directory | `/` (el repo **es** la app; no uses subcarpeta) |
-| Framework preset | **None** (o Workers detectará `"adapter": "@opennextjs/cloudflare"` en `package.json`) |
-| Node.js version | **22** (LTS; coincide con `.nvmrc`) |
+| Framework preset | **None** |
+| Node.js version | **22** |
 | Build command | `npm run build:cf` |
 | Deploy command | `npx wrangler deploy` |
 
-Alternativa (un solo paso):
-
-| Campo | Valor |
-|-------|-------|
-| Build command | `npm run deploy` |
-| Deploy command | *(vacío)* |
-
-> `npm run build` solo compila Next.js (`.next`). Para Workers necesitas **OpenNext**, que genera `.open-next/worker.js`. El script `build:cf` hace ambos pasos.
-
-### Qué verás en los logs (normal)
-
-```
-Installing project dependencies: npm clean-install
-Executing user build command: npm run build   ← o build:cf
-▲ Next.js 16.x (Turbopack)
-  Creating an optimized production build ...
-✓ Compiled successfully
-...
-Executing deploy command: npx wrangler deploy
-```
-
-Los avisos `middleware deprecated`, `No build cache`, telemetría y `glob deprecated` **no bloquean** el despliegue.
-
-4. Añade todas las variables/secrets en la sección **Environment variables**
+4. Añade variables/secrets de runtime en Cloudflare
 5. Conecta tu dominio personalizado en **Custom domains**
 
 ## 5. Checklist post-despliegue
