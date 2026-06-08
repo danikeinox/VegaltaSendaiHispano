@@ -11,15 +11,20 @@ export function HeroCtaBar() {
   const { dict } = useLocale();
 
   return (
-    <div className="flex flex-col sm:flex-row items-stretch justify-center gap-3 w-full max-w-xl mx-auto px-1">
+    <div className="flex w-full max-w-xl flex-col items-stretch justify-center gap-3 px-1 sm:flex-row">
       <TelegramJoinButton
         variant="hero"
         className={cn(
           heroChipClass,
-          "bg-[#229ED9] hover:bg-[#1a8bc4] text-white transition-colors"
+          "bg-[#229ED9] text-white transition-colors hover:bg-[#1a8bc4]"
         )}
       />
-      <div className={cn(heroChipClass, "bg-vegalta-red/90 text-white")}>
+      <div
+        className={cn(
+          heroChipClass,
+          "border border-vegalta-blue/20 bg-white/70 text-vegalta-blue backdrop-blur-sm"
+        )}
+      >
         {dict.hero.unofficial}
       </div>
     </div>

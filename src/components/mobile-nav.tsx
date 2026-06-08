@@ -24,7 +24,7 @@ export function MobileNav() {
   }
 
   return (
-    <div className="lg:hidden">
+    <div className="relative lg:hidden">
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}

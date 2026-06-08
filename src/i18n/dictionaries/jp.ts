@@ -92,9 +92,12 @@ const jp: Dictionary = {
   hero: {
     tagline: "Official Fan Website",
     taglineSecondary: "ヒスパノコミュニティ",
+    displayTitle: "HISPANO",
     description:
       "ヒスパノコミュニティのデジタル会員証。無料で、アップルウォレット・グーグルウォレットに対応しています。",
     unofficial: "非公式 · 非営利",
+    communityBarLabel: "コミュニティ",
+    communityBarRegister: "無料会員証を取得",
   },
   benefits: {
     title: "会員特典",

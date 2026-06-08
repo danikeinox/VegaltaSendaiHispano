@@ -94,9 +94,12 @@ const es: Dictionary = {
   hero: {
     tagline: "Official Fan Website",
     taglineSecondary: "Comunidad Hispana",
+    displayTitle: "HISPANO",
     description:
       "Tu carnet digital de socio de la comunidad hispana. Gratuito, compatible con Cartera de Apple y Cartera de Google.",
     unofficial: "No oficial · Sin fines de lucro",
+    communityBarLabel: "Comunidad",
+    communityBarRegister: "Obtener carnet gratuito",
   },
   benefits: {
     title: "BENEFICIOS DEL SOCIO",

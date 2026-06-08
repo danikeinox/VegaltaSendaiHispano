@@ -74,6 +74,28 @@ body {
   );
 }
 
+/* Hero dorado estilo vegalta.co.jp */
+.vegalta-official-hero-bg {
+  background-color: var(--vegalta-gold-light);
+  background-image:
+    radial-gradient(
+      ellipse 80% 60% at 15% 50%,
+      rgba(255, 255, 255, 0.35) 0%,
+      transparent 65%
+    ),
+    linear-gradient(
+      145deg,
+      #f8d654 0%,
+      var(--vegalta-gold-light) 35%,
+      var(--vegalta-gold) 70%,
+      #c99200 100%
+    );
+}
+
+.vegalta-nav-badge {
+  clip-path: polygon(0 0, 100% 0, 92% 100%, 0 100%);
+}
+
 .vegalta-section-title {
   font-family: var(--font-oswald), system-ui, sans-serif;
   letter-spacing: 0.12em;

@@ -2,10 +2,9 @@ import { AnthemSection } from "@/components/anthem-section";
 import { RegistrationForm } from "@/components/registration-form";
 import { HashScrollHandler } from "@/components/hash-scroll-handler";
 import { Header } from "@/components/header";
+import { HomeHero } from "@/components/home-hero";
 import { Footer } from "@/components/footer";
 import { SectionHeading } from "@/components/section-heading";
-import { ClubLogo } from "@/components/club-logo";
-import { HeroCtaBar } from "@/components/hero-cta-bar";
 import { TelegramJoinButton } from "@/components/telegram-join-button";
 import { FaApple, FaGoogle, FaIdCard, FaWallet } from "react-icons/fa";
 import { isValidLocale } from "@/i18n/config";
@@ -37,26 +36,7 @@ export default async function HomePage({ params }: PageProps) {
       <HashScrollHandler />
       <Header />
 
-      <section className="vegalta-hero-gradient relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_20%_50%,white_0%,transparent_50%)]" />
-        <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 md:py-24 relative">
-          <div className="max-w-3xl mx-auto text-center">
-            <p className="vegalta-section-title text-vegalta-gold-light text-[10px] sm:text-xs mb-4 tracking-[0.12em] sm:tracking-[0.25em] leading-relaxed px-1">
-              <span className="block sm:inline">{dict.hero.tagline}</span>
-              <span className="hidden sm:inline"> — </span>
-              <span className="block sm:inline">{dict.hero.taglineSecondary}</span>
-            </p>
-            <div className="flex flex-col items-center mb-5 sm:mb-6">
-              <ClubLogo size="xl" priority />
-            </div>
-            <p className="text-white/80 text-base sm:text-lg md:text-xl leading-relaxed max-w-xl mx-auto mb-6 sm:mb-8 px-1">
-              {dict.hero.description}
-            </p>
-            <HeroCtaBar />
-          </div>
-        </div>
-        <div className="h-2 bg-gradient-to-r from-vegalta-blue via-vegalta-red to-vegalta-gold" />
-      </section>
+      <HomeHero locale={rawLocale} />
 
       <main className="flex-1 container mx-auto px-4 sm:px-6 py-10 sm:py-14 w-full max-w-6xl">
         <section id="beneficios" className="mb-16 pt-2 scroll-mt-[var(--header-scroll-offset)]">
