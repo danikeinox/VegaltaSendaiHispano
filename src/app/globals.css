@@ -75,7 +75,7 @@ body {
   );
 }
 
-/* Hero bandera España — 3 franjas diagonales /// difuminadas */
+/* Hero bandera España — horizontal en móvil, vertical en desktop */
 .vegalta-official-hero-bg {
   background-color: var(--vegalta-red-dark);
   overflow: hidden;
@@ -84,15 +84,12 @@ body {
 
 .vegalta-hero-flag-stripes {
   position: absolute;
-  left: -4%;
-  top: 50%;
+  inset: 0;
   z-index: 0;
   display: flex;
-  flex-direction: row;
-  width: 108%;
-  height: 155%;
-  transform: translateY(-50%) skewY(-9deg);
-  transform-origin: center center;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
 }
 
 .vegalta-hero-flag-stripe--red {
@@ -101,7 +98,7 @@ body {
 
 .vegalta-hero-flag-stripe--red:first-child {
   background: linear-gradient(
-    to right,
+    to bottom,
     var(--vegalta-red-dark) 0%,
     var(--vegalta-red) 55%,
     #c42838 100%
@@ -110,7 +107,7 @@ body {
 
 .vegalta-hero-flag-stripe--red:last-child {
   background: linear-gradient(
-    to right,
+    to bottom,
     #c42838 0%,
     var(--vegalta-red) 45%,
     var(--vegalta-red-dark) 100%
@@ -120,12 +117,46 @@ body {
 .vegalta-hero-flag-stripe--yellow {
   flex: 2;
   background: linear-gradient(
-    to right,
+    to bottom,
     #c42838 0%,
     var(--vegalta-gold-light) 12%,
     var(--vegalta-gold) 88%,
     #c42838 100%
   );
+}
+
+@media (min-width: 768px) {
+  .vegalta-hero-flag-stripes {
+    flex-direction: row;
+  }
+
+  .vegalta-hero-flag-stripe--red:first-child {
+    background: linear-gradient(
+      to right,
+      var(--vegalta-red-dark) 0%,
+      var(--vegalta-red) 55%,
+      #c42838 100%
+    );
+  }
+
+  .vegalta-hero-flag-stripe--red:last-child {
+    background: linear-gradient(
+      to right,
+      #c42838 0%,
+      var(--vegalta-red) 45%,
+      var(--vegalta-red-dark) 100%
+    );
+  }
+
+  .vegalta-hero-flag-stripe--yellow {
+    background: linear-gradient(
+      to right,
+      #c42838 0%,
+      var(--vegalta-gold-light) 12%,
+      var(--vegalta-gold) 88%,
+      #c42838 100%
+    );
+  }
 }
 
 .vegalta-official-hero-bg .vegalta-hero-flag-overlay {
@@ -134,7 +165,7 @@ body {
   z-index: 1;
   background:
     radial-gradient(
-      ellipse 90% 70% at 18% 42%,
+      ellipse 90% 70% at 30% 45%,
       rgba(255, 255, 255, 0.22) 0%,
       transparent 58%
     ),
