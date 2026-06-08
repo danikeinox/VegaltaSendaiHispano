@@ -16,8 +16,8 @@ Guía para desplegar Vegalta Sendai Hispano en **Cloudflare Workers** usando el 
 ## Requisitos previos
 
 1. Cuenta en [Cloudflare](https://dash.cloudflare.com)
-2. Base de datos PostgreSQL en Neon (recomendado) o Supabase
-3. Wrangler CLI autenticado: `npx wrangler login`
+2. Proyecto Appwrite configurado (`npm run appwrite:setup`)
+3. Wrangler CLI autenticado: `npx wrangler login` (solo para despliegue manual)
 
 ## 1. Base de datos (Appwrite)
 
@@ -111,13 +111,32 @@ Abre `http://localhost:8787`.
 
 1. En Cloudflare Dashboard → **Workers & Pages** → **Create** → **Connect to Git**
 2. Selecciona el repo `danikeinox/VegaltaSendaiHispano`
-3. Configura el build:
+3. Configura el build (raíz del repo = raíz de `vegalta-app`):
 
 | Campo | Valor |
 |-------|-------|
-| Framework preset | None (o detecta Next.js) |
-| Build command | `npm run build` |
-| Deploy command | `npx opennextjs-cloudflare build && npx wrangler deploy` |
+| Root directory | `/` (el repo **es** la app; no uses subcarpeta) |
+| Framework preset | None |
+| Build command | `npm run build:cf` |
+| Deploy command | `npx wrangler deploy` |
+
+> `npm run build` solo compila Next.js (`.next`). Para Workers necesitas **OpenNext**, que genera `.open-next/worker.js`. El script `build:cf` hace ambos pasos.
+>
+> Si prefieres un solo comando: Build = `npm run deploy` y Deploy vacío (incluye build + deploy vía Wrangler).
+
+### Qué verás en los logs (normal)
+
+```
+Installing project dependencies: npm clean-install
+Executing user build command: npm run build   ← o build:cf
+▲ Next.js 16.x (Turbopack)
+  Creating an optimized production build ...
+✓ Compiled successfully
+...
+Executing deploy command: npx wrangler deploy
+```
+
+Los avisos `middleware deprecated`, `No build cache`, telemetría y `glob deprecated` **no bloquean** el despliegue.
 
 4. Añade todas las variables/secrets en la sección **Environment variables**
 5. Conecta tu dominio personalizado en **Custom domains**
