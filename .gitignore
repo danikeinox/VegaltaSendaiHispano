@@ -32,6 +32,12 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
+
+# wallet certificates (private keys)
+/certs/*.pem
+/certs/*.p12
+/certs/*.cer
 
 # vercel
 .vercel
