@@ -3,12 +3,14 @@ import path from "path";
 import { PKPass } from "passkit-generator";
 import { VEGALTA_COLORS } from "@/lib/constants";
 
+const PROJECT_ROOT = path.join(/* turbopackIgnore: true */ process.cwd());
 const WALLET_ASSETS_DIR = path.join(
-  process.cwd(),
+  PROJECT_ROOT,
   "public",
   "assets",
   "wallet"
 );
+const CERTS_DIR = path.join(PROJECT_ROOT, "certs");
 
 export type PassMemberData = {
   displayId: string;
@@ -28,9 +30,8 @@ function readPemFromEnvOrFile(
 
   if (!filePathEnv) return null;
 
-  const resolved = path.isAbsolute(filePathEnv)
-    ? filePathEnv
-    : path.resolve(process.cwd(), filePathEnv);
+  const fileName = path.basename(filePathEnv);
+  const resolved = path.join(CERTS_DIR, fileName);
 
   if (!fs.existsSync(resolved)) return null;
   return fs.readFileSync(resolved);

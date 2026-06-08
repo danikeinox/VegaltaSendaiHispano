@@ -109,20 +109,31 @@ Abre `http://localhost:8787`.
 
 ## 4. Despliegue automático (GitHub + Workers Builds)
 
-1. En Cloudflare Dashboard → **Workers & Pages** → **Create** → **Connect to Git**
+> **IMPORTANTE:** Este proyecto usa **Cloudflare Workers + OpenNext**, NO Cloudflare Pages con `@cloudflare/next-on-pages`.
+>
+> Si en los logs ves `npx @cloudflare/next-on-pages@1` o errores de `export const runtime = 'edge'`, tu proyecto está configurado como **Pages** con el adaptador obsoleto. Debes cambiarlo a **Workers Builds**.
+
+1. En Cloudflare Dashboard → **Workers & Pages** → **Create** → **Workers** → **Connect to Git**
+   - No uses el preset "Next.js" de **Pages** (fuerza `next-on-pages`, deprecado).
 2. Selecciona el repo `danikeinox/VegaltaSendaiHispano`
 3. Configura el build (raíz del repo = raíz de `vegalta-app`):
 
 | Campo | Valor |
 |-------|-------|
 | Root directory | `/` (el repo **es** la app; no uses subcarpeta) |
-| Framework preset | None |
+| Framework preset | **None** (o Workers detectará `"adapter": "@opennextjs/cloudflare"` en `package.json`) |
+| Node.js version | **22** (LTS; coincide con `.nvmrc`) |
 | Build command | `npm run build:cf` |
 | Deploy command | `npx wrangler deploy` |
 
+Alternativa (un solo paso):
+
+| Campo | Valor |
+|-------|-------|
+| Build command | `npm run deploy` |
+| Deploy command | *(vacío)* |
+
 > `npm run build` solo compila Next.js (`.next`). Para Workers necesitas **OpenNext**, que genera `.open-next/worker.js`. El script `build:cf` hace ambos pasos.
->
-> Si prefieres un solo comando: Build = `npm run deploy` y Deploy vacío (incluye build + deploy vía Wrangler).
 
 ### Qué verás en los logs (normal)
 
@@ -157,6 +168,16 @@ Los avisos `middleware deprecated`, `No build cache`, telemetría y `glob deprec
 - Para caché ISR avanzado, habilita un bucket R2 (opcional, ver [OpenNext Caching](https://opennext.js.org/cloudflare/caching)).
 
 ## Solución de problemas
+
+### Error: `next-on-pages` / `runtime = 'edge'` / `Invalid prerender config`
+
+**Causa:** Cloudflare Pages con `@cloudflare/next-on-pages` (obsoleto). Esta app usa APIs Node.js (Appwrite, PassKit, crypto) que **no funcionan** en Edge Runtime.
+
+**Solución:**
+1. Crea o migra a un proyecto **Workers** (no Pages).
+2. Framework preset → **None**.
+3. Build → `npm run build:cf`, Deploy → `npx wrangler deploy`.
+4. Asegúrate de tener el commit más reciente (incluye `"adapter": "@opennextjs/cloudflare"` en `package.json`).
 
 ### `Apple Wallet not configured`
 Los certificados deben estar en secrets `APPLE_PASS_CERT`, `APPLE_PASS_KEY`, `APPLE_WWDR_CERT`.
