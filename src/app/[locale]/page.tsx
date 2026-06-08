@@ -6,7 +6,7 @@ import { HomeHero } from "@/components/home-hero";
 import { Footer } from "@/components/footer";
 import { SectionHeading } from "@/components/section-heading";
 import { TelegramJoinButton } from "@/components/telegram-join-button";
-import { FaApple, FaGoogle, FaIdCard, FaWallet } from "react-icons/fa";
+import { FaApple, FaGithub, FaGoogle, FaIdCard, FaWallet } from "react-icons/fa";
 import { isValidLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { notFound } from "next/navigation";
@@ -21,7 +21,7 @@ const benefitAccents = [
   "border-vegalta-red",
 ] as const;
 
-const benefitIcons = [FaIdCard, FaWallet, FaGoogle];
+const benefitIcons = [FaIdCard, FaWallet, FaGithub];
 
 export default async function HomePage({ params }: PageProps) {
   const { locale: rawLocale } = await params;
