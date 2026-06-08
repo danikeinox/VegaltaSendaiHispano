@@ -1,6 +1,6 @@
 /**
- * Genera assets PNG para Apple Wallet (icon, logo, strip).
- * Ejecutar: node scripts/generate-wallet-assets.mjs
+ * Genera assets PNG para Apple Wallet (icon, logo, strip) desde el escudo oficial.
+ * Ejecutar: npm run wallet:assets
  */
 import fs from "fs";
 import path from "path";
@@ -9,6 +9,14 @@ import sharp from "sharp";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const outDir = path.join(__dirname, "..", "public", "assets", "wallet");
+const logoSvg = path.join(
+  __dirname,
+  "..",
+  "public",
+  "assets",
+  "branding",
+  "logo-hispano.svg"
+);
 
 const COLORS = {
   deepBlue: { r: 11, g: 37, b: 69 },
@@ -16,20 +24,17 @@ const COLORS = {
   yellow: { r: 245, g: 197, b: 24 },
 };
 
-async function createSolidPng(width, height, color, filename) {
-  const buffer = await sharp({
-    create: {
-      width,
-      height,
-      channels: 3,
-      background: color,
-    },
-  })
+async function createFromLogo(width, height, filename, fit = "contain") {
+  const buffer = await sharp(logoSvg)
+    .resize(width, height, {
+      fit,
+      background: COLORS.deepBlue,
+    })
     .png()
     .toBuffer();
 
   fs.writeFileSync(path.join(outDir, filename), buffer);
-  console.log(`Created ${filename} (${width}x${height})`);
+  console.log(`Created ${filename} (${width}x${height}) from logo-hispano.svg`);
 }
 
 async function createStrip() {
@@ -45,7 +50,7 @@ async function createStrip() {
         </linearGradient>
       </defs>
       <rect width="100%" height="100%" fill="url(#g)"/>
-      <text x="50%" y="55%" text-anchor="middle" fill="rgb(11,37,69)" font-size="28" font-weight="bold" font-family="Arial">VEGALTA SENDAI</text>
+      <text x="50%" y="55%" text-anchor="middle" fill="rgb(255,255,255)" font-size="26" font-weight="bold" font-family="Arial">VEGALTA SENDAI</text>
     </svg>
   `;
 
@@ -55,9 +60,14 @@ async function createStrip() {
 }
 
 async function main() {
+  if (!fs.existsSync(logoSvg)) {
+    console.error(`Logo not found: ${logoSvg}`);
+    process.exit(1);
+  }
+
   fs.mkdirSync(outDir, { recursive: true });
-  await createSolidPng(58, 58, COLORS.deepBlue, "icon.png");
-  await createSolidPng(160, 50, COLORS.gold, "logo.png");
+  await createFromLogo(58, 58, "icon.png", "cover");
+  await createFromLogo(160, 50, "logo.png", "contain");
   await createStrip();
   console.log("Wallet assets ready in public/assets/wallet/");
 }

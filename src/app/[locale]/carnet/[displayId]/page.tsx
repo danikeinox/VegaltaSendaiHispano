@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { FaApple, FaGoogle } from "react-icons/fa";
 import { MembershipCard } from "@/components/membership-card";
+import { WalletButtons } from "@/components/wallet-buttons";
+import { isAppleWalletConfigured } from "@/lib/wallet/apple-pass";
+import { isGoogleWalletConfigured } from "@/lib/wallet/google-wallet";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { SectionHeading } from "@/components/section-heading";
@@ -54,8 +56,15 @@ export default async function CarnetPage({ params }: PageProps) {
     notFound();
   }
 
-  const appleUrl = `/api/wallet/apple?displayId=${encodeURIComponent(member.displayId)}`;
-  const googleApiUrl = `/api/wallet/google?displayId=${encodeURIComponent(member.displayId)}`;
+  const displayIdParam = encodeURIComponent(member.displayId);
+  const appleConfigured = isAppleWalletConfigured();
+  const googleConfigured = isGoogleWalletConfigured();
+  const appleUrl = appleConfigured
+    ? `/api/wallet/apple?displayId=${displayIdParam}`
+    : null;
+  const googleApiUrl = googleConfigured
+    ? `/api/wallet/google?displayId=${displayIdParam}`
+    : null;
   const dateLocale = rawLocale === "jp" ? "ja-JP" : "es-ES";
 
   return (
@@ -93,22 +102,16 @@ export default async function CarnetPage({ params }: PageProps) {
           </p>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full max-w-md">
-          <a
-            href={appleUrl}
-            className="inline-flex flex-1 h-11 items-center justify-center gap-2 bg-vegalta-royal-blue text-white hover:bg-vegalta-blue-light px-6 text-xs vegalta-section-title tracking-wider transition-colors"
-          >
-            <FaApple />
-            {dict.headline.appleWallet}
-          </a>
-          <a
-            href={googleApiUrl}
-            className="inline-flex flex-1 h-11 items-center justify-center gap-2 border-2 border-vegalta-royal-blue text-vegalta-royal-blue hover:bg-vegalta-royal-blue/5 px-6 text-xs vegalta-section-title tracking-wider transition-colors bg-white"
-          >
-            <FaGoogle />
-            {dict.headline.googleWallet}
-          </a>
-        </div>
+        <WalletButtons
+          appleUrl={appleUrl}
+          googleUrl={googleApiUrl}
+          appleLabel={dict.headline.appleWallet}
+          googleLabel={dict.headline.googleWallet}
+          androidLabel={dict.register.downloadAndroid}
+          appleAvailable={appleConfigured}
+          googleAvailable={googleConfigured}
+          appleUnavailableNote={dict.register.appleUnavailable}
+        />
 
         <Link
           href={localizedPath(rawLocale)}

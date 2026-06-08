@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 import type { Dictionary } from "@/i18n/types";
 import { corsHeaders } from "@/lib/security/cors";
+import { MemberCapacityError } from "@/lib/members";
 
 export class ApiError extends Error {
   constructor(
@@ -37,6 +38,19 @@ export function handleApiError(
     return NextResponse.json(
       { error: error.message, code: error.code },
       { status: error.statusCode, headers }
+    );
+  }
+
+  if (error instanceof MemberCapacityError) {
+    return NextResponse.json(
+      {
+        error:
+          apiMessages?.capacityFull ??
+          "La comunidad ha alcanzado el límite gratuito de carnets.",
+        code: "CAPACITY_FULL",
+        capacity: error.capacity,
+      },
+      { status: 503, headers }
     );
   }
 

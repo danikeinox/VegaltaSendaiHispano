@@ -155,6 +155,8 @@ const es: Dictionary = {
     registerAnother: "Registrar otro socio",
     connectionError: "Error de conexión. Inténtalo de nuevo.",
     registerError: "Error al registrar",
+    appleUnavailable:
+      "Cartera de Apple no disponible aún (faltan certificados en el servidor). Puedes usar Google Wallet o guardar el carnet en pantalla.",
   },
   carnet: {
     title: "CARNET OFICIAL",
@@ -204,6 +206,10 @@ const es: Dictionary = {
   api: {
     forbiddenOrigin: "Origen no permitido",
     rateLimited: "Demasiados intentos de registro. Inténtalo de nuevo en un minuto.",
+    capacityFull:
+      "Hemos alcanzado el límite gratuito de carnets de la comunidad. Vuelve a intentarlo más adelante.",
+    dailyQuotaFull:
+      "Hoy se ha alcanzado el cupo diario de nuevos registros. Inténtalo mañana.",
     validationError: "Datos de entrada no válidos",
     internalError: "Error interno del servidor",
   },

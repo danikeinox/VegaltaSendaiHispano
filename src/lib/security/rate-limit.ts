@@ -1,5 +1,6 @@
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
+import { FREE_TIER_LIMITS } from "@/lib/limits";
 
 type RateLimitResult = {
   success: boolean;
@@ -37,6 +38,7 @@ function memoryRateLimit(
 }
 
 let registrationLimiter: Ratelimit | null = null;
+let dailyRegistrationLimiter: Ratelimit | null = null;
 
 function getUpstashLimiter(): Ratelimit | null {
   const url = process.env.UPSTASH_REDIS_REST_URL;
@@ -54,6 +56,47 @@ function getUpstashLimiter(): Ratelimit | null {
   }
 
   return registrationLimiter;
+}
+
+function getDailyRegistrationLimiter(): Ratelimit | null {
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+
+  if (!url || !token) return null;
+
+  if (!dailyRegistrationLimiter) {
+    dailyRegistrationLimiter = new Ratelimit({
+      redis: new Redis({ url, token }),
+      limiter: Ratelimit.slidingWindow(
+        FREE_TIER_LIMITS.dailyNewRegistrations,
+        "1 d"
+      ),
+      analytics: true,
+      prefix: "vegalta:register:daily",
+    });
+  }
+
+  return dailyRegistrationLimiter;
+}
+
+export async function checkDailyRegistrationQuota(): Promise<RateLimitResult> {
+  const upstash = getDailyRegistrationLimiter();
+
+  if (upstash) {
+    const result = await upstash.limit("global");
+    return {
+      success: result.success,
+      limit: result.limit,
+      remaining: result.remaining,
+      reset: result.reset,
+    };
+  }
+
+  return memoryRateLimit(
+    "register:daily:global",
+    FREE_TIER_LIMITS.dailyNewRegistrations,
+    86_400_000
+  );
 }
 
 export async function checkRegistrationRateLimit(

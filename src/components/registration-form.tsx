@@ -3,11 +3,11 @@
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FaApple, FaGoogle } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MembershipCard } from "@/components/membership-card";
+import { WalletButtons } from "@/components/wallet-buttons";
 import { useLocale } from "@/components/locale-provider";
 import {
   createRegistrationSchema,
@@ -24,8 +24,12 @@ type RegisterResponse = {
   };
   isNew: boolean;
   wallet: {
-    apple: string;
-    google: string;
+    apple: string | null;
+    google: string | null;
+  };
+  walletAvailable: {
+    apple: boolean;
+    google: boolean;
   };
 };
 
@@ -73,12 +77,14 @@ export function RegistrationForm() {
 
       setResult(json);
 
-      const googleRes = await fetch(json.wallet.google, {
-        headers: { "X-Locale": locale },
-      });
-      const googleJson = await googleRes.json();
-      if (googleJson.saveUrl) {
-        setGoogleUrl(googleJson.saveUrl);
+      if (json.wallet.google) {
+        const googleRes = await fetch(json.wallet.google, {
+          headers: { "X-Locale": locale },
+        });
+        const googleJson = await googleRes.json();
+        if (googleJson.saveUrl) {
+          setGoogleUrl(googleJson.saveUrl);
+        }
       }
     } catch {
       setError(dict.register.connectionError);
@@ -87,7 +93,7 @@ export function RegistrationForm() {
 
   if (result) {
     return (
-      <div className="flex flex-col items-center gap-8 w-full">
+      <div className="flex w-full flex-col items-center gap-6 sm:gap-8">
         <MembershipCard
           displayId={result.member.displayId}
           firstName={result.member.firstName}
@@ -95,41 +101,23 @@ export function RegistrationForm() {
           officialCardLabel={dict.carnet.officialCard}
         />
 
-        <p className="text-center text-vegalta-blue/70 text-sm max-w-md">
+        <p className="max-w-md text-center text-sm text-vegalta-blue/70">
           {result.isNew
             ? dict.register.welcomeNew
             : dict.register.welcomeExisting}
         </p>
 
-        <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md">
-          <a
-            href={result.wallet.apple}
-            className="inline-flex flex-1 h-11 items-center justify-center gap-2 bg-vegalta-royal-blue text-white hover:bg-vegalta-blue-light text-xs vegalta-section-title tracking-wider transition-colors"
-          >
-            <FaApple className="text-lg" />
-            {dict.register.addAppleWallet}
-          </a>
-
-          {googleUrl ? (
-            <a
-              href={googleUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex flex-1 h-11 items-center justify-center gap-2 border-2 border-vegalta-royal-blue text-vegalta-royal-blue hover:bg-vegalta-royal-blue/5 text-xs vegalta-section-title tracking-wider transition-colors bg-white"
-            >
-              <FaGoogle className="text-lg" />
-              {dict.register.addGoogleWallet}
-            </a>
-          ) : (
-            <a
-              href={result.wallet.apple}
-              className="inline-flex flex-1 h-11 items-center justify-center gap-2 border-2 border-vegalta-royal-blue text-vegalta-royal-blue hover:bg-vegalta-royal-blue/5 text-xs vegalta-section-title tracking-wider transition-colors bg-white"
-            >
-              <FaGoogle className="text-lg" />
-              {dict.register.downloadAndroid}
-            </a>
-          )}
-        </div>
+        <WalletButtons
+          appleUrl={result.wallet.apple}
+          googleUrl={result.wallet.google}
+          googleSaveUrl={googleUrl}
+          appleLabel={dict.register.addAppleWallet}
+          googleLabel={dict.register.addGoogleWallet}
+          androidLabel={dict.register.downloadAndroid}
+          appleAvailable={result.walletAvailable.apple}
+          googleAvailable={result.walletAvailable.google}
+          appleUnavailableNote={dict.register.appleUnavailable}
+        />
 
         <Button variant="ghost" onClick={() => setResult(null)}>
           {dict.register.registerAnother}
@@ -141,14 +129,14 @@ export function RegistrationForm() {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="flex flex-col gap-5 w-full max-w-md bg-white border border-vegalta-royal-blue/10 shadow-sm p-5 sm:p-6 md:p-8"
+      className="flex w-full max-w-md flex-col gap-5 border border-vegalta-royal-blue/10 bg-white p-5 shadow-sm sm:p-6 md:p-8"
       noValidate
     >
       <div className="space-y-2">
         <Label htmlFor="firstName">{dict.register.firstName}</Label>
         <Input id="firstName" autoComplete="given-name" {...register("firstName")} />
         {errors.firstName && (
-          <p className="text-vegalta-red text-xs">{errors.firstName.message}</p>
+          <p className="text-xs text-vegalta-red">{errors.firstName.message}</p>
         )}
       </div>
 
@@ -156,7 +144,7 @@ export function RegistrationForm() {
         <Label htmlFor="lastName">{dict.register.lastName}</Label>
         <Input id="lastName" autoComplete="family-name" {...register("lastName")} />
         {errors.lastName && (
-          <p className="text-vegalta-red text-xs">{errors.lastName.message}</p>
+          <p className="text-xs text-vegalta-red">{errors.lastName.message}</p>
         )}
       </div>
 
@@ -164,7 +152,7 @@ export function RegistrationForm() {
         <Label htmlFor="email">{dict.register.email}</Label>
         <Input id="email" type="email" autoComplete="email" {...register("email")} />
         {errors.email && (
-          <p className="text-vegalta-red text-xs">{errors.email.message}</p>
+          <p className="text-xs text-vegalta-red">{errors.email.message}</p>
         )}
       </div>
 
@@ -172,12 +160,12 @@ export function RegistrationForm() {
         <Label htmlFor="country">{dict.register.countryOptional}</Label>
         <Input id="country" autoComplete="country-name" {...register("country")} />
         {errors.country && (
-          <p className="text-vegalta-red text-xs">{errors.country.message}</p>
+          <p className="text-xs text-vegalta-red">{errors.country.message}</p>
         )}
       </div>
 
       {error && (
-        <p className="text-vegalta-red text-sm text-center bg-vegalta-red/10 border border-vegalta-red/20 p-3">
+        <p className="border border-vegalta-red/20 bg-vegalta-red/10 p-3 text-center text-sm text-vegalta-red">
           {error}
         </p>
       )}
@@ -186,7 +174,7 @@ export function RegistrationForm() {
         {isSubmitting ? dict.register.submitting : dict.register.submit}
       </Button>
 
-      <p className="text-xs text-vegalta-blue/50 text-center leading-relaxed">
+      <p className="text-center text-xs leading-relaxed text-vegalta-blue/50">
         {dict.register.disclaimer}
       </p>
     </form>

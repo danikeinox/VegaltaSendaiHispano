@@ -153,6 +153,8 @@ const jp: Dictionary = {
     registerAnother: "別の会員を登録",
     connectionError: "接続エラー。もう一度お試しください。",
     registerError: "登録エラー",
+    appleUnavailable:
+      "Appleウォレットはまだ利用できません（サーバー証明書未設定）。Googleウォレットをご利用ください。",
   },
   carnet: {
     title: "公式カード",
@@ -202,6 +204,10 @@ const jp: Dictionary = {
   api: {
     forbiddenOrigin: "許可されていないオリジンです",
     rateLimited: "登録の試行回数が多すぎます。1分後にもう一度お試しください。",
+    capacityFull:
+      "無料プランの会員カード上限に達しました。後でもう一度お試しください。",
+    dailyQuotaFull:
+      "本日の新規登録上限に達しました。明日もう一度お試しください。",
     validationError: "入力データが無効です",
     internalError: "サーバー内部エラー",
   },

@@ -1,4 +1,4 @@
-import { registerMember } from "@/lib/members";
+import { findMemberByEmail, registerMember } from "@/lib/members";
 import { validateOrigin } from "@/lib/security/csrf";
 import { corsHeaders } from "@/lib/security/cors";
 import {
@@ -7,7 +7,12 @@ import {
   handleApiError,
   jsonSuccess,
 } from "@/lib/security/error-handler";
-import { checkRegistrationRateLimit } from "@/lib/security/rate-limit";
+import {
+  checkDailyRegistrationQuota,
+  checkRegistrationRateLimit,
+} from "@/lib/security/rate-limit";
+import { isAppleWalletConfigured } from "@/lib/wallet/apple-pass";
+import { isGoogleWalletConfigured } from "@/lib/wallet/google-wallet";
 import { getSchemasForRequest } from "@/i18n/schemas";
 
 export async function OPTIONS(request: Request) {
@@ -33,12 +38,23 @@ export async function POST(request: Request) {
     const data = registrationSchema.parse(body);
     const country = data.country?.trim() || undefined;
 
+    const dailyQuota = await checkDailyRegistrationQuota();
+    const existingCheck = await findMemberByEmail(data.email);
+
+    if (!existingCheck && !dailyQuota.success) {
+      throw new ApiError(503, dict.api.dailyQuotaFull, "DAILY_QUOTA_FULL");
+    }
+
     const { member, isNew } = await registerMember({
       firstName: data.firstName,
       lastName: data.lastName,
       email: data.email,
       country,
     });
+
+    const appleConfigured = isAppleWalletConfigured();
+    const googleConfigured = isGoogleWalletConfigured();
+    const displayIdParam = encodeURIComponent(member.displayId);
 
     return jsonSuccess(
       {
@@ -52,8 +68,16 @@ export async function POST(request: Request) {
         },
         isNew,
         wallet: {
-          apple: `/api/wallet/apple?displayId=${encodeURIComponent(member.displayId)}`,
-          google: `/api/wallet/google?displayId=${encodeURIComponent(member.displayId)}`,
+          apple: appleConfigured
+            ? `/api/wallet/apple?displayId=${displayIdParam}`
+            : null,
+          google: googleConfigured
+            ? `/api/wallet/google?displayId=${displayIdParam}`
+            : null,
+        },
+        walletAvailable: {
+          apple: appleConfigured,
+          google: googleConfigured,
         },
       },
       isNew ? 201 : 200,

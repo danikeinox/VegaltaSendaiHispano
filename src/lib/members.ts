@@ -1,11 +1,22 @@
 import { AppwriteException, type Models } from "node-appwrite";
 import { formatMemberId } from "@/lib/constants";
+import { buildCapacityStatus } from "@/lib/limits";
 import {
   getAppwriteConfig,
   getDatabases,
   ID,
   Query,
 } from "@/lib/appwrite-server";
+
+export class MemberCapacityError extends Error {
+  constructor(
+    message: string,
+    public readonly capacity: Awaited<ReturnType<typeof getMemberCapacityStatus>>
+  ) {
+    super(message);
+    this.name = "MemberCapacityError";
+  }
+}
 
 export type Member = {
   id: string;
@@ -64,6 +75,24 @@ async function allocateMemberNumber(): Promise<number> {
   return memberNumber;
 }
 
+export async function countMembers(): Promise<number> {
+  const databases = getDatabases();
+  const { databaseId, membersCollectionId } = getAppwriteConfig();
+
+  const result = await databases.listDocuments<MemberDocument>(
+    databaseId,
+    membersCollectionId,
+    [Query.limit(1)]
+  );
+
+  return result.total;
+}
+
+export async function getMemberCapacityStatus() {
+  const currentMembers = await countMembers();
+  return buildCapacityStatus(currentMembers);
+}
+
 export async function findMemberByEmail(
   email: string
 ): Promise<Member | null> {
@@ -105,6 +134,11 @@ export async function registerMember(data: {
   const existing = await findMemberByEmail(data.email);
   if (existing) {
     return { member: existing, isNew: false };
+  }
+
+  const capacity = await getMemberCapacityStatus();
+  if (capacity.isFull) {
+    throw new MemberCapacityError("Member capacity reached", capacity);
   }
 
   const databases = getDatabases();

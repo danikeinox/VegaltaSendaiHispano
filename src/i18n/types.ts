@@ -75,6 +75,7 @@ export type Dictionary = {
     registerAnother: string;
     connectionError: string;
     registerError: string;
+    appleUnavailable: string;
   };
   carnet: {
     title: string;
@@ -122,6 +123,8 @@ export type Dictionary = {
   api: {
     forbiddenOrigin: string;
     rateLimited: string;
+    capacityFull: string;
+    dailyQuotaFull: string;
     validationError: string;
     internalError: string;
   };
