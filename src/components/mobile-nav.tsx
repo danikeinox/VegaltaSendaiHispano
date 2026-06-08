@@ -1,10 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaBars, FaTimes } from "react-icons/fa";
 import { useLocale } from "@/components/locale-provider";
 import { SectionNavLink } from "@/components/section-nav-link";
-import { TelegramJoinButton } from "@/components/telegram-join-button";
 import { localizedPath } from "@/i18n/navigation";
 
 export function MobileNav() {
@@ -19,16 +18,25 @@ export function MobileNav() {
     { href: `${homePath}/sobre`, label: dict.nav.about },
   ];
 
+  useEffect(() => {
+    if (!open) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [open]);
+
   function closeMenu() {
     setOpen(false);
   }
 
   return (
-    <div className="relative lg:hidden">
+    <div className="relative shrink-0 xl:hidden">
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className="inline-flex items-center justify-center h-9 w-9 text-white/90 hover:text-vegalta-gold-light hover:bg-white/5 transition-colors"
+        className="inline-flex h-9 w-9 items-center justify-center text-white/90 transition-colors hover:bg-white/5 hover:text-vegalta-gold-light"
         aria-expanded={open}
         aria-controls="mobile-nav-panel"
         aria-label={open ? dict.nav.closeMenu : dict.nav.openMenu}
@@ -37,31 +45,32 @@ export function MobileNav() {
       </button>
 
       {open && (
-        <nav
-          id="mobile-nav-panel"
-          className="absolute left-0 right-0 top-full bg-vegalta-royal-blue border-b border-white/10 shadow-lg"
-        >
-          <ul className="container mx-auto px-4 py-3 flex flex-col gap-1">
-            {links.map((item) => (
-              <li key={item.label}>
-                <SectionNavLink
-                  href={item.href}
-                  onNavigate={closeMenu}
-                  className="block vegalta-section-title px-3 py-3 text-sm text-white/85 hover:text-vegalta-gold-light hover:bg-white/5 transition-colors"
-                >
-                  {item.label}
-                </SectionNavLink>
-              </li>
-            ))}
-            <li className="pt-1">
-              <TelegramJoinButton
-                variant="button"
-                className="w-full justify-center text-xs"
-                onClick={closeMenu}
-              />
-            </li>
-          </ul>
-        </nav>
+        <>
+          <button
+            type="button"
+            className="fixed inset-0 top-[var(--header-height)] z-40 bg-black/40"
+            aria-label={dict.nav.closeMenu}
+            onClick={closeMenu}
+          />
+          <nav
+            id="mobile-nav-panel"
+            className="fixed left-0 right-0 top-[var(--header-height)] z-50 max-h-[calc(100dvh-var(--header-height))] overflow-y-auto border-b border-white/10 bg-vegalta-royal-blue shadow-lg"
+          >
+            <ul className="container mx-auto flex flex-col gap-1 px-4 py-3">
+              {links.map((item) => (
+                <li key={item.label}>
+                  <SectionNavLink
+                    href={item.href}
+                    onNavigate={closeMenu}
+                    className="block vegalta-section-title px-3 py-3 text-sm text-white/85 transition-colors hover:bg-white/5 hover:text-vegalta-gold-light"
+                  >
+                    {item.label}
+                  </SectionNavLink>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </>
       )}
     </div>
   );

@@ -34,11 +34,14 @@ export type Dictionary = {
   hero: {
     tagline: string;
     taglineSecondary: string;
+    titleLine1: string;
+    titleLine2: string;
     displayTitle: string;
     description: string;
     unofficial: string;
     communityBarLabel: string;
     communityBarRegister: string;
+    scrollToBenefits: string;
   };
   benefits: {
     title: string;

@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 :root {
+  --header-height: 5.5rem;
   --header-scroll-offset: 5.5rem;
   --vegalta-royal-blue: #1a3d7c;
   --vegalta-blue: #0f2d5c;

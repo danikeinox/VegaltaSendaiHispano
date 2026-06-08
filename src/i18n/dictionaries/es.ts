@@ -94,12 +94,15 @@ const es: Dictionary = {
   hero: {
     tagline: "Official Fan Website",
     taglineSecondary: "Comunidad Hispana",
+    titleLine1: "Comunidad",
+    titleLine2: "Hispana",
     displayTitle: "HISPANO",
     description:
-      "Tu carnet digital de socio de la comunidad hispana. Gratuito, compatible con Cartera de Apple y Cartera de Google.",
+      "Tu carnet digital de socio de la comunidad hispana del equipo japonés Vegalta Sendai. Gratuito, compatible con Cartera de Apple y Cartera de Google próximamente.",
     unofficial: "No oficial · Sin fines de lucro",
     communityBarLabel: "Comunidad",
     communityBarRegister: "Obtener carnet gratuito",
+    scrollToBenefits: "Ir a la sección de beneficios",
   },
   benefits: {
     title: "BENEFICIOS DEL SOCIO",

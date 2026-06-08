@@ -5,13 +5,13 @@ import { useLocale } from "@/components/locale-provider";
 import { cn } from "@/lib/utils";
 
 const heroChipClass =
-  "flex flex-1 items-center justify-center gap-2 min-h-11 px-4 py-3 text-xs vegalta-section-title font-bold tracking-wide text-center";
+  "flex w-full min-h-10 items-center justify-center gap-2 px-3 py-2.5 text-[10px] vegalta-section-title font-bold leading-snug tracking-wide text-center sm:min-h-11 sm:flex-1 sm:px-4 sm:py-3 sm:text-xs";
 
 export function HeroCtaBar() {
   const { dict } = useLocale();
 
   return (
-    <div className="flex w-full max-w-xl flex-col items-stretch justify-center gap-3 px-1 sm:flex-row">
+    <div className="mx-auto flex w-full max-w-md flex-col items-stretch gap-2.5 sm:max-w-xl sm:flex-row sm:gap-3 md:max-w-none">
       <TelegramJoinButton
         variant="hero"
         className={cn(
