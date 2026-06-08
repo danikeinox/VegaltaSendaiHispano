@@ -1,7 +1,7 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
   "main": ".open-next/worker.js",
-  "name": "vegalta-sendai-hispano",
+  "name": "vegalta-endai-hispano",
   "compatibility_date": "2026-06-08",
   "compatibility_flags": [
     "nodejs_compat",
@@ -14,7 +14,7 @@
   "services": [
     {
       "binding": "WORKER_SELF_REFERENCE",
-      "service": "vegalta-sendai-hispano"
+      "service": "vegalta-endai-hispano"
     }
   ],
   "observability": {
