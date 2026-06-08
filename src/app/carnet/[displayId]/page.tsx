@@ -4,7 +4,7 @@ import { FaApple, FaGoogle } from "react-icons/fa";
 import { MembershipCard } from "@/components/membership-card";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
-import { prisma } from "@/lib/prisma";
+import { findMemberByDisplayId } from "@/lib/members";
 import { memberLookupSchema } from "@/lib/validations";
 
 type PageProps = { params: Promise<{ displayId: string }> };
@@ -19,16 +19,7 @@ export default async function CarnetPage({ params }: PageProps) {
     notFound();
   }
 
-  const member = await prisma.member.findUnique({
-    where: { displayId },
-    select: {
-      displayId: true,
-      firstName: true,
-      lastName: true,
-      country: true,
-      createdAt: true,
-    },
-  });
+  const member = await findMemberByDisplayId(displayId);
 
   if (!member) {
     notFound();

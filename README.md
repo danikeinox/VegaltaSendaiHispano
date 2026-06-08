@@ -7,20 +7,21 @@ Aplicación web de producción para la **comunidad hispana de fans del Vegalta S
 ## Características
 
 - Registro gratuito con validación Zod y rate limiting (5 req/min por IP)
-- IDs consecutivos atómicos (`VS-0001`, `VS-0002`...) con `SELECT FOR UPDATE`
+- IDs consecutivos atómicos (`VS-0001`, `VS-0002`...) vía Appwrite `incrementDocumentAttribute`
 - Carnet digital SVG fiel a la estética del club (azul, oro, rojo)
 - Generación nativa `.pkpass` (PassKit / `passkit-generator`)
 - Integración Google Wallet via JWT firmado (Save to Google Wallet)
-- Seguridad OWASP: CSP, HSTS, CSRF por origen, CORS restringido, errores genéricos
+- Backend [Appwrite Cloud](https://cloud.appwrite.io) — base de datos, sin servidor propio
+- Seguridad OWASP: CSP, HSTS, CSRF por origen, CORS restringido
 
 ## Stack
 
 | Capa | Tecnología |
 |------|------------|
-| Frontend | Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4, Shadcn/ui |
-| Backend | API Routes Next.js |
-| Base de datos | PostgreSQL + Prisma ORM |
-| Rate limiting | Upstash Redis (opcional) o memoria local |
+| Frontend | Next.js 16, React 19, TypeScript, Tailwind CSS 4, Shadcn/ui |
+| Backend | API Routes Next.js + Appwrite Databases |
+| Base de datos | Appwrite Cloud (Frankfurt) |
+| Rate limiting | Upstash Redis |
 | Wallets | passkit-generator, jsonwebtoken |
 
 ## Inicio rápido
@@ -33,105 +34,65 @@ cd VegaltaSendaiHispano
 npm install
 ```
 
-### 2. Configurar entorno
+### 2. Configurar Appwrite
 
 ```bash
 cp .env.example .env
 ```
 
-Edita `.env` con tu `DATABASE_URL` (Neon, Supabase o PostgreSQL local).
+Añade tu `APPWRITE_API_KEY` desde la [consola de Appwrite](https://cloud.appwrite.io).
 
-### 3. Base de datos
+Guía completa: **[docs/APPWRITE_SETUP.md](docs/APPWRITE_SETUP.md)**
+
+### 3. Crear base de datos y colecciones
 
 ```bash
-npx prisma migrate deploy
-npm run db:seed
+npm run appwrite:setup
 ```
 
-### 4. Assets de wallet
+### 4. Assets de wallet y certificados
 
 ```bash
 npm run wallet:assets
+.\scripts\generate-pass-cert.ps1   # Windows — Apple Wallet dev
 ```
 
-### 5. Certificados Apple (desarrollo)
-
-```powershell
-# Windows
-.\scripts\generate-pass-cert.ps1
-```
-
-```bash
-# Linux/macOS
-./scripts/generate-pass-cert.sh
-```
-
-Consulta [docs/WALLET_SETUP.md](docs/WALLET_SETUP.md) para producción.
-
-### 6. Ejecutar
+### 5. Ejecutar
 
 ```bash
 npm run dev
 ```
 
-Abre [http://localhost:3000](http://localhost:3000).
+Abre [http://localhost:3000](http://localhost:3000). Al cargar, `client.ping()` verifica la conexión con Appwrite automáticamente.
+
+## Despliegue en Cloudflare Workers
+
+```bash
+npm run deploy
+```
+
+Guía: **[docs/DEPLOY_CLOUDFLARE.md](docs/DEPLOY_CLOUDFLARE.md)**
 
 ## Estructura del proyecto
 
 ```
 src/
-├── app/
-│   ├── api/
-│   │   ├── register/          # POST registro de socio
-│   │   ├── member/[displayId] # GET consulta socio
-│   │   └── wallet/
-│   │       ├── apple/         # GET descarga .pkpass
-│   │       └── google/        # GET/POST Save to Google Wallet
-│   ├── carnet/[displayId]/    # Página pública del carnet
-│   └── page.tsx               # Landing + formulario
+├── lib/
+│   ├── appwrite.ts          # SDK cliente (browser)
+│   ├── appwrite-server.ts   # SDK servidor (API routes)
+│   └── members.ts           # Registro e IDs consecutivos
 ├── components/
-│   ├── membership-card.tsx    # Carnet SVG
-│   ├── registration-form.tsx
-│   └── ui/                    # Shadcn components
-└── lib/
-    ├── member-id.ts           # ID consecutivo atómico
-    ├── security/              # Rate limit, CSRF, CORS, errores
-    └── wallet/                # Apple Pass + Google JWT
+│   ├── appwrite-ping.tsx    # Verificación client.ping()
+│   └── membership-card.tsx  # Carnet SVG
+└── app/api/
+    ├── register/            # POST registro
+    └── wallet/              # Apple + Google Wallet
 ```
-
-## API
-
-### `POST /api/register`
-
-```json
-{
-  "firstName": "Juan",
-  "lastName": "García",
-  "email": "juan@example.com",
-  "country": "España"
-}
-```
-
-### `GET /api/wallet/apple?displayId=VS-0001`
-
-Descarga archivo `.pkpass`.
-
-### `GET /api/wallet/google?displayId=VS-0001`
-
-Devuelve URL de Save to Google Wallet o fallback `.pkpass`.
-
-## Despliegue (coste cero)
-
-| Servicio | Proveedor gratuito |
-|----------|-------------------|
-| Hosting | Vercel Hobby |
-| PostgreSQL | Neon / Supabase Free |
-| Redis | Upstash Free (10k req/día) |
 
 ## Licencia
 
-MIT — Uso y modificación libres. Ver [LICENSE](LICENSE).
+MIT — Ver [LICENSE](LICENSE).
 
 ## Aviso legal
 
-Este carnet es un proyecto de la comunidad hispana de aficionados. **No está afiliado ni avalado por el Vegalta Sendai oficial.**
+Carnet de la comunidad hispana de aficionados. **No afiliado al Vegalta Sendai oficial.**

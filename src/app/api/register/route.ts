@@ -1,4 +1,4 @@
-import { registerMember } from "@/lib/member-id";
+import { registerMember } from "@/lib/members";
 import { validateOrigin } from "@/lib/security/csrf";
 import { corsHeaders } from "@/lib/security/cors";
 import {

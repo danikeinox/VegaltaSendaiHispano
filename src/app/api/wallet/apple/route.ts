@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { findMemberByDisplayId } from "@/lib/members";
 import { corsHeaders } from "@/lib/security/cors";
 import { ApiError, handleApiError } from "@/lib/security/error-handler";
 import {
@@ -18,9 +18,7 @@ export async function GET(request: Request) {
 
     const parsed = memberLookupSchema.parse({ displayId });
 
-    const member = await prisma.member.findUnique({
-      where: { displayId: parsed.displayId },
-    });
+    const member = await findMemberByDisplayId(parsed.displayId);
 
     if (!member) {
       throw new ApiError(404, "Socio no encontrado", "NOT_FOUND");
