@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
+import { SupportCallout } from "@/components/support-callout";
 import { SectionHeading } from "@/components/section-heading";
 import { isValidLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
@@ -102,7 +103,11 @@ export default async function AboutPage({ params }: PageProps) {
           ))}
         </article>
 
-        <div className="mt-12 flex flex-col sm:flex-row flex-wrap gap-3 justify-center">
+        <div className="mt-12 flex justify-center">
+          <SupportCallout className="mx-auto" />
+        </div>
+
+        <div className="mt-8 flex flex-col sm:flex-row flex-wrap gap-3 justify-center">
           <Link
             href={`${homePath}#registro`}
             className="inline-flex items-center justify-center min-h-11 px-5 py-3 bg-vegalta-royal-blue text-white hover:bg-vegalta-blue-light text-xs vegalta-section-title font-bold tracking-wide transition-colors text-center"

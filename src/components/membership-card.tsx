@@ -16,13 +16,11 @@ export function MembershipCard({
   displayId,
   firstName,
   lastName,
-  officialCardLabel = "CARNET OFICIAL",
+  officialCardLabel = "CARNET FAN OFICIAL",
   className = "",
 }: MembershipCardProps) {
   const fullName = `${firstName} ${lastName}`.toUpperCase();
-  const [idPrefix, idNumber] = displayId.includes("-")
-    ? displayId.split("-")
-    : ["VS", displayId];
+  const engravedId = displayId.toUpperCase();
 
   return (
     <div className={`mx-auto w-full max-w-[min(100%,520px)] px-1 sm:px-0 ${className}`}>
@@ -47,6 +45,19 @@ export function MembershipCard({
             <feComposite in="white" in2="dilated" operator="in" result="outline" />
             <feMerge>
               <feMergeNode in="outline" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+          <filter id="machineEngrave" x="-30%" y="-30%" width="160%" height="160%">
+            <feFlood floodColor="#000000" floodOpacity="0.65" result="shadowColor" />
+            <feComposite in="shadowColor" in2="SourceAlpha" operator="in" result="shadow" />
+            <feOffset in="shadow" dx="1.2" dy="1.4" result="shadowOffset" />
+            <feFlood floodColor="#ffffff" floodOpacity="0.22" result="hiColor" />
+            <feComposite in="hiColor" in2="SourceAlpha" operator="in" result="highlight" />
+            <feOffset in="highlight" dx="-0.8" dy="-1" result="hiOffset" />
+            <feMerge>
+              <feMergeNode in="shadowOffset" />
+              <feMergeNode in="hiOffset" />
               <feMergeNode in="SourceGraphic" />
             </feMerge>
           </filter>
@@ -149,38 +160,18 @@ export function MembershipCard({
 
         <path d="M468,272 L520,272 L520,325 L448,325 Z" fill={VEGALTA_COLORS.red} />
 
-        <rect
-          x="300"
-          y="283"
-          width="158"
-          height="32"
-          rx="6"
-          fill="white"
-          stroke={VEGALTA_COLORS.goldLight}
-          strokeWidth="1.5"
-        />
-
         <text
-          x="318"
+          x="452"
           y="305"
-          fill={VEGALTA_COLORS.royalBlue}
-          fontSize="14"
-          fontWeight="800"
-          fontFamily="'Courier New', monospace"
-          letterSpacing="1"
+          textAnchor="end"
+          fill="#8FA8C8"
+          fontSize="19"
+          fontWeight="700"
+          fontFamily="'Courier New', 'Lucida Console', monospace"
+          letterSpacing="5"
+          filter="url(#machineEngrave)"
         >
-          {idPrefix}-
-        </text>
-        <text
-          x="358"
-          y="305"
-          fill={VEGALTA_COLORS.red}
-          fontSize="18"
-          fontWeight="900"
-          fontFamily="'Courier New', monospace"
-          letterSpacing="2"
-        >
-          {idNumber}
+          {engravedId}
         </text>
       </svg>
     </div>

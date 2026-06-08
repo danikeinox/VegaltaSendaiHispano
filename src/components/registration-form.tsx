@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MembershipCard } from "@/components/membership-card";
+import { SupportCallout } from "@/components/support-callout";
 import { WalletButtons } from "@/components/wallet-buttons";
 import { useLocale } from "@/components/locale-provider";
 import {
@@ -118,6 +119,10 @@ export function RegistrationForm() {
           googleAvailable={result.walletAvailable.google}
           appleUnavailableNote={dict.register.appleUnavailable}
         />
+
+        {!result.walletAvailable.apple && (
+          <SupportCallout showAppleNote className="mx-auto" />
+        )}
 
         <Button variant="ghost" onClick={() => setResult(null)}>
           {dict.register.registerAnother}

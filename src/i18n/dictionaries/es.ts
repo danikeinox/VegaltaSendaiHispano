@@ -156,15 +156,24 @@ const es: Dictionary = {
     connectionError: "Error de conexión. Inténtalo de nuevo.",
     registerError: "Error al registrar",
     appleUnavailable:
-      "Cartera de Apple no disponible aún (faltan certificados en el servidor). Puedes usar Google Wallet o guardar el carnet en pantalla.",
+      "Cartera de Apple no disponible aún. Usa Google Wallet o guarda el carnet en pantalla.",
+  },
+  support: {
+    title: "Apoya el proyecto",
+    description:
+      "vegalta.es es gratis y sin ánimo de lucro. Tu aporte ayuda a mantener la web y los servicios de la comunidad.",
+    appleNote:
+      "Cartera de Apple requiere certificados de pago (~99 USD/año). Con tu apoyo podemos habilitarla para todos los iPhone.",
+    button: "Invítame a un café",
+    ariaLabel: "Apoyar Vegalta Sendai Hispano en Buy Me a Coffee",
   },
   carnet: {
-    title: "CARNET OFICIAL",
+    title: "CARNET FAN OFICIAL",
     subtitle: "Carnet digital del socio",
     country: "País",
     memberSince: "Miembro desde",
     backHome: "← Volver al inicio",
-    officialCard: "CARNET OFICIAL",
+    officialCard: "CARNET FAN OFICIAL",
   },
   footer: {
     description:

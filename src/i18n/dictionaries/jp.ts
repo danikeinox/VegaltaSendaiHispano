@@ -154,15 +154,24 @@ const jp: Dictionary = {
     connectionError: "接続エラー。もう一度お試しください。",
     registerError: "登録エラー",
     appleUnavailable:
-      "Appleウォレットはまだ利用できません（サーバー証明書未設定）。Googleウォレットをご利用ください。",
+      "Appleウォレットはまだ利用できません。Googleウォレットをご利用ください。",
+  },
+  support: {
+    title: "プロジェクトを支援",
+    description:
+      "vegalta.esは無料の非営利サイトです。ご支援はサイトの維持とコミュニティサービスの運営に役立ちます。",
+    appleNote:
+      "Appleウォレットには有料証明書（年間約99米ドル）が必要です。ご支援によりiPhone向けに有効化できます。",
+    button: "コーヒーをおごる",
+    ariaLabel: "Buy Me a CoffeeでVegalta Sendai Hispanoを支援",
   },
   carnet: {
-    title: "公式カード",
+    title: "ファン公式カード",
     subtitle: "会員デジタルカード",
     country: "国",
     memberSince: "入会日",
     backHome: "← ホームに戻る",
-    officialCard: "公式カード",
+    officialCard: "ファン公式カード",
   },
   footer: {
     description:

@@ -3,6 +3,7 @@
 import { ClubLogo } from "@/components/club-logo";
 import { SectionNavLink } from "@/components/section-nav-link";
 import { useLocale } from "@/components/locale-provider";
+import { SupportCallout } from "@/components/support-callout";
 import { TelegramJoinButton } from "@/components/telegram-join-button";
 import { VegaltaLogo } from "@/components/vegalta-logo";
 import { localizedPath } from "@/i18n/navigation";
@@ -15,7 +16,7 @@ export function Footer() {
       <div className="h-1 bg-gradient-to-r from-vegalta-gold via-vegalta-gold-light to-vegalta-gold" />
 
       <div className="bg-vegalta-royal-blue text-white">
-        <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10">
+        <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10">
           <div className="sm:col-span-2 lg:col-span-1">
             <div className="flex items-center gap-3 mb-3">
               <ClubLogo size="sm" />
@@ -81,6 +82,10 @@ export function Footer() {
             <p className="text-xs text-white/60 leading-relaxed">
               {dict.footer.legalText}
             </p>
+          </div>
+
+          <div className="sm:col-span-2 lg:col-span-1">
+            <SupportCallout variant="dark" className="max-w-none" />
           </div>
         </div>
 

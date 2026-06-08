@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { MembershipCard } from "@/components/membership-card";
+import { SupportCallout } from "@/components/support-callout";
 import { WalletButtons } from "@/components/wallet-buttons";
 import { isAppleWalletConfigured } from "@/lib/wallet/apple-pass";
 import { isGoogleWalletConfigured } from "@/lib/wallet/google-wallet";
@@ -112,6 +113,10 @@ export default async function CarnetPage({ params }: PageProps) {
           googleAvailable={googleConfigured}
           appleUnavailableNote={dict.register.appleUnavailable}
         />
+
+        {!appleConfigured && (
+          <SupportCallout showAppleNote className="mx-auto" />
+        )}
 
         <Link
           href={localizedPath(rawLocale)}

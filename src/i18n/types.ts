@@ -85,6 +85,13 @@ export type Dictionary = {
     backHome: string;
     officialCard: string;
   };
+  support: {
+    title: string;
+    description: string;
+    appleNote: string;
+    button: string;
+    ariaLabel: string;
+  };
   footer: {
     description: string;
     links: string;
