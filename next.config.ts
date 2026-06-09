@@ -2,16 +2,27 @@ import type { NextConfig } from "next";
 import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
 
 const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://www.vegalta.es";
+const isDev = process.env.NODE_ENV !== "production";
+
+const scriptSrc = [
+  "'self'",
+  "'unsafe-inline'",
+  ...(isDev ? ["'unsafe-eval'"] : []),
+  "https://challenges.cloudflare.com",
+].join(" ");
 
 const ContentSecurityPolicy = `
   default-src 'self';
-  script-src 'self' 'unsafe-inline' 'unsafe-eval';
+  script-src ${scriptSrc};
   style-src 'self' 'unsafe-inline';
   img-src 'self' data: blob: https://i.ytimg.com https://www.youtube.com;
   font-src 'self' data: https://fonts.gstatic.com;
-  connect-src 'self' https://pay.google.com https://fra.cloud.appwrite.io;
-  frame-src 'self' https://www.youtube-nocookie.com https://www.youtube.com;
+  connect-src 'self' https://pay.google.com https://fra.cloud.appwrite.io https://challenges.cloudflare.com;
+  frame-src 'self' https://www.youtube-nocookie.com https://www.youtube.com https://challenges.cloudflare.com;
   frame-ancestors 'none';
+  object-src 'none';
+  manifest-src 'self';
+  worker-src 'self';
   base-uri 'self';
   form-action 'self';
   upgrade-insecure-requests;
@@ -22,7 +33,10 @@ const ContentSecurityPolicy = `
 const securityHeaders = [
   { key: "X-Frame-Options", value: "DENY" },
   { key: "X-Content-Type-Options", value: "nosniff" },
-  { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+  {
+    key: "Referrer-Policy",
+    value: "strict-origin-when-cross-origin",
+  },
   {
     key: "Strict-Transport-Security",
     value: "max-age=63072000; includeSubDomains; preload",
@@ -44,6 +58,20 @@ const nextConfig: NextConfig = {
       {
         source: "/(.*)",
         headers: securityHeaders,
+      },
+      {
+        source: "/:locale/carnet/:path*",
+        headers: [
+          ...securityHeaders.filter((h) => h.key !== "Referrer-Policy"),
+          { key: "Referrer-Policy", value: "no-referrer" },
+        ],
+      },
+      {
+        source: "/:locale/recuperar/:path*",
+        headers: [
+          ...securityHeaders.filter((h) => h.key !== "Referrer-Policy"),
+          { key: "Referrer-Policy", value: "no-referrer" },
+        ],
       },
     ];
   },

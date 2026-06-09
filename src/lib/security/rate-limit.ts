@@ -1,6 +1,7 @@
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 import { FREE_TIER_LIMITS } from "@/lib/limits";
+import { isUpstashConfigured } from "@/lib/security/env";
 
 type RateLimitResult = {
   success: boolean;
@@ -10,6 +11,16 @@ type RateLimitResult = {
 };
 
 const memoryStore = new Map<string, { count: number; resetAt: number }>();
+
+function isProductionRuntime(): boolean {
+  return process.env.NODE_ENV === "production";
+}
+
+function requireUpstashOrDev(): void {
+  if (isProductionRuntime() && !isUpstashConfigured()) {
+    throw new Error("Upstash Redis is required for rate limiting in production");
+  }
+}
 
 function memoryRateLimit(
   identifier: string,
@@ -40,16 +51,22 @@ function memoryRateLimit(
 let registrationLimiter: Ratelimit | null = null;
 let dailyRegistrationLimiter: Ratelimit | null = null;
 let memberLookupLimiter: Ratelimit | null = null;
+let recoveryLimiter: Ratelimit | null = null;
+
+function getRedis(): Redis | null {
+  const url = process.env.UPSTASH_REDIS_REST_URL?.trim();
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN?.trim();
+  if (!url || !token) return null;
+  return new Redis({ url, token });
+}
 
 function getUpstashLimiter(): Ratelimit | null {
-  const url = process.env.UPSTASH_REDIS_REST_URL;
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
-
-  if (!url || !token) return null;
+  const redis = getRedis();
+  if (!redis) return null;
 
   if (!registrationLimiter) {
     registrationLimiter = new Ratelimit({
-      redis: new Redis({ url, token }),
+      redis,
       limiter: Ratelimit.slidingWindow(5, "1 m"),
       analytics: true,
       prefix: "vegalta:register",
@@ -60,14 +77,12 @@ function getUpstashLimiter(): Ratelimit | null {
 }
 
 function getDailyRegistrationLimiter(): Ratelimit | null {
-  const url = process.env.UPSTASH_REDIS_REST_URL;
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
-
-  if (!url || !token) return null;
+  const redis = getRedis();
+  if (!redis) return null;
 
   if (!dailyRegistrationLimiter) {
     dailyRegistrationLimiter = new Ratelimit({
-      redis: new Redis({ url, token }),
+      redis,
       limiter: Ratelimit.slidingWindow(
         FREE_TIER_LIMITS.dailyNewRegistrations,
         "1 d"
@@ -80,7 +95,24 @@ function getDailyRegistrationLimiter(): Ratelimit | null {
   return dailyRegistrationLimiter;
 }
 
+function getRecoveryLimiter(): Ratelimit | null {
+  const redis = getRedis();
+  if (!redis) return null;
+
+  if (!recoveryLimiter) {
+    recoveryLimiter = new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(3, "15 m"),
+      analytics: true,
+      prefix: "vegalta:recover",
+    });
+  }
+
+  return recoveryLimiter;
+}
+
 export async function checkDailyRegistrationQuota(): Promise<RateLimitResult> {
+  requireUpstashOrDev();
   const upstash = getDailyRegistrationLimiter();
 
   if (upstash) {
@@ -101,12 +133,13 @@ export async function checkDailyRegistrationQuota(): Promise<RateLimitResult> {
 }
 
 export async function checkRegistrationRateLimit(
-  ip: string
+  identifier: string
 ): Promise<RateLimitResult> {
+  requireUpstashOrDev();
   const upstash = getUpstashLimiter();
 
   if (upstash) {
-    const result = await upstash.limit(ip);
+    const result = await upstash.limit(identifier);
     return {
       success: result.success,
       limit: result.limit,
@@ -115,18 +148,16 @@ export async function checkRegistrationRateLimit(
     };
   }
 
-  return memoryRateLimit(`register:${ip}`, 5, 60_000);
+  return memoryRateLimit(`register:${identifier}`, 5, 60_000);
 }
 
 function getMemberLookupLimiter(): Ratelimit | null {
-  const url = process.env.UPSTASH_REDIS_REST_URL;
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
-
-  if (!url || !token) return null;
+  const redis = getRedis();
+  if (!redis) return null;
 
   if (!memberLookupLimiter) {
     memberLookupLimiter = new Ratelimit({
-      redis: new Redis({ url, token }),
+      redis,
       limiter: Ratelimit.slidingWindow(30, "1 m"),
       analytics: true,
       prefix: "vegalta:member",
@@ -139,6 +170,7 @@ function getMemberLookupLimiter(): Ratelimit | null {
 export async function checkMemberLookupRateLimit(
   ip: string
 ): Promise<RateLimitResult> {
+  requireUpstashOrDev();
   const upstash = getMemberLookupLimiter();
 
   if (upstash) {
@@ -152,4 +184,23 @@ export async function checkMemberLookupRateLimit(
   }
 
   return memoryRateLimit(`member:${ip}`, 30, 60_000);
+}
+
+export async function checkRecoveryRateLimit(
+  identifier: string
+): Promise<RateLimitResult> {
+  requireUpstashOrDev();
+  const upstash = getRecoveryLimiter();
+
+  if (upstash) {
+    const result = await upstash.limit(identifier);
+    return {
+      success: result.success,
+      limit: result.limit,
+      remaining: result.remaining,
+      reset: result.reset,
+    };
+  }
+
+  return memoryRateLimit(`recover:${identifier}`, 3, 900_000);
 }

@@ -15,7 +15,7 @@ import {
   createMemberVerificationUrl,
   isPreviewVerificationToken,
   PREVIEW_DISPLAY_ID,
-  verifyMemberToken,
+  verifyPublicVerificationToken,
 } from "@/lib/verification";
 
 type PageProps = {
@@ -59,7 +59,7 @@ export default async function VerificationPage({ params }: PageProps) {
   const dateLocale = rawLocale === "jp" ? "ja-JP" : "es-ES";
   const member = await findMemberByDisplayId(displayId);
 
-  if (member && verifyMemberToken(member, token)) {
+  if (member && verifyPublicVerificationToken(displayId, token)) {
     const verificationUrl = createMemberVerificationUrl(rawLocale, member);
     const memberName = `${member.firstName} ${member.lastName}`;
     const memberSince = new Date(member.createdAt).toLocaleDateString(

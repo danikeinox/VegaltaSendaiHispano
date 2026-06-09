@@ -1,4 +1,5 @@
 import { findMemberByDisplayId } from "@/lib/members";
+import { validateOrigin } from "@/lib/security/csrf";
 import { corsHeaders } from "@/lib/security/cors";
 import { ApiError, handleApiError, jsonSuccess } from "@/lib/security/error-handler";
 import { assertMemberAccess } from "@/lib/security/member-access";
@@ -34,7 +35,7 @@ export async function GET(request: Request) {
           configured: false,
           fallback: {
             type: "pkpass",
-            url: getAndroidPkpassFallbackUrl(member),
+            url: getAndroidPkpassFallbackUrl(member, token ?? ""),
             message:
               "Google Wallet API no configurada. Usa la descarga .pkpass compatible con apps Android.",
           },
@@ -69,6 +70,10 @@ export async function POST(request: Request) {
   const { dict, memberLookupSchema } = await getSchemasForRequest(request);
 
   try {
+    if (!validateOrigin(request)) {
+      throw new ApiError(403, dict.api.forbiddenOrigin, "FORBIDDEN_ORIGIN");
+    }
+
     const body = await request.json();
     const parsed = memberLookupSchema.parse(body);
     const token =
@@ -88,7 +93,7 @@ export async function POST(request: Request) {
           configured: false,
           fallback: {
             type: "pkpass",
-            url: getAndroidPkpassFallbackUrl(member),
+            url: getAndroidPkpassFallbackUrl(member, token ?? ""),
           },
         },
         200,

@@ -18,6 +18,13 @@ export class MemberCapacityError extends Error {
   }
 }
 
+export class MemberAlreadyExistsError extends Error {
+  constructor() {
+    super("Member already exists");
+    this.name = "MemberAlreadyExistsError";
+  }
+}
+
 export type Member = {
   id: string;
   memberNumber: number;
@@ -26,6 +33,8 @@ export type Member = {
   lastName: string;
   email: string;
   country: string | null;
+  accessTokenHash: string | null;
+  tokenVersion: number;
   createdAt: Date;
 };
 
@@ -36,6 +45,8 @@ type MemberDocument = Models.Document & {
   lastName: string;
   email: string;
   country?: string | null;
+  accessTokenHash?: string | null;
+  tokenVersion?: number | null;
 };
 
 function mapDocument(doc: MemberDocument): Member {
@@ -47,13 +58,12 @@ function mapDocument(doc: MemberDocument): Member {
     lastName: doc.lastName,
     email: doc.email,
     country: doc.country ?? null,
+    accessTokenHash: doc.accessTokenHash ?? null,
+    tokenVersion: doc.tokenVersion ?? 0,
     createdAt: new Date(doc.$createdAt),
   };
 }
 
-/**
- * Incremento atómico del contador vía Appwrite incrementDocumentAttribute.
- */
 async function allocateMemberNumber(): Promise<number> {
   const databases = getDatabases();
   const { databaseId, sequenceCollectionId, sequenceDocumentId } =
@@ -125,15 +135,55 @@ export async function findMemberByDisplayId(
   return doc ? mapDocument(doc) : null;
 }
 
+export async function findMemberById(memberId: string): Promise<Member | null> {
+  const databases = getDatabases();
+  const { databaseId, membersCollectionId } = getAppwriteConfig();
+
+  try {
+    const doc = await databases.getDocument<MemberDocument>(
+      databaseId,
+      membersCollectionId,
+      memberId
+    );
+    return mapDocument(doc);
+  } catch (error) {
+    if (error instanceof AppwriteException && error.code === 404) {
+      return null;
+    }
+    throw error;
+  }
+}
+
+export async function setMemberAccessToken(
+  memberId: string,
+  accessTokenHash: string,
+  tokenVersion: number
+): Promise<Member> {
+  const databases = getDatabases();
+  const { databaseId, membersCollectionId } = getAppwriteConfig();
+
+  const doc = await databases.updateDocument<MemberDocument>(
+    databaseId,
+    membersCollectionId,
+    memberId,
+    {
+      accessTokenHash,
+      tokenVersion,
+    }
+  );
+
+  return mapDocument(doc);
+}
+
 export async function registerMember(data: {
   firstName: string;
   lastName: string;
   email: string;
   country?: string;
-}): Promise<{ member: Member; isNew: boolean }> {
+}): Promise<Member> {
   const existing = await findMemberByEmail(data.email);
   if (existing) {
-    return { member: existing, isNew: false };
+    throw new MemberAlreadyExistsError();
   }
 
   const capacity = await getMemberCapacityStatus();
@@ -159,15 +209,17 @@ export async function registerMember(data: {
         lastName: data.lastName,
         email: data.email,
         country: data.country ?? null,
+        accessTokenHash: null,
+        tokenVersion: 0,
       }
     );
 
-    return { member: mapDocument(doc), isNew: true };
+    return mapDocument(doc);
   } catch (error) {
     if (error instanceof AppwriteException && error.code === 409) {
       const duplicate = await findMemberByEmail(data.email);
       if (duplicate) {
-        return { member: duplicate, isNew: false };
+        throw new MemberAlreadyExistsError();
       }
     }
     throw error;

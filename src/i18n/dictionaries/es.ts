@@ -236,6 +236,23 @@ const es: Dictionary = {
       "Por medidas de seguridad, el registro de nuevos socios está deshabilitado temporalmente. Se han eliminado todos los carnets existentes y se volverá a habilitar el registro una vez completadas las correcciones.",
     disabledNote:
       "Gracias por tu paciencia. Puedes seguir uniéndote a la comunidad en Telegram mientras tanto.",
+    recoverPrompt: "¿Ya tienes carnet?",
+    recoverLink: "Recupéralo por email",
+    pendingExisting:
+      "Si este email ya está registrado, recibirás instrucciones para recuperar tu carnet.",
+  },
+  recover: {
+    title: "Recuperar carnet",
+    subtitle:
+      "Introduce el email con el que te registraste. Si existe, te enviaremos un enlace temporal.",
+    emailLabel: "Correo electrónico",
+    submit: "Enviar enlace de recuperación",
+    submitting: "Enviando...",
+    requestError: "No se pudo procesar la solicitud",
+    connectionError: "Error de conexión. Inténtalo de nuevo.",
+    loading: "Validando enlace de recuperación...",
+    invalid: "El enlace de recuperación no es válido o ha expirado.",
+    backToRegister: "Volver al registro",
   },
   support: {
     title: "Apoya el proyecto",
@@ -393,6 +410,24 @@ const es: Dictionary = {
             "El registro está pensado para personas con capacidad para consentir el tratamiento de sus datos. Si eres menor de edad, debes contar con autorización de tu padre, madre o tutor.",
           ],
         },
+        {
+          heading: "Enlaces privados del carnet",
+          paragraphs: [
+            "Tu carnet incluye enlaces privados con acceso personal. No los compartas en redes sociales, chats públicos ni capturas de pantalla. Si crees que alguien ha accedido a tu enlace, solicita un nuevo acceso desde la opción de recuperación por email.",
+          ],
+        },
+        {
+          heading: "Datos compartidos con Apple/Google Wallet",
+          paragraphs: [
+            "Si añades el carnet a Apple Wallet o Google Wallet, esas plataformas pueden recibir tu nombre, email, identificador VS-XXXX y la URL pública de verificación del carnet, según sus propias políticas de privacidad.",
+          ],
+        },
+        {
+          heading: "Brechas de seguridad",
+          paragraphs: [
+            "Si detectamos una brecha que afecte a datos personales, informaremos a los afectados y, cuando proceda, a la AEPD en un plazo razonable, indicando la naturaleza del incidente y las medidas adoptadas.",
+          ],
+        },
       ],
     },
     cookies: {
@@ -493,6 +528,9 @@ const es: Dictionary = {
     internalError: "Error interno del servidor",
     registrationDisabled:
       "El registro está temporalmente cerrado por medidas de seguridad.",
+    existingMemberRecovery:
+      "Si este email ya está registrado, recibirás instrucciones para recuperar tu carnet.",
+    recoveryInvalid: "El enlace de recuperación no es válido o ha expirado.",
   },
 };
 

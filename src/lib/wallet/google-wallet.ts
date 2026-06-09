@@ -111,9 +111,10 @@ export function generateGoogleWalletSaveUrl(
 
 /** URL alternativa: descarga .pkpass compatible con apps Android universales */
 export function getAndroidPkpassFallbackUrl(
-  member: Pick<GooglePassMemberData, "id" | "displayId">
+  member: Pick<GooglePassMemberData, "displayId">,
+  accessToken: string
 ): string {
   const appUrl =
     process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
-  return `${appUrl}/api/wallet/apple?${buildMemberAccessQuery(member)}`;
+  return `${appUrl}/api/wallet/apple?${buildMemberAccessQuery(member, accessToken)}`;
 }

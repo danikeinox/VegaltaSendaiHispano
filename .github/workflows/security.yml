@@ -1,0 +1,49 @@
+name: Security checks
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    name: Lint, test and audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint security modules
+        run: npx eslint src/lib/security src/lib/verification.ts src/lib/recovery-flow.ts src/lib/register-response.ts src/app/api/register src/app/api/recover src/app/api/wallet/google/route.ts
+
+      - name: Unit tests
+        run: npm test
+        env:
+          MEMBER_VERIFICATION_SECRET: test-secret-for-ci
+          ALLOWED_ORIGIN: https://www.vegalta.es
+
+      - name: npm audit
+        run: npm audit --audit-level=moderate
+        continue-on-error: true
+
+      - name: OSV scanner
+        uses: google/osv-scanner-action/osv-scanner-action@v2.2.4
+        with:
+          scan-args: |-
+            --lockfile=package-lock.json

@@ -15,12 +15,23 @@ export class ApiError extends Error {
   }
 }
 
-export function getClientIp(request: Request): string {
-  const forwarded = request.headers.get("x-forwarded-for");
+export function getClientIpFromHeaders(headers: Headers): string {
+  const cfConnectingIp = headers.get("cf-connecting-ip")?.trim();
+  if (cfConnectingIp) return cfConnectingIp;
+
+  const trueClientIp = headers.get("true-client-ip")?.trim();
+  if (trueClientIp) return trueClientIp;
+
+  const forwarded = headers.get("x-forwarded-for");
   if (forwarded) {
     return forwarded.split(",")[0]?.trim() ?? "unknown";
   }
-  return request.headers.get("x-real-ip") ?? "unknown";
+
+  return headers.get("x-real-ip")?.trim() ?? "unknown";
+}
+
+export function getClientIp(request: Request): string {
+  return getClientIpFromHeaders(request.headers);
 }
 
 export function handleApiError(

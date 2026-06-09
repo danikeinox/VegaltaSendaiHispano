@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
+import { getClientIpFromHeaders } from "@/lib/security/error-handler";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { MemberQrCode } from "@/components/member-qr-code";
@@ -20,7 +21,7 @@ import { checkMemberLookupRateLimit } from "@/lib/security/rate-limit";
 import {
   buildMemberAccessQuery,
   createMemberVerificationUrl,
-  verifyMemberToken,
+  verifyPrivateAccessToken,
 } from "@/lib/verification";
 
 type PageProps = {
@@ -62,10 +63,7 @@ export default async function CarnetPage({ params }: PageProps) {
   }
 
   const headerList = await headers();
-  const ip =
-    headerList.get("x-forwarded-for")?.split(",")[0]?.trim() ??
-    headerList.get("x-real-ip") ??
-    "unknown";
+  const ip = getClientIpFromHeaders(headerList);
   const rateLimit = await checkMemberLookupRateLimit(ip);
 
   if (!rateLimit.success) {
@@ -74,11 +72,11 @@ export default async function CarnetPage({ params }: PageProps) {
 
   const member = await findMemberByDisplayId(displayId);
 
-  if (!member || !verifyMemberToken(member, token)) {
+  if (!member || !verifyPrivateAccessToken(member, token)) {
     notFound();
   }
 
-  const accessQuery = buildMemberAccessQuery(member);
+  const accessQuery = buildMemberAccessQuery(member, token);
   const appleConfigured = isAppleWalletConfigured();
   const googleConfigured = isGoogleWalletConfigured();
   const appleUrl = appleConfigured ? `/api/wallet/apple?${accessQuery}` : null;
