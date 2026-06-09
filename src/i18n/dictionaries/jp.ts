@@ -227,6 +227,13 @@ const jp: Dictionary = {
       "Appleウォレットはまだ利用できません。Googleウォレットをご利用ください。",
     privacyAcceptPrefix: "以下に同意します：",
     privacyAcceptLink: "プライバシーポリシー",
+    disabledTitle: "登録は一時停止中",
+    disabledSubtitle:
+      "会員登録を再開する前に、セキュリティ対策を実施しています。",
+    disabledMessage:
+      "セキュリティ上の理由により、新規会員登録は一時的に停止しています。既存の会員証はすべて削除され、対策完了後に登録を再開します。",
+    disabledNote:
+      "ご理解いただきありがとうございます。それまでの間、Telegramコミュニティへの参加は可能です。",
   },
   support: {
     title: "プロジェクトを支援",
@@ -482,6 +489,8 @@ const jp: Dictionary = {
       "本日の新規登録上限に達しました。明日もう一度お試しください。",
     validationError: "入力データが無効です",
     internalError: "サーバー内部エラー",
+    registrationDisabled:
+      "セキュリティ対策のため、登録は一時的に停止しています。",
   },
 };
 

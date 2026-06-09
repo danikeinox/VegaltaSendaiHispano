@@ -8,9 +8,11 @@ import {
   type RegisterResult,
 } from "@/components/registration-form";
 import { useLocale } from "@/components/locale-provider";
+import { isRegistrationDisabledClient } from "@/lib/registration-config";
 
 export function RegistrationSection() {
   const { dict } = useLocale();
+  const registrationDisabled = isRegistrationDisabledClient();
   const [previewName, setPreviewName] = useState("");
   const [issued, setIssued] = useState<RegisterResult | null>(null);
   const [googleSaveUrl, setGoogleSaveUrl] = useState<string | null>(null);
@@ -29,10 +31,18 @@ export function RegistrationSection() {
       <div className="mx-auto w-full max-w-portal px-4 sm:px-6">
         <div className="mb-10 text-center sm:mb-12">
           <h2 className="font-display text-2xl font-bold text-portal-primary sm:text-3xl">
-            {issued ? dict.register.successTitle : dict.register.title}
+            {issued
+              ? dict.register.successTitle
+              : registrationDisabled
+                ? dict.register.disabledTitle
+                : dict.register.title}
           </h2>
           <p className="mx-auto mt-2 max-w-xl text-sm text-portal-on-surface-variant sm:text-base">
-            {issued ? dict.register.successSubtitle : dict.register.subtitle}
+            {issued
+              ? dict.register.successSubtitle
+              : registrationDisabled
+                ? dict.register.disabledSubtitle
+                : dict.register.subtitle}
           </p>
         </div>
 

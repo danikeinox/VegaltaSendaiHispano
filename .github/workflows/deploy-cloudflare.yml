@@ -53,3 +53,4 @@ jobs:
           ALLOWED_ORIGIN: https://www.vegalta.es
           NEXT_PUBLIC_APPWRITE_PROJECT_ID: 6a2702ec000b42a91782
           NEXT_PUBLIC_APPWRITE_ENDPOINT: https://fra.cloud.appwrite.io/v1
+          REGISTRATION_DISABLED: "true"

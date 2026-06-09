@@ -144,6 +144,10 @@ export type Dictionary = {
     appleUnavailable: string;
     privacyAcceptPrefix: string;
     privacyAcceptLink: string;
+    disabledTitle: string;
+    disabledSubtitle: string;
+    disabledMessage: string;
+    disabledNote: string;
   };
   carnet: {
     title: string;
@@ -275,5 +279,6 @@ export type Dictionary = {
     dailyQuotaFull: string;
     validationError: string;
     internalError: string;
+    registrationDisabled: string;
   };
 };
