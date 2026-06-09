@@ -9,7 +9,7 @@ import {
 export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ??
   process.env.NEXT_PUBLIC_APP_URL ??
-  "https://vegalta.es";
+  "https://www.vegalta.es";
 
 export const SITE_NAME = "Vegalta Sendai Hispano";
 export const SITE_DOMAIN = "vegalta.es";

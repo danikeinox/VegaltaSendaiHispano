@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { defaultLocale, isValidLocale, localeCookie } from "@/i18n/config";
+import {
+  LOCALE_COOKIE_MAX_AGE,
+  shouldPersistLocaleCookie,
+} from "@/lib/locale-cookie";
+import { isAllowedSiteOrigin } from "@/lib/site-origin";
 
 function applySecurityHeaders(response: NextResponse, request: NextRequest) {
   response.headers.set("X-Frame-Options", "DENY");
@@ -20,15 +25,10 @@ function applySecurityHeaders(response: NextResponse, request: NextRequest) {
 
   if (request.nextUrl.pathname.startsWith("/api/")) {
     const origin = request.headers.get("origin");
-    const allowed =
-      process.env.ALLOWED_ORIGIN ?? process.env.NEXT_PUBLIC_APP_URL;
 
-    if (origin && allowed) {
-      const allowedOrigin = new URL(allowed).origin;
-      if (origin === allowedOrigin) {
-        response.headers.set("Access-Control-Allow-Origin", origin);
-        response.headers.set("Vary", "Origin");
-      }
+    if (origin && isAllowedSiteOrigin(origin)) {
+      response.headers.set("Access-Control-Allow-Origin", origin);
+      response.headers.set("Vary", "Origin");
     }
   }
 
@@ -82,11 +82,14 @@ export function handleSiteRequest(request: NextRequest) {
   }
 
   const response = applySecurityHeaders(NextResponse.next(), request);
-  response.cookies.set(localeCookie, pathnameLocale, {
-    path: "/",
-    maxAge: 60 * 60 * 24 * 365,
-    sameSite: "lax",
-  });
+
+  if (shouldPersistLocaleCookie(request)) {
+    response.cookies.set(localeCookie, pathnameLocale, {
+      path: "/",
+      maxAge: LOCALE_COOKIE_MAX_AGE,
+      sameSite: "lax",
+    });
+  }
 
   return response;
 }

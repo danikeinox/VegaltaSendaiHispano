@@ -1,15 +1,13 @@
-const ALLOWED_ORIGIN =
-  process.env.ALLOWED_ORIGIN ?? process.env.NEXT_PUBLIC_APP_URL ?? "";
+import { getAllowedSiteOrigins } from "@/lib/site-origin";
 
 export function validateOrigin(request: Request): boolean {
   const origin = request.headers.get("origin");
   const referer = request.headers.get("referer");
+  const allowedOrigins = getAllowedSiteOrigins();
 
-  if (!ALLOWED_ORIGIN) {
+  if (allowedOrigins.length === 0) {
     return process.env.NODE_ENV === "development";
   }
-
-  const allowed = new URL(ALLOWED_ORIGIN).origin;
 
   function isDevLocalOrigin(value: string): boolean {
     if (process.env.NODE_ENV !== "development") return false;
@@ -22,13 +20,15 @@ export function validateOrigin(request: Request): boolean {
   }
 
   if (origin) {
-    return origin === allowed || isDevLocalOrigin(origin);
+    return allowedOrigins.includes(origin) || isDevLocalOrigin(origin);
   }
 
   if (referer) {
     try {
       const refererOrigin = new URL(referer).origin;
-      return refererOrigin === allowed || isDevLocalOrigin(refererOrigin);
+      return (
+        allowedOrigins.includes(refererOrigin) || isDevLocalOrigin(refererOrigin)
+      );
     } catch {
       return false;
     }

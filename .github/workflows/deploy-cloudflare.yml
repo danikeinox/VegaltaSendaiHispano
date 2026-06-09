@@ -48,7 +48,8 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          NEXT_PUBLIC_APP_URL: https://vegalta.es
-          NEXT_PUBLIC_SITE_URL: https://vegalta.es
+          NEXT_PUBLIC_APP_URL: https://www.vegalta.es
+          NEXT_PUBLIC_SITE_URL: https://www.vegalta.es
+          ALLOWED_ORIGIN: https://www.vegalta.es
           NEXT_PUBLIC_APPWRITE_PROJECT_ID: 6a2702ec000b42a91782
           NEXT_PUBLIC_APPWRITE_ENDPOINT: https://fra.cloud.appwrite.io/v1

@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { locales, type Locale } from "@/i18n/config";
 import { switchLocalePath } from "@/i18n/navigation";
 import { useLocale } from "@/components/locale-provider";
+import { setLocaleCookieClient } from "@/lib/locale-cookie";
 import { cn } from "@/lib/utils";
 
 export function LanguageSwitcher({ className }: { className?: string }) {
@@ -26,6 +27,8 @@ export function LanguageSwitcher({ className }: { className?: string }) {
           <Link
             key={targetLocale}
             href={switchLocalePath(pathname, targetLocale as Locale)}
+            prefetch={false}
+            onClick={() => setLocaleCookieClient(targetLocale as Locale)}
             className={cn(
               "vegalta-section-title px-2 py-1.5 text-[10px] sm:text-xs transition-colors whitespace-nowrap",
               isActive

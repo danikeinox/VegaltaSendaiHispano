@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
 
-const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://vegalta.es";
+const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://www.vegalta.es";
 
 const ContentSecurityPolicy = `
   default-src 'self';

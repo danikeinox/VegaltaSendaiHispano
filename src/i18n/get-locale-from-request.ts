@@ -6,10 +6,5 @@ export function getLocaleFromRequest(request: Request): Locale {
     return headerLocale;
   }
 
-  const acceptLanguage = request.headers.get("accept-language");
-  if (acceptLanguage?.toLowerCase().includes("ja")) {
-    return "jp";
-  }
-
   return defaultLocale;
 }
