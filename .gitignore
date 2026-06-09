@@ -25,6 +25,9 @@
 # production
 /build
 
+# cloudflare proxy build stash
+/scripts/.proxy.stash.ts
+
 # misc
 .DS_Store
 *.pem

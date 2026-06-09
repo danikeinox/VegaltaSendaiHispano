@@ -9,13 +9,13 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:cf": "opennextjs-cloudflare build",
+    "build:cf": "node scripts/cloudflare-proxy.mjs build",
     "start": "next start",
     "lint": "eslint",
     "appwrite:setup": "node --env-file=.env scripts/setup-appwrite.mjs",
     "wallet:assets": "node scripts/generate-wallet-assets.mjs",
-    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
-    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "preview": "node scripts/cloudflare-proxy.mjs preview",
+    "deploy": "node scripts/cloudflare-proxy.mjs deploy",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
   },
   "dependencies": {
