@@ -78,8 +78,8 @@ export function MatchRibbon({ matches }: MatchRibbonProps) {
   const calendarPath = localizedPath(locale, "/calendario");
 
   return (
-    <section className="relative z-20 shrink-0 bg-portal-primary-container pb-3 pt-10 text-white sm:pb-4 sm:pt-12 md:pt-14">
-      <div className="mx-auto max-w-portal px-4 md:px-6">
+    <section className="relative z-20 shrink-0 bg-portal-primary-container pb-3 pt-4 text-white sm:pb-4 sm:pt-10 md:pt-14">
+      <div className="mx-auto w-full max-w-portal px-4 sm:px-6">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:items-center md:gap-6">
           {/* Último partido */}
           <div className="min-w-0 border-b border-white/10 pb-4 md:border-b-0 md:border-r md:pb-0 md:pr-6">

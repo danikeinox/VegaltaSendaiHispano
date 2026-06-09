@@ -28,8 +28,8 @@ export default async function HomePage({ params }: PageProps) {
       <HashScrollHandler />
       <Header overlay />
 
-      <div className="relative flex h-[100dvh] w-full flex-col overflow-hidden">
-        <div className="relative min-h-0 flex-1">
+      <div className="relative flex w-full flex-col overflow-x-hidden md:h-[100dvh] md:overflow-hidden">
+        <div className="relative md:min-h-0 md:flex-1">
           <HomeHero locale={rawLocale} />
           <HeroLogoBridge />
         </div>
