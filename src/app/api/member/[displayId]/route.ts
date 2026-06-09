@@ -1,6 +1,7 @@
 import { findMemberByDisplayId } from "@/lib/members";
 import { corsHeaders } from "@/lib/security/cors";
 import { ApiError, handleApiError, jsonSuccess } from "@/lib/security/error-handler";
+import { assertMemberAccess } from "@/lib/security/member-access";
 import { getSchemasForRequest } from "@/i18n/schemas";
 
 type RouteContext = { params: Promise<{ displayId: string }> };
@@ -15,12 +16,14 @@ export async function GET(request: Request, context: RouteContext) {
   try {
     const { displayId: rawId } = await context.params;
     const { displayId } = memberLookupSchema.parse({ displayId: rawId });
+    const { searchParams } = new URL(request.url);
+    const token = searchParams.get("token");
 
-    const member = await findMemberByDisplayId(displayId);
-
-    if (!member) {
-      throw new ApiError(404, "Socio no encontrado", "NOT_FOUND");
-    }
+    const member = await assertMemberAccess(
+      request,
+      await findMemberByDisplayId(displayId),
+      token
+    );
 
     return jsonSuccess(
       {

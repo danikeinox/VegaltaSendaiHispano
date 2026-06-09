@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { MemberQrCode } from "@/components/member-qr-code";
 import { MembershipCard } from "@/components/membership-card";
 import { SupportCallout } from "@/components/support-callout";
 import { WalletButtons } from "@/components/wallet-buttons";
@@ -14,8 +16,16 @@ import { createMemberLookupSchema } from "@/lib/validations";
 import { isValidLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { localizedPath } from "@/i18n/navigation";
+import { checkMemberLookupRateLimit } from "@/lib/security/rate-limit";
+import {
+  buildMemberAccessQuery,
+  createMemberVerificationUrl,
+  verifyMemberToken,
+} from "@/lib/verification";
 
-type PageProps = { params: Promise<{ locale: string; displayId: string }> };
+type PageProps = {
+  params: Promise<{ locale: string; displayId: string; token: string }>;
+};
 
 export async function generateMetadata({
   params,
@@ -35,7 +45,7 @@ export async function generateMetadata({
 }
 
 export default async function CarnetPage({ params }: PageProps) {
-  const { locale: rawLocale, displayId: rawId } = await params;
+  const { locale: rawLocale, displayId: rawId, token } = await params;
 
   if (!isValidLocale(rawLocale)) {
     notFound();
@@ -51,22 +61,32 @@ export default async function CarnetPage({ params }: PageProps) {
     notFound();
   }
 
-  const member = await findMemberByDisplayId(displayId);
+  const headerList = await headers();
+  const ip =
+    headerList.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+    headerList.get("x-real-ip") ??
+    "unknown";
+  const rateLimit = await checkMemberLookupRateLimit(ip);
 
-  if (!member) {
+  if (!rateLimit.success) {
     notFound();
   }
 
-  const displayIdParam = encodeURIComponent(member.displayId);
+  const member = await findMemberByDisplayId(displayId);
+
+  if (!member || !verifyMemberToken(member, token)) {
+    notFound();
+  }
+
+  const accessQuery = buildMemberAccessQuery(member);
   const appleConfigured = isAppleWalletConfigured();
   const googleConfigured = isGoogleWalletConfigured();
-  const appleUrl = appleConfigured
-    ? `/api/wallet/apple?displayId=${displayIdParam}`
-    : null;
+  const appleUrl = appleConfigured ? `/api/wallet/apple?${accessQuery}` : null;
   const googleApiUrl = googleConfigured
-    ? `/api/wallet/google?displayId=${displayIdParam}`
+    ? `/api/wallet/google?${accessQuery}`
     : null;
   const dateLocale = rawLocale === "jp" ? "ja-JP" : "es-ES";
+  const verificationUrl = createMemberVerificationUrl(rawLocale, member);
 
   return (
     <div className="flex flex-col min-h-screen bg-[#f4f6fa]">
@@ -86,6 +106,20 @@ export default async function CarnetPage({ params }: PageProps) {
           lastName={member.lastName}
           officialCardLabel={dict.carnet.officialCard}
         />
+
+        <div className="flex w-full max-w-md flex-col items-center gap-3 rounded-xl border border-vegalta-royal-blue/10 bg-white px-6 py-4 shadow-sm">
+          <p className="text-xs uppercase tracking-wide text-vegalta-blue/60">
+            {dict.verification.qrLabel}
+          </p>
+          <MemberQrCode
+            url={verificationUrl}
+            size={128}
+            label={dict.verification.qrLabel}
+          />
+          <p className="text-center text-xs text-vegalta-blue/60">
+            {dict.verification.qrHint}
+          </p>
+        </div>
 
         <div className="bg-white border border-vegalta-royal-blue/10 shadow-sm px-6 py-4 text-center text-vegalta-blue/70 text-sm space-y-1 w-full max-w-md">
           {member.country && (

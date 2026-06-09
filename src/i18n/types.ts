@@ -16,9 +16,54 @@ export type Dictionary = {
     register: string;
     benefits: string;
     about: string;
+    anthem: string;
+    community: string;
     telegram: string;
     openMenu: string;
     closeMenu: string;
+    getCard: string;
+  };
+  match: {
+    latestLabel: string;
+    nextLabel: string;
+    fullCalendar: string;
+    vs: string;
+    final: string;
+    updatedNote: string;
+    unavailable: string;
+  };
+  calendar: {
+    metaTitle: string;
+    metaDescription: string;
+    title: string;
+    subtitle: string;
+    backHome: string;
+    seasonLabel: string;
+    venue: string;
+    noFixtures: string;
+    updatedNote: string;
+    statusFinished: string;
+    statusLive: string;
+    statusUpcoming: string;
+    statusPostponed: string;
+  };
+  communityCta: {
+    title: string;
+    subtitle: string;
+    telegram: string;
+    github: string;
+  };
+  previewCard: {
+    memberType: string;
+    pena: string;
+    season: string;
+    member: string;
+    placeholderName: string;
+    id: string;
+    since: string;
+    disclaimer: string;
+    qrLabel: string;
+    qrPreviewLabel: string;
   };
   about: {
     metaTitle: string;
@@ -42,6 +87,7 @@ export type Dictionary = {
     communityBarLabel: string;
     communityBarRegister: string;
     scrollToBenefits: string;
+    learnMore: string;
   };
   benefits: {
     title: string;
@@ -70,6 +116,10 @@ export type Dictionary = {
     email: string;
     country: string;
     countryOptional: string;
+    countryPlaceholder: string;
+    countrySearch: string;
+    countryNone: string;
+    countryNoResults: string;
     submit: string;
     submitting: string;
     disclaimer: string;
@@ -91,6 +141,29 @@ export type Dictionary = {
     backHome: string;
     officialCard: string;
   };
+  verification: {
+    title: string;
+    subtitle: string;
+    verifiedBadge: string;
+    verifiedTitle: string;
+    verifiedSubtitle: string;
+    invalidBadge: string;
+    invalidTitle: string;
+    invalidSubtitle: string;
+    previewBadge: string;
+    previewTitle: string;
+    previewSubtitle: string;
+    previewNote: string;
+    memberLabel: string;
+    memberId: string;
+    memberSince: string;
+    country: string;
+    qrLabel: string;
+    qrHint: string;
+    disclaimer: string;
+    getCard: string;
+    backHome: string;
+  };
   support: {
     title: string;
     description: string;
@@ -110,6 +183,11 @@ export type Dictionary = {
     legal: string;
     legalText: string;
     copyright: string;
+    official: string;
+    social: string;
+    store: string;
+    fanclub: string;
+    tickets: string;
   };
   telegram: {
     join: string;

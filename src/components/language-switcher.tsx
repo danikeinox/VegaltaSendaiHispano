@@ -29,8 +29,8 @@ export function LanguageSwitcher({ className }: { className?: string }) {
             className={cn(
               "vegalta-section-title px-2 py-1.5 text-[10px] sm:text-xs transition-colors whitespace-nowrap",
               isActive
-                ? "bg-vegalta-gold text-vegalta-blue font-bold"
-                : "text-white/70 hover:text-vegalta-gold-light hover:bg-white/5"
+                ? "rounded bg-portal-gold font-bold text-portal-gold-text"
+                : "text-white/70 hover:bg-white/5 hover:text-portal-gold-light"
             )}
             aria-current={isActive ? "page" : undefined}
             lang={targetLocale === "jp" ? "ja" : targetLocale}

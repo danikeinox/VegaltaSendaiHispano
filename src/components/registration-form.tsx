@@ -1,15 +1,18 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useEffect, useMemo, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { CountrySelect } from "@/components/country-select";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { MemberQrCode } from "@/components/member-qr-code";
 import { MembershipCard } from "@/components/membership-card";
 import { SupportCallout } from "@/components/support-callout";
 import { WalletButtons } from "@/components/wallet-buttons";
 import { useLocale } from "@/components/locale-provider";
+import { cn } from "@/lib/utils";
 import {
   createRegistrationSchema,
   type RegistrationInput,
@@ -32,9 +35,22 @@ type RegisterResponse = {
     apple: boolean;
     google: boolean;
   };
+  verification: {
+    url: string;
+  };
 };
 
-export function RegistrationForm() {
+type RegistrationFormProps = {
+  variant?: "default" | "portal";
+  onPreviewNameChange?: (name: string) => void;
+  className?: string;
+};
+
+export function RegistrationForm({
+  variant = "default",
+  onPreviewNameChange,
+  className,
+}: RegistrationFormProps) {
   const { locale, dict } = useLocale();
   const [result, setResult] = useState<RegisterResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -47,12 +63,22 @@ export function RegistrationForm() {
 
   const {
     register,
+    control,
     handleSubmit,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<RegistrationInput>({
     resolver: zodResolver(registrationSchema),
     defaultValues: { country: "" },
   });
+
+  const firstName = watch("firstName");
+  const lastName = watch("lastName");
+
+  useEffect(() => {
+    if (!onPreviewNameChange) return;
+    onPreviewNameChange(`${firstName ?? ""} ${lastName ?? ""}`.trim());
+  }, [firstName, lastName, onPreviewNameChange]);
 
   async function onSubmit(data: RegistrationInput) {
     setError(null);
@@ -102,7 +128,21 @@ export function RegistrationForm() {
           officialCardLabel={dict.carnet.officialCard}
         />
 
-        <p className="max-w-md text-center text-sm text-vegalta-blue/70">
+        <div className="flex max-w-md flex-col items-center gap-3 rounded-xl border border-portal-outline-variant bg-white p-4 text-center">
+          <p className="text-xs uppercase tracking-wide text-portal-on-surface-variant">
+            {dict.verification.qrLabel}
+          </p>
+          <MemberQrCode
+            url={result.verification.url}
+            size={128}
+            label={dict.verification.qrLabel}
+          />
+          <p className="text-xs text-portal-on-surface-variant">
+            {dict.verification.qrHint}
+          </p>
+        </div>
+
+        <p className="max-w-md text-center text-sm text-portal-on-surface-variant">
           {result.isNew
             ? dict.register.welcomeNew
             : dict.register.welcomeExisting}
@@ -131,39 +171,86 @@ export function RegistrationForm() {
     );
   }
 
+  const isPortal = variant === "portal";
+
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="flex w-full max-w-md flex-col gap-5 border border-vegalta-royal-blue/10 bg-white p-5 shadow-sm sm:p-6 md:p-8"
+      className={cn(
+        "flex w-full flex-col gap-5",
+        isPortal
+          ? "h-full min-w-0 max-w-full rounded-2xl border border-portal-outline-variant bg-white p-6 portal-card-shadow sm:p-8"
+          : "max-w-md border border-vegalta-royal-blue/10 bg-white p-5 shadow-sm sm:p-6 md:p-8",
+        className
+      )}
       noValidate
     >
       <div className="space-y-2">
-        <Label htmlFor="firstName">{dict.register.firstName}</Label>
-        <Input id="firstName" autoComplete="given-name" {...register("firstName")} />
+        <Label htmlFor="firstName" className="portal-label text-portal-on-surface">
+          {dict.register.firstName}
+        </Label>
+        <Input
+          id="firstName"
+          autoComplete="given-name"
+          className="rounded-lg border-portal-outline-variant focus-visible:ring-portal-primary"
+          {...register("firstName")}
+        />
         {errors.firstName && (
           <p className="text-xs text-vegalta-red">{errors.firstName.message}</p>
         )}
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="lastName">{dict.register.lastName}</Label>
-        <Input id="lastName" autoComplete="family-name" {...register("lastName")} />
+        <Label htmlFor="lastName" className="portal-label text-portal-on-surface">
+          {dict.register.lastName}
+        </Label>
+        <Input
+          id="lastName"
+          autoComplete="family-name"
+          className="rounded-lg border-portal-outline-variant focus-visible:ring-portal-primary"
+          {...register("lastName")}
+        />
         {errors.lastName && (
           <p className="text-xs text-vegalta-red">{errors.lastName.message}</p>
         )}
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="email">{dict.register.email}</Label>
-        <Input id="email" type="email" autoComplete="email" {...register("email")} />
+        <Label htmlFor="email" className="portal-label text-portal-on-surface">
+          {dict.register.email}
+        </Label>
+        <Input
+          id="email"
+          type="email"
+          autoComplete="email"
+          className="rounded-lg border-portal-outline-variant focus-visible:ring-portal-primary"
+          {...register("email")}
+        />
         {errors.email && (
           <p className="text-xs text-vegalta-red">{errors.email.message}</p>
         )}
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="country">{dict.register.countryOptional}</Label>
-        <Input id="country" autoComplete="country-name" {...register("country")} />
+        <Label htmlFor="country" className="portal-label text-portal-on-surface">
+          {dict.register.countryOptional}
+        </Label>
+        <Controller
+          name="country"
+          control={control}
+          render={({ field }) => (
+            <CountrySelect
+              id="country"
+              value={field.value ?? ""}
+              onChange={field.onChange}
+              locale={locale}
+              placeholder={dict.register.countryPlaceholder}
+              searchPlaceholder={dict.register.countrySearch}
+              emptyLabel={dict.register.countryNone}
+              noResultsLabel={dict.register.countryNoResults}
+            />
+          )}
+        />
         {errors.country && (
           <p className="text-xs text-vegalta-red">{errors.country.message}</p>
         )}
@@ -175,13 +262,23 @@ export function RegistrationForm() {
         </p>
       )}
 
-      <Button type="submit" size="lg" disabled={isSubmitting} className="w-full">
+      <Button
+        type="submit"
+        size="lg"
+        disabled={isSubmitting}
+        className={cn(
+          "w-full portal-label rounded-lg",
+          isPortal && "mt-auto bg-portal-gold text-portal-gold-text hover:bg-portal-gold-light",
+        )}
+      >
         {isSubmitting ? dict.register.submitting : dict.register.submit}
       </Button>
 
-      <p className="text-center text-xs leading-relaxed text-vegalta-blue/50">
-        {dict.register.disclaimer}
-      </p>
+      {!isPortal && (
+        <p className="text-center text-xs leading-relaxed text-portal-on-surface-variant">
+          {dict.register.disclaimer}
+        </p>
+      )}
     </form>
   );
 }

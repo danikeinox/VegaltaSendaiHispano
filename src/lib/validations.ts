@@ -1,5 +1,8 @@
 import { z } from "zod";
 import type { Dictionary } from "@/i18n/types";
+import { COUNTRY_CODES } from "@/lib/countries";
+
+const COUNTRY_CODE_SET = new Set<string>(COUNTRY_CODES);
 
 const nameRegex = /^[\p{L}\p{M}'\-\s.]{1,50}$/u;
 
@@ -26,9 +29,10 @@ export function createRegistrationSchema(v: Dictionary["validation"]) {
     country: z
       .string()
       .trim()
-      .min(2, v.countryInvalid)
-      .max(56)
-      .regex(/^[\p{L}\s\-'.]+$/u, v.countryInvalid)
+      .refine(
+        (val) => val === "" || COUNTRY_CODE_SET.has(val),
+        v.countryInvalid
+      )
       .optional()
       .or(z.literal("")),
   });

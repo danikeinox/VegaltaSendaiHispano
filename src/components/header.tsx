@@ -1,33 +1,29 @@
 "use client";
 
 import { useEffect } from "react";
-import { FaTelegramPlane } from "react-icons/fa";
-import { ClubLogo } from "@/components/club-logo";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { MobileNav } from "@/components/mobile-nav";
 import { SectionNavLink } from "@/components/section-nav-link";
 import { useLocale } from "@/components/locale-provider";
-import { TELEGRAM_COMMUNITY_URL } from "@/lib/constants";
+import { useActiveNav } from "@/hooks/use-active-nav";
 import { localizedPath } from "@/i18n/navigation";
+import { buildNavItems } from "@/lib/nav-items";
 
 const navLinkClass =
-  "vegalta-section-title px-2 xl:px-3 py-1.5 text-[10px] xl:text-[11px] text-white/85 hover:text-vegalta-gold-light hover:bg-white/5 transition-colors whitespace-nowrap";
+  "portal-label text-xs text-portal-primary-accent/85 transition-colors hover:text-portal-gold-light xl:text-sm";
+
+const navLinkActiveClass =
+  "portal-label border-b-2 border-portal-gold-light pb-1 text-xs text-portal-gold-light xl:text-sm";
 
 type HeaderProps = {
-  /** Home: header flota sobre el hero a pantalla completa (sin spacer). */
   overlay?: boolean;
 };
 
 export function Header({ overlay = false }: HeaderProps) {
   const { locale, dict } = useLocale();
   const homePath = localizedPath(locale);
-
-  const navItems = [
-    { href: homePath, label: dict.nav.home },
-    { href: `${homePath}#registro`, label: dict.nav.register },
-    { href: `${homePath}#beneficios`, label: dict.nav.benefits },
-    { href: `${homePath}/sobre`, label: dict.nav.about },
-  ];
+  const activeNav = useActiveNav(homePath);
+  const navItems = buildNavItems(homePath, dict);
 
   useEffect(() => {
     const header = document.getElementById("site-header");
@@ -57,77 +53,48 @@ export function Header({ overlay = false }: HeaderProps) {
     <>
       <header
         id="site-header"
-        className="fixed top-0 left-0 right-0 z-50 w-full overflow-visible shadow-lg"
+        className="fixed top-0 left-0 right-0 z-50 w-full border-b border-white/10 bg-portal-primary shadow-md"
       >
-        <div className="h-1 bg-gradient-to-r from-vegalta-gold via-vegalta-gold-light to-vegalta-gold" />
-
-        <div className="bg-vegalta-royal-blue relative overflow-visible">
-          <div className="flex items-center justify-between gap-2 px-2 py-2 sm:px-4 sm:py-0">
-            <div className="flex min-w-0 items-center gap-2">
-              <SectionNavLink href={homePath} className="shrink-0 md:hidden">
-                <ClubLogo
-                  size="sm"
-                  priority
-                  className="drop-shadow-[0_2px_8px_rgba(0,0,0,0.35)]"
-                />
-              </SectionNavLink>
-
-              <div className="vegalta-nav-badge min-w-0 bg-vegalta-gold px-2.5 py-1.5 sm:min-w-[10rem] sm:px-4 sm:py-2 md:min-w-[14rem] md:px-6 md:py-2.5">
-                <p className="vegalta-brand-text text-sm leading-none text-vegalta-blue sm:text-lg md:text-xl">
-                  VEGALTA
-                </p>
-                <p className="vegalta-section-title text-[7px] tracking-[0.3em] text-vegalta-blue/80 sm:text-[9px] md:text-[10px]">
-                  SENDAI
-                </p>
-                <p className="vegalta-section-title mt-0.5 hidden text-[8px] tracking-[0.2em] text-vegalta-blue/70 md:mt-1 md:block md:text-[9px]">
-                  {dict.hero.tagline}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex shrink-0 items-center gap-1 sm:gap-2">
-              <nav
-                className="hidden min-w-0 items-center justify-end gap-0.5 xl:flex"
-                aria-label="Main"
-              >
-                {navItems.map((item) => (
-                  <SectionNavLink key={item.label} href={item.href} className={navLinkClass}>
-                    {item.label}
-                  </SectionNavLink>
-                ))}
-              </nav>
-
-              <a
-                href={TELEGRAM_COMMUNITY_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={dict.telegram.ariaLabel}
-                className="hidden h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/10 text-white/90 transition-colors hover:bg-[#229ED9] hover:text-white xl:inline-flex"
-              >
-                <FaTelegramPlane className="text-base" aria-hidden />
-              </a>
-              <LanguageSwitcher className="scale-90 sm:scale-100" />
-              <MobileNav />
-            </div>
-          </div>
-
-          <div className="pointer-events-none relative mx-auto hidden h-0 max-w-[1400px] px-3 sm:px-5 md:block">
-            <SectionNavLink
-              href={homePath}
-              className="pointer-events-auto absolute bottom-0 left-3 z-20 translate-y-[42%] lg:left-5 lg:translate-y-[45%]"
-            >
-              <ClubLogo
-                size="hero"
-                priority
-                className="drop-shadow-[0_4px_12px_rgba(0,0,0,0.35)]"
-              />
+        <div className="mx-auto grid h-20 max-w-portal grid-cols-[auto_1fr_auto] items-center gap-3 px-4 sm:px-6 lg:grid-cols-[1fr_auto_1fr] lg:gap-6">
+          <div className="min-w-0 justify-self-start">
+            <SectionNavLink href={homePath} className="block min-w-0">
+              <span className="vegalta-brand-text block truncate text-base text-portal-gold-light sm:text-lg lg:text-xl">
+                VEGALTA HISPANO
+              </span>
+              <span className="mt-0.5 block truncate text-[9px] font-medium tracking-[0.18em] text-portal-primary-accent/80 sm:text-[10px]">
+                {dict.hero.tagline}
+              </span>
             </SectionNavLink>
           </div>
 
-          <div className="hidden h-3 md:block lg:h-4" aria-hidden />
-        </div>
+          <nav
+            className="hidden items-center justify-center gap-5 lg:flex xl:gap-7"
+            aria-label="Main"
+          >
+            {navItems.map((item) => (
+              <SectionNavLink
+                key={item.id}
+                href={item.href}
+                className={
+                  activeNav === item.id ? navLinkActiveClass : navLinkClass
+                }
+              >
+                {item.label}
+              </SectionNavLink>
+            ))}
+          </nav>
 
-        <div className="h-0.5 bg-vegalta-gold" />
+          <div className="flex shrink-0 items-center justify-end gap-2 sm:gap-3">
+            <LanguageSwitcher className="hidden sm:flex" />
+            <SectionNavLink
+              href={`${homePath}#registro`}
+              className="portal-label hidden rounded-full bg-portal-gold px-4 py-2 text-xs text-portal-gold-text shadow-sm transition-transform hover:scale-105 hover:bg-portal-gold-light md:inline-flex lg:px-5 lg:text-sm"
+            >
+              {dict.nav.getCard}
+            </SectionNavLink>
+            <MobileNav />
+          </div>
+        </div>
       </header>
 
       {!overlay && (

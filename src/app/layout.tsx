@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
-import { Noto_Sans, Noto_Sans_JP, Oswald, Bebas_Neue } from "next/font/google";
+import {
+  Hanken_Grotesk,
+  Noto_Sans_JP,
+  Plus_Jakarta_Sans,
+} from "next/font/google";
 import { AppwritePing } from "@/components/appwrite-ping";
 import { SITE_URL } from "@/lib/seo";
 import "./globals.css";
@@ -8,27 +12,22 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
 };
 
-const noto = Noto_Sans({
+const hanken = Hanken_Grotesk({
   subsets: ["latin"],
-  variable: "--font-noto",
+  variable: "--font-hanken",
+  weight: ["600", "700", "800"],
+});
+
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-jakarta",
+  weight: ["400", "500"],
 });
 
 const notoJp = Noto_Sans_JP({
   subsets: ["latin"],
   variable: "--font-noto-jp",
   weight: ["400", "500", "700"],
-});
-
-const oswald = Oswald({
-  subsets: ["latin"],
-  variable: "--font-oswald",
-  weight: ["400", "500", "600", "700"],
-});
-
-const bebas = Bebas_Neue({
-  subsets: ["latin"],
-  variable: "--font-bebas",
-  weight: "400",
 });
 
 export const viewport = {
@@ -45,7 +44,7 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`${noto.variable} ${notoJp.variable} ${oswald.variable} ${bebas.variable} h-full`}
+      className={`${hanken.variable} ${jakarta.variable} ${notoJp.variable} h-full`}
     >
       <body className="min-h-full flex flex-col font-sans antialiased">
         <AppwritePing />

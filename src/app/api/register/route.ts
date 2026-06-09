@@ -13,7 +13,14 @@ import {
 } from "@/lib/security/rate-limit";
 import { isAppleWalletConfigured } from "@/lib/wallet/apple-pass";
 import { isGoogleWalletConfigured } from "@/lib/wallet/google-wallet";
+import { getCountryName, isValidCountryCode } from "@/lib/countries";
+import {
+  buildMemberAccessQuery,
+  createMemberCarnetUrl,
+  createMemberVerificationUrl,
+} from "@/lib/verification";
 import { getSchemasForRequest } from "@/i18n/schemas";
+import { getLocaleFromRequest } from "@/i18n/get-locale-from-request";
 
 export async function OPTIONS(request: Request) {
   return new Response(null, { status: 204, headers: corsHeaders(request) });
@@ -36,7 +43,12 @@ export async function POST(request: Request) {
 
     const body = await request.json();
     const data = registrationSchema.parse(body);
-    const country = data.country?.trim() || undefined;
+    const locale = getLocaleFromRequest(request);
+    const countryCode = data.country?.trim();
+    const country =
+      countryCode && isValidCountryCode(countryCode)
+        ? getCountryName(countryCode, locale)
+        : undefined;
 
     const dailyQuota = await checkDailyRegistrationQuota();
     const existingCheck = await findMemberByEmail(data.email);
@@ -54,7 +66,9 @@ export async function POST(request: Request) {
 
     const appleConfigured = isAppleWalletConfigured();
     const googleConfigured = isGoogleWalletConfigured();
-    const displayIdParam = encodeURIComponent(member.displayId);
+    const accessQuery = buildMemberAccessQuery(member);
+    const verificationUrl = createMemberVerificationUrl(locale, member);
+    const carnetUrl = createMemberCarnetUrl(locale, member);
 
     return jsonSuccess(
       {
@@ -66,14 +80,16 @@ export async function POST(request: Request) {
           country: member.country,
           createdAt: member.createdAt,
         },
+        verification: {
+          url: verificationUrl,
+        },
+        carnet: {
+          url: carnetUrl,
+        },
         isNew,
         wallet: {
-          apple: appleConfigured
-            ? `/api/wallet/apple?displayId=${displayIdParam}`
-            : null,
-          google: googleConfigured
-            ? `/api/wallet/google?displayId=${displayIdParam}`
-            : null,
+          apple: appleConfigured ? `/api/wallet/apple?${accessQuery}` : null,
+          google: googleConfigured ? `/api/wallet/google?${accessQuery}` : null,
         },
         walletAvailable: {
           apple: appleConfigured,

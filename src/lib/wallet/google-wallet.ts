@@ -1,7 +1,12 @@
 import jwt from "jsonwebtoken";
 import { VEGALTA_COLORS } from "@/lib/constants";
+import {
+  buildMemberAccessQuery,
+  createMemberVerificationUrl,
+} from "@/lib/verification";
 
 export type GooglePassMemberData = {
+  id: string;
   displayId: string;
   firstName: string;
   lastName: string;
@@ -40,6 +45,7 @@ export function generateGoogleWalletSaveUrl(
   const classSuffix = classId;
   const appUrl =
     process.env.NEXT_PUBLIC_APP_URL ?? "https://vegalta-hispano.example.com";
+  const verificationUrl = createMemberVerificationUrl("es", member);
 
   const genericClass = {
     id: `${issuerId}.${classSuffix}`,
@@ -71,7 +77,7 @@ export function generateGoogleWalletSaveUrl(
     },
     barcode: {
       type: "QR_CODE",
-      value: `${appUrl}/carnet/${member.displayId}`,
+      value: verificationUrl,
     },
     textModulesData: [
       {
@@ -104,8 +110,10 @@ export function generateGoogleWalletSaveUrl(
 }
 
 /** URL alternativa: descarga .pkpass compatible con apps Android universales */
-export function getAndroidPkpassFallbackUrl(displayId: string): string {
+export function getAndroidPkpassFallbackUrl(
+  member: Pick<GooglePassMemberData, "id" | "displayId">
+): string {
   const appUrl =
     process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
-  return `${appUrl}/api/wallet/apple?displayId=${encodeURIComponent(displayId)}`;
+  return `${appUrl}/api/wallet/apple?${buildMemberAccessQuery(member)}`;
 }

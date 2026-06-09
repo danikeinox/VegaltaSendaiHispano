@@ -1,37 +1,65 @@
 @import "tailwindcss";
 
 :root {
-  --header-height: 5.5rem;
-  --header-scroll-offset: 5.5rem;
-  --vegalta-royal-blue: #1a3d7c;
-  --vegalta-blue: #0f2d5c;
-  --vegalta-blue-light: #244a8a;
-  --vegalta-gold: #e8a800;
-  --vegalta-gold-light: #f5c842;
-  --vegalta-yellow: #f5c842;
+  --header-height: 5rem;
+  --header-scroll-offset: 5rem;
+  --portal-primary: #002254;
+  --portal-primary-container: #00367e;
+  --portal-primary-accent: #afc6ff;
+  --portal-primary-muted: #19448c;
+  --portal-gold: #fdc33f;
+  --portal-gold-light: #ffdea1;
+  --portal-gold-text: #6f5100;
+  --portal-gold-dark: #7a5900;
+  --portal-surface: #f8f9fa;
+  --portal-surface-container: #edeeef;
+  --portal-on-surface: #191c1d;
+  --portal-on-surface-variant: #434751;
+  --portal-outline-variant: #c4c6d2;
+  --vegalta-royal-blue: #002254;
+  --vegalta-blue: #00367e;
+  --vegalta-blue-light: #19448c;
+  --vegalta-gold: #fdc33f;
+  --vegalta-gold-light: #ffdea1;
+  --vegalta-yellow: #fdc33f;
   --vegalta-red: #d41e36;
   --vegalta-red-dark: #b01830;
-  --background: #f4f6fa;
-  --foreground: #0f2d5c;
+  --background: #f8f9fa;
+  --foreground: #191c1d;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-vegalta-royal-blue: var(--vegalta-royal-blue);
-  --color-vegalta-blue: var(--vegalta-blue);
-  --color-vegalta-blue-light: var(--vegalta-blue-light);
-  --color-vegalta-gold: var(--vegalta-gold);
-  --color-vegalta-gold-light: var(--vegalta-gold-light);
-  --color-vegalta-yellow: var(--vegalta-yellow);
-  --color-vegalta-red: var(--vegalta-red);
-  --color-vegalta-red-dark: var(--vegalta-red-dark);
-  --font-sans: var(--font-noto), var(--font-noto-jp), system-ui, sans-serif;
-  --font-display: var(--font-oswald), system-ui, sans-serif;
-  --font-brand: var(--font-bebas), system-ui, sans-serif;
+  --color-background: #f8f9fa;
+  --color-foreground: #191c1d;
+  --color-portal-primary: #002254;
+  --color-portal-primary-container: #00367e;
+  --color-portal-primary-accent: #afc6ff;
+  --color-portal-primary-muted: #19448c;
+  --color-portal-gold: #fdc33f;
+  --color-portal-gold-light: #ffdea1;
+  --color-portal-gold-text: #6f5100;
+  --color-portal-gold-dark: #7a5900;
+  --color-portal-surface: #f8f9fa;
+  --color-portal-surface-container: #edeeef;
+  --color-portal-on-surface: #191c1d;
+  --color-portal-on-surface-variant: #434751;
+  --color-portal-outline-variant: #c4c6d2;
+  --color-vegalta-royal-blue: #002254;
+  --color-vegalta-blue: #00367e;
+  --color-vegalta-blue-light: #19448c;
+  --color-vegalta-gold: #fdc33f;
+  --color-vegalta-gold-light: #ffdea1;
+  --color-vegalta-yellow: #fdc33f;
+  --color-vegalta-red: #d41e36;
+  --color-vegalta-red-dark: #b01830;
+  --font-sans: var(--font-jakarta), var(--font-noto-jp), system-ui, sans-serif;
+  --font-display: var(--font-hanken), system-ui, sans-serif;
+  --font-brand: var(--font-hanken), system-ui, sans-serif;
+  --max-width-portal: 80rem;
 }
 
 html {
+  width: 100%;
   overflow-x: hidden;
   scroll-behavior: smooth;
   scroll-padding-top: var(--header-scroll-offset);
@@ -48,12 +76,26 @@ section[id] {
 }
 
 body {
+  width: 100%;
+  min-height: 100%;
   background: var(--background);
   color: var(--foreground);
   overflow-x: hidden;
 }
 
-/* Gradiente diagonal estilo tarjeta oficial */
+.portal-hero-gradient {
+  background: linear-gradient(
+    135deg,
+    rgba(0, 34, 84, 0.94) 0%,
+    rgba(0, 54, 126, 0.82) 55%,
+    rgba(0, 34, 84, 0.88) 100%
+  );
+}
+
+.portal-card-shadow {
+  box-shadow: 0 10px 20px rgba(0, 54, 126, 0.05);
+}
+
 .vegalta-card-gradient {
   background: linear-gradient(
     135deg,
@@ -75,120 +117,22 @@ body {
   );
 }
 
-/* Hero bandera España — horizontal en móvil, vertical en desktop */
-.vegalta-official-hero-bg {
-  background-color: var(--vegalta-red-dark);
-  overflow: hidden;
-  isolation: isolate;
-}
-
-.vegalta-hero-flag-stripes {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: 100%;
-}
-
-.vegalta-hero-flag-stripe--red {
-  flex: 1;
-}
-
-.vegalta-hero-flag-stripe--red:first-child {
-  background: linear-gradient(
-    to bottom,
-    var(--vegalta-red-dark) 0%,
-    var(--vegalta-red) 55%,
-    #c42838 100%
-  );
-}
-
-.vegalta-hero-flag-stripe--red:last-child {
-  background: linear-gradient(
-    to bottom,
-    #c42838 0%,
-    var(--vegalta-red) 45%,
-    var(--vegalta-red-dark) 100%
-  );
-}
-
-.vegalta-hero-flag-stripe--yellow {
-  flex: 2;
-  background: linear-gradient(
-    to bottom,
-    #c42838 0%,
-    var(--vegalta-gold-light) 12%,
-    var(--vegalta-gold) 88%,
-    #c42838 100%
-  );
-}
-
-@media (min-width: 768px) {
-  .vegalta-hero-flag-stripes {
-    flex-direction: row;
-  }
-
-  .vegalta-hero-flag-stripe--red:first-child {
-    background: linear-gradient(
-      to right,
-      var(--vegalta-red-dark) 0%,
-      var(--vegalta-red) 55%,
-      #c42838 100%
-    );
-  }
-
-  .vegalta-hero-flag-stripe--red:last-child {
-    background: linear-gradient(
-      to right,
-      #c42838 0%,
-      var(--vegalta-red) 45%,
-      var(--vegalta-red-dark) 100%
-    );
-  }
-
-  .vegalta-hero-flag-stripe--yellow {
-    background: linear-gradient(
-      to right,
-      #c42838 0%,
-      var(--vegalta-gold-light) 12%,
-      var(--vegalta-gold) 88%,
-      #c42838 100%
-    );
-  }
-}
-
-.vegalta-official-hero-bg .vegalta-hero-flag-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  background:
-    radial-gradient(
-      ellipse 90% 70% at 30% 45%,
-      rgba(255, 255, 255, 0.22) 0%,
-      transparent 58%
-    ),
-    linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.08) 0%,
-      transparent 45%,
-      rgba(15, 45, 92, 0.05) 100%
-    );
-  pointer-events: none;
-}
-
-.vegalta-nav-badge {
-  clip-path: polygon(0 0, 100% 0, 92% 100%, 0 100%);
-}
-
 .vegalta-section-title {
-  font-family: var(--font-oswald), system-ui, sans-serif;
-  letter-spacing: 0.12em;
+  font-family: var(--font-hanken), system-ui, sans-serif;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
 }
 
 .vegalta-brand-text {
-  font-family: var(--font-bebas), system-ui, sans-serif;
-  letter-spacing: 0.06em;
+  font-family: var(--font-hanken), system-ui, sans-serif;
+  letter-spacing: -0.02em;
+  font-weight: 800;
+}
+
+.portal-label {
+  font-family: var(--font-hanken), system-ui, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  line-height: 1;
 }

@@ -1,6 +1,7 @@
 import { findMemberByDisplayId } from "@/lib/members";
 import { corsHeaders } from "@/lib/security/cors";
 import { ApiError, handleApiError, jsonSuccess } from "@/lib/security/error-handler";
+import { assertMemberAccess } from "@/lib/security/member-access";
 import {
   generateGoogleWalletSaveUrl,
   getAndroidPkpassFallbackUrl,
@@ -14,18 +15,18 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const displayId = searchParams.get("displayId");
+    const token = searchParams.get("token");
 
     if (!displayId) {
       throw new ApiError(400, "displayId requerido", "MISSING_PARAM");
     }
 
     const parsed = memberLookupSchema.parse({ displayId });
-
-    const member = await findMemberByDisplayId(parsed.displayId);
-
-    if (!member) {
-      throw new ApiError(404, "Socio no encontrado", "NOT_FOUND");
-    }
+    const member = await assertMemberAccess(
+      request,
+      await findMemberByDisplayId(parsed.displayId),
+      token
+    );
 
     if (!isGoogleWalletConfigured()) {
       return jsonSuccess(
@@ -33,7 +34,7 @@ export async function GET(request: Request) {
           configured: false,
           fallback: {
             type: "pkpass",
-            url: getAndroidPkpassFallbackUrl(member.displayId),
+            url: getAndroidPkpassFallbackUrl(member),
             message:
               "Google Wallet API no configurada. Usa la descarga .pkpass compatible con apps Android.",
           },
@@ -44,6 +45,7 @@ export async function GET(request: Request) {
     }
 
     const saveUrl = generateGoogleWalletSaveUrl({
+      id: member.id,
       displayId: member.displayId,
       firstName: member.firstName,
       lastName: member.lastName,
@@ -69,12 +71,16 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const parsed = memberLookupSchema.parse(body);
+    const token =
+      typeof body === "object" && body !== null && "token" in body
+        ? String((body as { token?: string }).token ?? "")
+        : null;
 
-    const member = await findMemberByDisplayId(parsed.displayId);
-
-    if (!member) {
-      throw new ApiError(404, "Socio no encontrado", "NOT_FOUND");
-    }
+    const member = await assertMemberAccess(
+      request,
+      await findMemberByDisplayId(parsed.displayId),
+      token
+    );
 
     if (!isGoogleWalletConfigured()) {
       return jsonSuccess(
@@ -82,7 +88,7 @@ export async function POST(request: Request) {
           configured: false,
           fallback: {
             type: "pkpass",
-            url: getAndroidPkpassFallbackUrl(member.displayId),
+            url: getAndroidPkpassFallbackUrl(member),
           },
         },
         200,
@@ -91,6 +97,7 @@ export async function POST(request: Request) {
     }
 
     const saveUrl = generateGoogleWalletSaveUrl({
+      id: member.id,
       displayId: member.displayId,
       firstName: member.firstName,
       lastName: member.lastName,

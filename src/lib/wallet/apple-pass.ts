@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import { PKPass } from "passkit-generator";
 import { VEGALTA_COLORS } from "@/lib/constants";
+import { createMemberVerificationUrl } from "@/lib/verification";
 
 const PROJECT_ROOT = path.join(/* turbopackIgnore: true */ process.cwd());
 const WALLET_ASSETS_DIR = path.join(
@@ -13,6 +14,7 @@ const WALLET_ASSETS_DIR = path.join(
 const CERTS_DIR = path.join(PROJECT_ROOT, "certs");
 
 export type PassMemberData = {
+  id: string;
   displayId: string;
   firstName: string;
   lastName: string;
@@ -96,8 +98,6 @@ export async function generateApplePass(
   const passTypeId =
     process.env.APPLE_PASS_TYPE_IDENTIFIER ?? "pass.com.vegalta.hispano";
   const teamId = process.env.APPLE_TEAM_IDENTIFIER ?? "VEGALTA001";
-  const appUrl =
-    process.env.NEXT_PUBLIC_APP_URL ?? "https://vegalta-hispano.example.com";
 
   const [icon, logo, strip] = await Promise.all([
     loadAsset("icon.png"),
@@ -132,7 +132,7 @@ export async function generateApplePass(
   );
 
   pass.type = "generic";
-  pass.setBarcodes(`${appUrl}/carnet/${member.displayId}`);
+  pass.setBarcodes(createMemberVerificationUrl("es", member));
 
   pass.primaryFields.push({
     key: "member",

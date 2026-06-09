@@ -1,7 +1,6 @@
 "use client";
 
 import { FaYoutube } from "react-icons/fa";
-import { SectionHeading } from "@/components/section-heading";
 import { useLocale } from "@/components/locale-provider";
 import {
   HIMNO_YOUTUBE_EMBED_URL,
@@ -14,21 +13,24 @@ export function AnthemSection() {
   return (
     <section
       id="himno"
-      className="flex flex-col items-center w-full px-0 sm:px-2 pt-2 mt-16 scroll-mt-[var(--header-scroll-offset)]"
+      className="scroll-mt-[var(--header-scroll-offset)] bg-portal-surface py-12 sm:py-16"
     >
-      <SectionHeading
-        title={dict.anthem.title}
-        subtitle={dict.anthem.subtitle}
-        className="mb-8"
-      />
+      <div className="mx-auto max-w-portal px-4 sm:px-6">
+        <div className="mb-8 text-center sm:mb-10">
+          <h2 className="font-display text-2xl font-bold text-portal-primary sm:text-3xl">
+            {dict.anthem.title}
+          </h2>
+          <p className="mt-2 text-sm text-portal-on-surface-variant sm:text-base">
+            {dict.anthem.subtitle}
+          </p>
+        </div>
 
-      <div className="w-full max-w-3xl mx-auto">
-        <p className="text-center text-vegalta-blue/70 text-sm sm:text-base leading-relaxed mb-6 px-2">
+        <p className="mx-auto mb-6 max-w-2xl text-center text-sm leading-relaxed text-portal-on-surface-variant sm:text-base">
           {dict.anthem.description}
         </p>
 
-        <div className="bg-white border border-vegalta-royal-blue/10 shadow-sm overflow-hidden">
-          <div className="aspect-video w-full bg-vegalta-royal-blue/5">
+        <div className="mx-auto max-w-3xl overflow-hidden rounded-2xl border border-portal-outline-variant bg-white portal-card-shadow">
+          <div className="aspect-video w-full bg-portal-primary/5">
             <iframe
               src={HIMNO_YOUTUBE_EMBED_URL}
               title={dict.anthem.videoTitle}
@@ -39,15 +41,15 @@ export function AnthemSection() {
             />
           </div>
 
-          <div className="p-5 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-vegalta-royal-blue/10">
-            <p className="text-xs text-vegalta-blue/50 text-center sm:text-left leading-relaxed">
+          <div className="flex flex-col items-center justify-between gap-4 border-t border-portal-outline-variant p-5 sm:flex-row sm:p-6">
+            <p className="text-center text-xs leading-relaxed text-portal-on-surface-variant sm:text-left">
               {dict.anthem.fanmadeNote}
             </p>
             <a
               href={HIMNO_YOUTUBE_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex shrink-0 items-center justify-center gap-2 min-h-11 px-5 py-2.5 bg-vegalta-red text-white hover:bg-vegalta-red-dark text-xs vegalta-section-title font-bold tracking-wide transition-colors"
+              className="portal-label inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-lg bg-vegalta-red px-5 py-2.5 text-xs text-white transition-colors hover:bg-vegalta-red-dark"
             >
               <FaYoutube className="text-lg" aria-hidden />
               {dict.anthem.watchOnYoutube}

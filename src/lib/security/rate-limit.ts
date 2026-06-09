@@ -39,6 +39,7 @@ function memoryRateLimit(
 
 let registrationLimiter: Ratelimit | null = null;
 let dailyRegistrationLimiter: Ratelimit | null = null;
+let memberLookupLimiter: Ratelimit | null = null;
 
 function getUpstashLimiter(): Ratelimit | null {
   const url = process.env.UPSTASH_REDIS_REST_URL;
@@ -115,4 +116,40 @@ export async function checkRegistrationRateLimit(
   }
 
   return memoryRateLimit(`register:${ip}`, 5, 60_000);
+}
+
+function getMemberLookupLimiter(): Ratelimit | null {
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+
+  if (!url || !token) return null;
+
+  if (!memberLookupLimiter) {
+    memberLookupLimiter = new Ratelimit({
+      redis: new Redis({ url, token }),
+      limiter: Ratelimit.slidingWindow(30, "1 m"),
+      analytics: true,
+      prefix: "vegalta:member",
+    });
+  }
+
+  return memberLookupLimiter;
+}
+
+export async function checkMemberLookupRateLimit(
+  ip: string
+): Promise<RateLimitResult> {
+  const upstash = getMemberLookupLimiter();
+
+  if (upstash) {
+    const result = await upstash.limit(ip);
+    return {
+      success: result.success,
+      limit: result.limit,
+      remaining: result.remaining,
+      reset: result.reset,
+    };
+  }
+
+  return memoryRateLimit(`member:${ip}`, 30, 60_000);
 }
