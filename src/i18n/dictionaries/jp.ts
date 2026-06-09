@@ -220,6 +220,8 @@ const jp: Dictionary = {
     registerError: "登録エラー",
     appleUnavailable:
       "Appleウォレットはまだ利用できません。Googleウォレットをご利用ください。",
+    privacyAcceptPrefix: "以下に同意します：",
+    privacyAcceptLink: "プライバシーポリシー",
   },
   support: {
     title: "プロジェクトを支援",
@@ -266,13 +268,168 @@ const jp: Dictionary = {
     getCard: "無料会員証を取得",
     backHome: "ホームに戻る",
   },
+  legal: {
+    metaTitle: "法的通知・プライバシー・クッキー — Vegalta Sendai Hispano",
+    metaDescription:
+      "vegalta.es（ベガルタ仙台ヒスパノ非公式ファンコミュニティ）の法的通知、プライバシーポリシーおよびクッキーポリシー。",
+    title: "法的情報",
+    subtitle:
+      "本サイト、個人データおよびクッキーの利用についての透明性。",
+    lastUpdated: "最終更新：2026年6月。",
+    navLabel: "法的セクション",
+    nav: {
+      notice: "法的通知",
+      privacy: "プライバシー",
+      cookies: "クッキー",
+    },
+    contactIntro:
+      "プライバシー、個人データまたは本サイトに関するお問い合わせ：",
+    backHome: "← ホームに戻る",
+    notice: {
+      title: "法的通知",
+      sections: [
+        {
+          heading: "サイト運営者",
+          paragraphs: [
+            "運営者：Daniel Cabrera（Vegalta Sendai Hispano コミュニティプロジェクト）",
+            "ウェブサイト：vegalta.es",
+            "連絡先メール：daniel@danielcabrera.es",
+            "活動内容：ベガルタ仙台のヒスパノファンコミュニティ向けの情報提供および無料デジタル会員証の登録。非公式・非営利プロジェクト。",
+          ],
+        },
+        {
+          heading: "サービスの目的と性質",
+          paragraphs: [
+            "vegalta.es はサポーターによる自主的な取り組みです。ベガルタ仙台クラブまたは公式ファンクラブによる承認・後援・運営はありません。",
+            "VS-XXXX デジタル会員証はヒスパノコミュニティの象徴的な識別子です。スタジアム入場権、商業上の特典、クラブ公式会員資格を付与するものではありません。",
+            "プロジェクトのソースコードは GitHub 上で MIT ライセンスの下に公開されています。",
+          ],
+        },
+        {
+          heading: "知的財産",
+          paragraphs: [
+            "表示されるエンブレムは「HISPANO」テキスト付きのファンアレンジであり、ベガルタ仙台の公式エンブレムに代わるものではありません。",
+            "Vegalta Sendai の商標および公式要素はそれぞれの権利者に帰属します。本サイトは情報提供およびファンコミュニティの識別目的で言及します。",
+            "本サイト独自のコンテンツ（テキスト、デザイン、コード）は MIT ライセンスに従って再利用できます（第三者の商標を除く）。",
+          ],
+        },
+        {
+          heading: "責任",
+          paragraphs: [
+            "運営者はサービスの継続的な可用性やエラーの不存在を保証しませんが、サイトの運用に努めます。",
+            "外部リンク（Telegram、YouTube、クラブ公式サイトなど）は各提供者の責任となります。",
+            "ユーザーは自身のデジタル会員証の利用および他者のなりすましを行わない責任を負います。",
+          ],
+        },
+      ],
+    },
+    privacy: {
+      title: "プライバシーポリシー",
+      sections: [
+        {
+          heading: "データ管理者",
+          paragraphs: [
+            "管理者：Daniel Cabrera（vegalta.es / Vegalta Sendai Hispano プロジェクト管理者）",
+            "プライバシーに関する権利行使・お問い合わせ：daniel@danielcabrera.es",
+          ],
+        },
+        {
+          heading: "収集するデータ",
+          paragraphs: [
+            "会員証登録時に収集するデータ：名、姓、メールアドレス、国（任意）。",
+            "会員識別番号（VS-XXXX）、検証トークン、登録日などの技術データを自動生成します。",
+            "Apple Wallet または Google Wallet に追加する場合、各プラットフォームのポリシーに従い、氏名・メール・識別番号が渡されることがあります。",
+            "データを商業目的で販売または第三者に提供することはありません。",
+          ],
+        },
+        {
+          heading: "利用目的と法的根拠",
+          paragraphs: [
+            "主な目的：登録管理、デジタル会員証の発行、QR による検証、ウォレットパスの生成（希望時）。",
+            "法的根拠：登録時の同意および本ポリシーへの同意。",
+            "サービスの安全性維持（レート制限、不正利用防止）のため、正当な利益に基づく処理を行う場合があります。",
+          ],
+        },
+        {
+          heading: "保存期間",
+          paragraphs: [
+            "コミュニティ会員として会員証を保持する間、または削除を依頼するまでデータを保存します。",
+            "daniel@danielcabrera.es までご連絡いただければ、合理的な期間内に削除します。",
+          ],
+        },
+        {
+          heading: "委託先とデータの取り扱い",
+          paragraphs: [
+            "データは Appwrite（EU インフラ）に保存されます。サイトは Cloudflare 経由で配信されます。レート制限に Upstash Redis を使用する場合があります。",
+            "試合結果の取得に API-Football を使用しますが、ユーザーの個人データは送信しません。",
+            "Telegram、YouTube、ウォレットサービスを利用する場合は、各提供者のプライバシーポリシーが適用されます。",
+          ],
+        },
+        {
+          heading: "あなたの権利",
+          paragraphs: [
+            "EEA 在住者は、アクセス、訂正、削除、異議、制限、ポータビリティの権利を daniel@danielcabrera.es まで行使できます。",
+            "処理が法令に適合していないと考える場合、スペインデータ保護機関（AEPD）に苦情を申し立てることができます。",
+            "日本のユーザーも同じメールアドレスで個人データの取り扱いについてお問い合わせいただけます。",
+          ],
+        },
+        {
+          heading: "未成年者",
+          paragraphs: [
+            "登録は、自身のデータ処理に同意できる方を対象としています。未成年の場合は保護者の同意が必要です。",
+          ],
+        },
+      ],
+    },
+    cookies: {
+      title: "クッキーポリシー",
+      sections: [
+        {
+          heading: "クッキーとは",
+          paragraphs: [
+            "クッキーは、設定の記憶や基本機能の維持のためにブラウザに保存される小さなファイルです。",
+          ],
+        },
+        {
+          heading: "使用するクッキー",
+          paragraphs: [
+            "vegalta.es は現在、自社の技術的クッキーを1つのみ使用しています。広告や第三者分析用のクッキーは使用していません。",
+            "将来、測定やマーケティングツールを導入する場合は、本ポリシーを更新し、必要に応じて同意を求めます。",
+          ],
+        },
+        {
+          heading: "クッキーの管理",
+          paragraphs: [
+            "ブラウザの設定からクッキーを削除またはブロックできます。言語クッキーをブロックすると、訪問間で言語設定が保持されない場合があります。",
+          ],
+        },
+      ],
+      tableHeaders: {
+        name: "クッキー",
+        purpose: "目的",
+        duration: "期間",
+        type: "種類",
+      },
+      items: [
+        {
+          name: "vegalta_locale",
+          purpose: "選択した言語（スペイン語または日本語）を記憶",
+          duration: "1年",
+          type: "技術的 / 必要",
+        },
+      ],
+    },
+  },
   footer: {
     description:
       "ベガルタ仙台のヒスパノファンコミュニティ。非公式・非営利プロジェクトです。",
     links: "リンク",
     home: "ホーム",
-    about: "コミュニティについて",
+    about: "私たちについて",
     getCard: "会員証を取得",
+    legalNotice: "法的通知",
+    privacy: "プライバシー",
+    cookies: "クッキー",
     officialWeb: "ベガルタ仙台公式サイト",
     github: "GitHubでコラボレーション",
     telegramMembers: "Peña Ibérica Vegalta Sendai — 500人以上のメンバー",
@@ -309,6 +466,7 @@ const jp: Dictionary = {
     emailInvalid: "メールアドレスが無効です",
     countryInvalid: "国名が無効です",
     displayIdInvalid: "会員識別番号が無効です",
+    privacyRequired: "登録にはプライバシーポリシーへの同意が必要です",
   },
   api: {
     forbiddenOrigin: "許可されていないオリジンです",

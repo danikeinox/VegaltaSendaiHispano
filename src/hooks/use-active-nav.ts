@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { normalizePath } from "@/lib/scroll-to-section";
+import { getHeaderOffset, normalizePath } from "@/lib/scroll-to-section";
 
 export type NavItemId =
   | "home"
@@ -18,6 +18,84 @@ function resolveFromHash(hash: string): NavItemId | null {
   if (hash === "himno") return "anthem";
   if (hash === "comunidad") return "community";
   return null;
+}
+
+function resolveFromSection(sectionId: string | null): NavItemId | null {
+  if (sectionId === "registro") return "register";
+  if (sectionId === "himno") return "anthem";
+  if (sectionId === "comunidad") return "community";
+  return null;
+}
+
+function detectVisibleSection(): string | null {
+  if (window.scrollY < 120) {
+    return null;
+  }
+
+  const headerOffset = getHeaderOffset();
+  const line = headerOffset + 48;
+  const viewportBottom = window.innerHeight;
+  const scrollBottom = window.scrollY + viewportBottom;
+  const pageBottom = document.documentElement.scrollHeight;
+  const hash = window.location.hash.replace("#", "");
+
+  if (HOME_SECTIONS.includes(hash as (typeof HOME_SECTIONS)[number])) {
+    const hashTarget = document.getElementById(hash);
+    if (hashTarget) {
+      const top = hashTarget.getBoundingClientRect().top;
+      if (Math.abs(top - headerOffset) < 40) {
+        return hash;
+      }
+    }
+  }
+
+  if (pageBottom - scrollBottom < 120) {
+    return HOME_SECTIONS[HOME_SECTIONS.length - 1];
+  }
+
+  for (const sectionId of HOME_SECTIONS) {
+    const element = document.getElementById(sectionId);
+    if (!element) continue;
+
+    const { top, bottom } = element.getBoundingClientRect();
+    if (top <= line && bottom > line) {
+      return sectionId;
+    }
+  }
+
+  let bestId: string | null = null;
+  let bestVisible = 0;
+
+  for (const sectionId of HOME_SECTIONS) {
+    const element = document.getElementById(sectionId);
+    if (!element) continue;
+
+    const { top, bottom } = element.getBoundingClientRect();
+    const visible =
+      Math.min(bottom, viewportBottom) - Math.max(top, line);
+
+    if (visible > bestVisible) {
+      bestVisible = visible;
+      bestId = sectionId;
+    }
+  }
+
+  if (bestId) {
+    return bestId;
+  }
+
+  let activeId: string | null = null;
+
+  for (const sectionId of HOME_SECTIONS) {
+    const element = document.getElementById(sectionId);
+    if (!element) continue;
+
+    if (element.getBoundingClientRect().top <= line) {
+      activeId = sectionId;
+    }
+  }
+
+  return activeId;
 }
 
 export function useActiveNav(homePath: string): NavItemId {
@@ -44,38 +122,17 @@ export function useActiveNav(homePath: string): NavItemId {
       return;
     }
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-
-        if (visible?.target.id) {
-          setVisibleSection(visible.target.id);
-        }
-      },
-      {
-        rootMargin: "-35% 0px -50% 0px",
-        threshold: [0.15, 0.35, 0.55],
-      }
-    );
-
-    for (const sectionId of HOME_SECTIONS) {
-      const element = document.getElementById(sectionId);
-      if (element) observer.observe(element);
-    }
-
-    const handleScroll = () => {
-      if (window.scrollY < 120) {
-        setVisibleSection(null);
-      }
+    const updateActiveFromScroll = () => {
+      setVisibleSection(detectVisibleSection());
     };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
+    updateActiveFromScroll();
+    window.addEventListener("scroll", updateActiveFromScroll, { passive: true });
+    window.addEventListener("resize", updateActiveFromScroll);
 
     return () => {
-      observer.disconnect();
-      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("scroll", updateActiveFromScroll);
+      window.removeEventListener("resize", updateActiveFromScroll);
     };
   }, [normalizedPath, normalizedHome]);
 
@@ -84,12 +141,9 @@ export function useActiveNav(homePath: string): NavItemId {
   }
 
   if (normalizedPath === normalizedHome) {
+    const fromScroll = resolveFromSection(visibleSection);
+    if (fromScroll) return fromScroll;
     if (hashSection) return hashSection;
-
-    if (visibleSection === "registro") return "register";
-    if (visibleSection === "himno") return "anthem";
-    if (visibleSection === "comunidad") return "community";
-
     return "home";
   }
 

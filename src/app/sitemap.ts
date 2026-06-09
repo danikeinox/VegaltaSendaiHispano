@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { locales } from "@/i18n/config";
 import { absoluteUrl } from "@/lib/seo";
 
-const STATIC_ROUTES = ["", "/sobre", "/calendario"] as const;
+const STATIC_ROUTES = ["", "/sobre", "/calendario", "/legal"] as const;
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified = new Date();

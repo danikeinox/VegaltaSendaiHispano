@@ -222,6 +222,8 @@ const es: Dictionary = {
     registerError: "Error al registrar",
     appleUnavailable:
       "Cartera de Apple no disponible aún. Usa Google Wallet o guarda el carnet en pantalla.",
+    privacyAcceptPrefix: "He leído y acepto la",
+    privacyAcceptLink: "política de privacidad",
   },
   support: {
     title: "Apoya el proyecto",
@@ -268,13 +270,168 @@ const es: Dictionary = {
     getCard: "Obtener mi carnet gratuito",
     backHome: "Volver al inicio",
   },
+  legal: {
+    metaTitle: "Aviso legal, privacidad y cookies — Vegalta Sendai Hispano",
+    metaDescription:
+      "Información legal, política de privacidad y uso de cookies de vegalta.es, comunidad fan no oficial del Vegalta Sendai.",
+    title: "Información legal",
+    subtitle:
+      "Transparencia sobre el sitio, tus datos personales y el uso de cookies.",
+    lastUpdated: "Última actualización: junio de 2026.",
+    navLabel: "Secciones legales",
+    nav: {
+      notice: "Aviso legal",
+      privacy: "Privacidad",
+      cookies: "Cookies",
+    },
+    contactIntro:
+      "Para cualquier consulta sobre privacidad, datos personales o este sitio web:",
+    backHome: "← Volver al inicio",
+    notice: {
+      title: "Aviso legal",
+      sections: [
+        {
+          heading: "Titular del sitio",
+          paragraphs: [
+            "Titular: Daniel Cabrera (proyecto comunitario Vegalta Sendai Hispano).",
+            "Sitio web: vegalta.es",
+            "Correo de contacto: daniel@danielcabrera.es",
+            "Actividad: sitio web informativo y de registro gratuito de carnet digital para la comunidad hispana de fans del Vegalta Sendai. Proyecto no oficial y sin fines de lucro.",
+          ],
+        },
+        {
+          heading: "Objeto y naturaleza del servicio",
+          paragraphs: [
+            "vegalta.es es una iniciativa de aficionados. No está avalada, patrocinada ni administrada por el Vegalta Sendai ni por su club de aficionados oficial.",
+            "El carnet digital VS-XXXX es un identificador simbólico de la comunidad hispana. No otorga derechos de acceso al estadio, ventajas comerciales ni membresía oficial del club.",
+            "El código fuente del proyecto se publica bajo licencia MIT en GitHub.",
+          ],
+        },
+        {
+          heading: "Propiedad intelectual",
+          paragraphs: [
+            'El escudo mostrado es una adaptación de fans con el texto "HISPANO" y no sustituye al escudo oficial del club Vegalta Sendai.',
+            "Las marcas Vegalta Sendai y los elementos oficiales del club pertenecen a sus respectivos titulares. Este sitio las menciona con fines informativos y de identificación de la afición.",
+            "Los contenidos propios del sitio (textos, diseño y código) pueden reutilizarse según la licencia MIT, salvo marcas de terceros.",
+          ],
+        },
+        {
+          heading: "Responsabilidad",
+          paragraphs: [
+            "El titular no garantiza la disponibilidad ininterrumpida del servicio ni la ausencia de errores, aunque se procura mantener el sitio operativo.",
+            "Los enlaces externos (Telegram, YouTube, web oficial del club, etc.) son responsabilidad de sus respectivos titulares.",
+            "El usuario es responsable del uso que haga de su carnet digital y de no suplantar la identidad de otros miembros.",
+          ],
+        },
+      ],
+    },
+    privacy: {
+      title: "Política de privacidad",
+      sections: [
+        {
+          heading: "Responsable del tratamiento",
+          paragraphs: [
+            "Responsable: Daniel Cabrera, en calidad de administrador del proyecto Vegalta Sendai Hispano (vegalta.es).",
+            "Contacto para ejercer derechos o consultas de privacidad: daniel@danielcabrera.es",
+          ],
+        },
+        {
+          heading: "Datos que recogemos",
+          paragraphs: [
+            "Al registrarte para obtener el carnet digital recogemos: nombre, apellidos, correo electrónico y país (opcional).",
+            "Generamos automáticamente un identificador de socio (VS-XXXX) y datos técnicos asociados al carnet (token de verificación, fecha de alta).",
+            "Si añades el carnet a Apple Wallet o Google Wallet, esas plataformas pueden recibir tu nombre, email e identificador según sus propias políticas.",
+            "No vendemos ni cedemos tus datos a terceros con fines comerciales.",
+          ],
+        },
+        {
+          heading: "Finalidad y base legal",
+          paragraphs: [
+            "Finalidad principal: gestionar tu registro, emitir el carnet digital, permitir su verificación mediante QR y, si lo solicitas, generar pases para carteras digitales.",
+            "Base legal: tu consentimiento al registrarte y marcar la casilla de aceptación de esta política.",
+            "También podemos tratar datos por interés legítimo para mantener la seguridad del servicio (rate limiting, prevención de abuso).",
+          ],
+        },
+        {
+          heading: "Conservación",
+          paragraphs: [
+            "Conservamos tus datos mientras mantengas tu carnet activo en la comunidad o hasta que solicites su supresión.",
+            "Puedes solicitar la eliminación escribiendo a daniel@danielcabrera.es. Procesaremos la solicitud en un plazo razonable.",
+          ],
+        },
+        {
+          heading: "Encargados y transferencias",
+          paragraphs: [
+            "Los datos se almacenan en Appwrite (infraestructura en la UE). El sitio se sirve mediante Cloudflare. El rate limiting puede usar Upstash Redis.",
+            "Para resultados deportivos consultamos API-Football (api-sports.io) sin enviar datos personales de usuarios.",
+            "Al unirte a Telegram, YouTube o servicios de Wallet, aplican las políticas de privacidad de esos proveedores.",
+          ],
+        },
+        {
+          heading: "Tus derechos",
+          paragraphs: [
+            "Si resides en el Espacio Económico Europeo, puedes ejercer los derechos de acceso, rectificación, supresión, oposición, limitación y portabilidad escribiendo a daniel@danielcabrera.es.",
+            "Tienes derecho a presentar una reclamación ante la Agencia Española de Protección de Datos (AEPD) si consideras que el tratamiento no se ajusta a la normativa.",
+            "Para usuarios en Japón, puedes contactarnos por el mismo correo para consultas sobre el tratamiento de datos personales.",
+          ],
+        },
+        {
+          heading: "Menores",
+          paragraphs: [
+            "El registro está pensado para personas con capacidad para consentir el tratamiento de sus datos. Si eres menor de edad, debes contar con autorización de tu padre, madre o tutor.",
+          ],
+        },
+      ],
+    },
+    cookies: {
+      title: "Política de cookies",
+      sections: [
+        {
+          heading: "¿Qué son las cookies?",
+          paragraphs: [
+            "Las cookies son pequeños archivos que el sitio guarda en tu navegador para recordar preferencias o mantener funciones básicas.",
+          ],
+        },
+        {
+          heading: "Cookies que utilizamos",
+          paragraphs: [
+            "vegalta.es utiliza únicamente una cookie técnica propia. No usamos cookies de publicidad ni de analítica de terceros en este momento.",
+            "Si en el futuro incorporamos herramientas de medición o marketing, actualizaremos esta política y, cuando sea necesario, solicitaremos tu consentimiento.",
+          ],
+        },
+        {
+          heading: "Cómo gestionar las cookies",
+          paragraphs: [
+            "Puedes eliminar o bloquear cookies desde la configuración de tu navegador. Si bloqueas la cookie de idioma, es posible que el sitio no recuerde tu preferencia de idioma entre visitas.",
+          ],
+        },
+      ],
+      tableHeaders: {
+        name: "Cookie",
+        purpose: "Finalidad",
+        duration: "Duración",
+        type: "Tipo",
+      },
+      items: [
+        {
+          name: "vegalta_locale",
+          purpose: "Recordar el idioma elegido (español o japonés)",
+          duration: "1 año",
+          type: "Técnica / necesaria",
+        },
+      ],
+    },
+  },
   footer: {
     description:
       "La comunidad oficial para fans de habla hispana del Vegalta Sendai. Pasión sin fronteras.",
     links: "Enlaces",
     home: "Inicio",
-    about: "Sobre la comunidad",
+    about: "Sobre nosotros",
     getCard: "Obtener carnet",
+    legalNotice: "Aviso legal",
+    privacy: "Privacidad",
+    cookies: "Cookies",
     officialWeb: "Web Oficial (JP)",
     github: "Colaborar en GitHub",
     telegramMembers: "Peña Ibérica Vegalta Sendai — más de 500 miembros",
@@ -311,6 +468,7 @@ const es: Dictionary = {
     emailInvalid: "Correo electrónico no válido",
     countryInvalid: "País no válido",
     displayIdInvalid: "Identificador de socio no válido",
+    privacyRequired: "Debes aceptar la política de privacidad para registrarte",
   },
   api: {
     forbiddenOrigin: "Origen no permitido",

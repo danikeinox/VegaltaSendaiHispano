@@ -35,6 +35,7 @@ export function createRegistrationSchema(v: Dictionary["validation"]) {
       )
       .optional()
       .or(z.literal("")),
+    acceptPrivacy: z.boolean().refine((val) => val === true, v.privacyRequired),
   });
 }
 

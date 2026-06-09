@@ -137,6 +137,8 @@ export type Dictionary = {
     connectionError: string;
     registerError: string;
     appleUnavailable: string;
+    privacyAcceptPrefix: string;
+    privacyAcceptLink: string;
   };
   carnet: {
     title: string;
@@ -176,12 +178,54 @@ export type Dictionary = {
     button: string;
     ariaLabel: string;
   };
+  legal: {
+    metaTitle: string;
+    metaDescription: string;
+    title: string;
+    subtitle: string;
+    lastUpdated: string;
+    navLabel: string;
+    nav: {
+      notice: string;
+      privacy: string;
+      cookies: string;
+    };
+    contactIntro: string;
+    backHome: string;
+    notice: {
+      title: string;
+      sections: Array<{ heading: string; paragraphs: string[] }>;
+    };
+    privacy: {
+      title: string;
+      sections: Array<{ heading: string; paragraphs: string[] }>;
+    };
+    cookies: {
+      title: string;
+      sections: Array<{ heading: string; paragraphs: string[] }>;
+      tableHeaders: {
+        name: string;
+        purpose: string;
+        duration: string;
+        type: string;
+      };
+      items: Array<{
+        name: string;
+        purpose: string;
+        duration: string;
+        type: string;
+      }>;
+    };
+  };
   footer: {
     description: string;
     links: string;
     home: string;
     about: string;
     getCard: string;
+    legalNotice: string;
+    privacy: string;
+    cookies: string;
     officialWeb: string;
     github: string;
     telegramMembers: string;
@@ -217,6 +261,7 @@ export type Dictionary = {
     emailInvalid: string;
     countryInvalid: string;
     displayIdInvalid: string;
+    privacyRequired: string;
   };
   api: {
     forbiddenOrigin: string;

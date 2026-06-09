@@ -36,11 +36,13 @@ export function scrollToSection(
 
 export function updateSectionHash(sectionId: string | null): void {
   const hash = sectionId ? `#${sectionId}` : "";
-  window.history.replaceState(
-    window.history.state,
-    "",
-    `${window.location.pathname}${hash}`
-  );
+  const nextUrl = `${window.location.pathname}${hash}`;
+  const currentUrl = `${window.location.pathname}${window.location.hash}`;
+
+  if (currentUrl === nextUrl) return;
+
+  window.history.replaceState(window.history.state, "", nextUrl);
+  window.dispatchEvent(new HashChangeEvent("hashchange"));
 }
 
 export function parseSectionHref(href: string): {

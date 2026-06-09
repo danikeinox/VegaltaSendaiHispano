@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { SupportCallout } from "@/components/support-callout";
 import { WalletButtons } from "@/components/wallet-buttons";
 import { useLocale } from "@/components/locale-provider";
+import { localizedPath } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import {
   createRegistrationSchema,
@@ -77,7 +79,7 @@ export function RegistrationForm({
     formState: { errors, isSubmitting },
   } = useForm<RegistrationInput>({
     resolver: zodResolver(registrationSchema),
-    defaultValues: { country: "" },
+    defaultValues: { country: "", acceptPrivacy: false },
   });
 
   const firstName = watch("firstName");
@@ -255,6 +257,41 @@ export function RegistrationForm({
         />
         {errors.country && (
           <p className="text-xs text-vegalta-red">{errors.country.message}</p>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        <Controller
+          name="acceptPrivacy"
+          control={control}
+          render={({ field }) => (
+            <label className="flex cursor-pointer items-start gap-3 text-sm leading-snug text-portal-on-surface-variant">
+              <input
+                type="checkbox"
+                checked={field.value}
+                onChange={(event) => field.onChange(event.target.checked)}
+                onBlur={field.onBlur}
+                ref={field.ref}
+                className="mt-0.5 h-4 w-4 shrink-0 rounded border-portal-outline-variant text-portal-primary focus:ring-portal-primary"
+              />
+              <span>
+                {dict.register.privacyAcceptPrefix}{" "}
+                <Link
+                  href={`${localizedPath(locale)}/legal#privacidad`}
+                  className="font-semibold text-portal-primary underline-offset-2 hover:underline"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {dict.register.privacyAcceptLink}
+                </Link>
+              </span>
+            </label>
+          )}
+        />
+        {errors.acceptPrivacy && (
+          <p className="text-xs text-vegalta-red">
+            {errors.acceptPrivacy.message}
+          </p>
         )}
       </div>
 
