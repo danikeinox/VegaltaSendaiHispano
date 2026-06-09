@@ -154,6 +154,11 @@ const es: Dictionary = {
     communityBarRegister: "Obtener carnet gratuito",
     scrollToBenefits: "Ir a la sección de beneficios",
     learnMore: "SABER MÁS",
+    memberCounter: {
+      label: "socios registrados",
+      updatedNote: "se actualiza cada hora",
+      unavailable: "—",
+    },
   },
   benefits: {
     title: "BENEFICIOS DEL SOCIO",
@@ -231,7 +236,7 @@ const es: Dictionary = {
       "vegalta.es es gratis y sin ánimo de lucro. Tu aporte ayuda a mantener la web y los servicios de la comunidad.",
     appleNote:
       "Cartera de Apple requiere certificados de pago (~99 USD/año). Con tu apoyo podemos habilitarla para todos los iPhone.",
-    button: "Invítame a un café",
+    button: "Invítame a un Red Bull",
     ariaLabel: "Apoyar Vegalta Sendai Hispano en Buy Me a Coffee",
   },
   carnet: {

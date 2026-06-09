@@ -152,6 +152,11 @@ const jp: Dictionary = {
     communityBarRegister: "無料会員証を取得",
     scrollToBenefits: "特典セクションへ移動",
     learnMore: "詳しく見る",
+    memberCounter: {
+      label: "人の会員",
+      updatedNote: "1時間ごとに更新",
+      unavailable: "—",
+    },
   },
   benefits: {
     title: "会員特典",
@@ -229,7 +234,7 @@ const jp: Dictionary = {
       "vegalta.esは無料の非営利サイトです。ご支援はサイトの維持とコミュニティサービスの運営に役立ちます。",
     appleNote:
       "Appleウォレットには有料証明書（年間約99米ドル）が必要です。ご支援によりiPhone向けに有効化できます。",
-    button: "コーヒーをおごる",
+    button: "Red Bullをおごる",
     ariaLabel: "Buy Me a CoffeeでVegalta Sendai Hispanoを支援",
   },
   carnet: {

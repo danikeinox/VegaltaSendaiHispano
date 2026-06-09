@@ -91,6 +91,11 @@ export type Dictionary = {
     communityBarRegister: string;
     scrollToBenefits: string;
     learnMore: string;
+    memberCounter: {
+      label: string;
+      updatedNote: string;
+      unavailable: string;
+    };
   };
   benefits: {
     title: string;

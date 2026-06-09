@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { HeroCtaBar } from "@/components/hero-cta-bar";
+import { HeroMemberCounter } from "@/components/hero-member-counter";
 import { isValidLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { localizedPath } from "@/i18n/navigation";
@@ -47,6 +48,12 @@ export async function HomeHero({ locale: rawLocale }: HomeHeroProps) {
               {dict.hero.learnMore}
             </SectionNavLink>
           </div>
+          <HeroMemberCounter
+            locale={rawLocale}
+            label={dict.hero.memberCounter.label}
+            updatedNote={dict.hero.memberCounter.updatedNote}
+            unavailable={dict.hero.memberCounter.unavailable}
+          />
         </div>
       </div>
     </section>
