@@ -11,13 +11,24 @@ export function validateOrigin(request: Request): boolean {
 
   const allowed = new URL(ALLOWED_ORIGIN).origin;
 
+  function isDevLocalOrigin(value: string): boolean {
+    if (process.env.NODE_ENV !== "development") return false;
+    try {
+      const { hostname } = new URL(value);
+      return hostname === "localhost" || hostname === "127.0.0.1";
+    } catch {
+      return false;
+    }
+  }
+
   if (origin) {
-    return origin === allowed;
+    return origin === allowed || isDevLocalOrigin(origin);
   }
 
   if (referer) {
     try {
-      return new URL(referer).origin === allowed;
+      const refererOrigin = new URL(referer).origin;
+      return refererOrigin === allowed || isDevLocalOrigin(refererOrigin);
     } catch {
       return false;
     }

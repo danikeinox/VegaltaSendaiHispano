@@ -10,6 +10,17 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
+  openGraph: {
+    type: "website",
+    siteName: "Vegalta Sendai Hispano",
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
+  other: {
+    "og:image:width": "1200",
+    "og:image:height": "630",
+  },
 };
 
 const hanken = Hanken_Grotesk({

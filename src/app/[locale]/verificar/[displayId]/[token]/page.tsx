@@ -57,6 +57,82 @@ export default async function VerificationPage({ params }: PageProps) {
   }
 
   const dateLocale = rawLocale === "jp" ? "ja-JP" : "es-ES";
+  const member = await findMemberByDisplayId(displayId);
+
+  if (member && verifyMemberToken(member, token)) {
+    const verificationUrl = createMemberVerificationUrl(rawLocale, member);
+    const memberName = `${member.firstName} ${member.lastName}`;
+    const memberSince = new Date(member.createdAt).toLocaleDateString(
+      dateLocale,
+      {
+        year: "numeric",
+        month: "long",
+      }
+    );
+
+    return (
+      <VerificationLayout locale={rawLocale}>
+        <StatusCard
+          icon={
+            <FaCheckCircle className="text-3xl text-emerald-600" aria-hidden />
+          }
+          badgeClassName="bg-emerald-100 text-emerald-800"
+          badge={dict.verification.verifiedBadge}
+          title={dict.verification.verifiedTitle}
+          subtitle={dict.verification.verifiedSubtitle}
+        >
+          <div className="rounded-xl bg-portal-primary p-5 text-white portal-card-shadow">
+            <p className="text-xs uppercase tracking-widest text-white/60">
+              {dict.verification.memberLabel}
+            </p>
+            <p className="mt-1 font-display text-xl font-bold uppercase tracking-wide">
+              {memberName}
+            </p>
+            <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
+              <DetailRow
+                label={dict.verification.memberId}
+                value={member.displayId}
+                inverted
+              />
+              <DetailRow
+                label={dict.verification.memberSince}
+                value={memberSince}
+                inverted
+              />
+            </div>
+          </div>
+
+          {member.country && (
+            <DetailRow
+              label={dict.verification.country}
+              value={member.country}
+            />
+          )}
+
+          <div className="flex items-center justify-between gap-4 rounded-xl border border-portal-outline-variant bg-portal-surface-container p-4">
+            <div className="min-w-0">
+              <p className="text-xs uppercase tracking-wide text-portal-on-surface-variant">
+                {dict.verification.qrLabel}
+              </p>
+              <p className="mt-1 text-sm text-portal-on-surface-variant">
+                {dict.verification.qrHint}
+              </p>
+            </div>
+            <MemberQrCode
+              url={verificationUrl}
+              size={72}
+              label={dict.verification.qrLabel}
+            />
+          </div>
+
+          <p className="text-center text-xs text-portal-on-surface-variant">
+            {dict.verification.disclaimer}
+          </p>
+        </StatusCard>
+      </VerificationLayout>
+    );
+  }
+
   const isPreview =
     displayId === PREVIEW_DISPLAY_ID && isPreviewVerificationToken(token);
 
@@ -85,99 +161,26 @@ export default async function VerificationPage({ params }: PageProps) {
     );
   }
 
-  const member = await findMemberByDisplayId(displayId);
-
-  if (!member || !verifyMemberToken(member, token)) {
-    return (
-      <VerificationLayout locale={rawLocale}>
-        <StatusCard
-          icon={
-            <FaExclamationTriangle
-              className="text-3xl text-vegalta-red"
-              aria-hidden
-            />
-          }
-          badgeClassName="bg-vegalta-red/10 text-vegalta-red"
-          badge={dict.verification.invalidBadge}
-          title={dict.verification.invalidTitle}
-          subtitle={dict.verification.invalidSubtitle}
-        >
-          <Link
-            href={localizedPath(rawLocale)}
-            className="inline-flex w-full items-center justify-center rounded-lg border border-portal-outline-variant px-4 py-3 text-sm font-semibold text-portal-primary transition-colors hover:bg-portal-surface-container"
-          >
-            {dict.verification.backHome}
-          </Link>
-        </StatusCard>
-      </VerificationLayout>
-    );
-  }
-
-  const verificationUrl = createMemberVerificationUrl(rawLocale, member);
-  const memberName = `${member.firstName} ${member.lastName}`;
-  const memberSince = new Date(member.createdAt).toLocaleDateString(dateLocale, {
-    year: "numeric",
-    month: "long",
-  });
-
   return (
     <VerificationLayout locale={rawLocale}>
       <StatusCard
         icon={
-          <FaCheckCircle className="text-3xl text-emerald-600" aria-hidden />
+          <FaExclamationTriangle
+            className="text-3xl text-vegalta-red"
+            aria-hidden
+          />
         }
-        badgeClassName="bg-emerald-100 text-emerald-800"
-        badge={dict.verification.verifiedBadge}
-        title={dict.verification.verifiedTitle}
-        subtitle={dict.verification.verifiedSubtitle}
+        badgeClassName="bg-vegalta-red/10 text-vegalta-red"
+        badge={dict.verification.invalidBadge}
+        title={dict.verification.invalidTitle}
+        subtitle={dict.verification.invalidSubtitle}
       >
-        <div className="rounded-xl bg-portal-primary p-5 text-white portal-card-shadow">
-          <p className="text-xs uppercase tracking-widest text-white/60">
-            {dict.verification.memberLabel}
-          </p>
-          <p className="mt-1 font-display text-xl font-bold uppercase tracking-wide">
-            {memberName}
-          </p>
-          <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
-            <DetailRow
-              label={dict.verification.memberId}
-              value={member.displayId}
-              inverted
-            />
-            <DetailRow
-              label={dict.verification.memberSince}
-              value={memberSince}
-              inverted
-            />
-          </div>
-        </div>
-
-        {member.country && (
-          <DetailRow
-            label={dict.verification.country}
-            value={member.country}
-          />
-        )}
-
-        <div className="flex items-center justify-between gap-4 rounded-xl border border-portal-outline-variant bg-portal-surface-container p-4">
-          <div className="min-w-0">
-            <p className="text-xs uppercase tracking-wide text-portal-on-surface-variant">
-              {dict.verification.qrLabel}
-            </p>
-            <p className="mt-1 text-sm text-portal-on-surface-variant">
-              {dict.verification.qrHint}
-            </p>
-          </div>
-          <MemberQrCode
-            url={verificationUrl}
-            size={72}
-            label={dict.verification.qrLabel}
-          />
-        </div>
-
-        <p className="text-center text-xs text-portal-on-surface-variant">
-          {dict.verification.disclaimer}
-        </p>
+        <Link
+          href={localizedPath(rawLocale)}
+          className="inline-flex w-full items-center justify-center rounded-lg border border-portal-outline-variant px-4 py-3 text-sm font-semibold text-portal-primary transition-colors hover:bg-portal-surface-container"
+        >
+          {dict.verification.backHome}
+        </Link>
       </StatusCard>
     </VerificationLayout>
   );

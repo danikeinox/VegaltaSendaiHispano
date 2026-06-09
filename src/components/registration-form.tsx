@@ -7,8 +7,6 @@ import { CountrySelect } from "@/components/country-select";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { MemberQrCode } from "@/components/member-qr-code";
-import { MembershipCard } from "@/components/membership-card";
 import { SupportCallout } from "@/components/support-callout";
 import { WalletButtons } from "@/components/wallet-buttons";
 import { useLocale } from "@/components/locale-provider";
@@ -18,13 +16,14 @@ import {
   type RegistrationInput,
 } from "@/lib/validations";
 
-type RegisterResponse = {
+export type RegisterResult = {
   member: {
     displayId: string;
     firstName: string;
     lastName: string;
     email: string;
     country: string | null;
+    createdAt?: string;
   };
   isNew: boolean;
   wallet: {
@@ -42,19 +41,27 @@ type RegisterResponse = {
 
 type RegistrationFormProps = {
   variant?: "default" | "portal";
+  issued?: RegisterResult | null;
+  googleSaveUrl?: string | null;
   onPreviewNameChange?: (name: string) => void;
+  onIssued?: (result: RegisterResult) => void;
+  onGoogleSaveUrl?: (url: string | null) => void;
+  onReset?: () => void;
   className?: string;
 };
 
 export function RegistrationForm({
   variant = "default",
+  issued = null,
+  googleSaveUrl = null,
   onPreviewNameChange,
+  onIssued,
+  onGoogleSaveUrl,
+  onReset,
   className,
 }: RegistrationFormProps) {
   const { locale, dict } = useLocale();
-  const [result, setResult] = useState<RegisterResponse | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [googleUrl, setGoogleUrl] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const registrationSchema = useMemo(
     () => createRegistrationSchema(dict.validation),
@@ -66,6 +73,7 @@ export function RegistrationForm({
     control,
     handleSubmit,
     watch,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm<RegistrationInput>({
     resolver: zodResolver(registrationSchema),
@@ -76,14 +84,13 @@ export function RegistrationForm({
   const lastName = watch("lastName");
 
   useEffect(() => {
-    if (!onPreviewNameChange) return;
+    if (!onPreviewNameChange || issued) return;
     onPreviewNameChange(`${firstName ?? ""} ${lastName ?? ""}`.trim());
-  }, [firstName, lastName, onPreviewNameChange]);
+  }, [firstName, lastName, onPreviewNameChange, issued]);
 
   async function onSubmit(data: RegistrationInput) {
-    setError(null);
-    setResult(null);
-    setGoogleUrl(null);
+    setSubmitError(null);
+    onGoogleSaveUrl?.(null);
 
     try {
       const res = await fetch("/api/register", {
@@ -98,11 +105,11 @@ export function RegistrationForm({
       const json = await res.json();
 
       if (!res.ok) {
-        setError(json.error ?? dict.register.registerError);
+        setSubmitError(json.error ?? dict.register.registerError);
         return;
       }
 
-      setResult(json);
+      onIssued?.(json);
 
       if (json.wallet.google) {
         const googleRes = await fetch(json.wallet.google, {
@@ -110,61 +117,56 @@ export function RegistrationForm({
         });
         const googleJson = await googleRes.json();
         if (googleJson.saveUrl) {
-          setGoogleUrl(googleJson.saveUrl);
+          onGoogleSaveUrl?.(googleJson.saveUrl);
         }
       }
     } catch {
-      setError(dict.register.connectionError);
+      setSubmitError(dict.register.connectionError);
     }
   }
 
-  if (result) {
+  if (issued && variant === "portal") {
     return (
-      <div className="flex w-full flex-col items-center gap-6 sm:gap-8">
-        <MembershipCard
-          displayId={result.member.displayId}
-          firstName={result.member.firstName}
-          lastName={result.member.lastName}
-          officialCardLabel={dict.carnet.officialCard}
-        />
-
-        <div className="flex max-w-md flex-col items-center gap-3 rounded-xl border border-portal-outline-variant bg-white p-4 text-center">
-          <p className="text-xs uppercase tracking-wide text-portal-on-surface-variant">
-            {dict.verification.qrLabel}
-          </p>
-          <MemberQrCode
-            url={result.verification.url}
-            size={128}
-            label={dict.verification.qrLabel}
-          />
-          <p className="text-xs text-portal-on-surface-variant">
-            {dict.verification.qrHint}
-          </p>
-        </div>
-
-        <p className="max-w-md text-center text-sm text-portal-on-surface-variant">
-          {result.isNew
+      <div
+        className={cn(
+          "flex h-full w-full min-w-0 max-w-full flex-col gap-5 rounded-2xl border border-portal-outline-variant bg-white p-6 portal-card-shadow sm:p-8",
+          className
+        )}
+      >
+        <p className="text-sm leading-relaxed text-portal-on-surface-variant">
+          {issued.isNew
             ? dict.register.welcomeNew
             : dict.register.welcomeExisting}
         </p>
 
+        <p className="text-xs text-portal-on-surface-variant">
+          {dict.verification.qrHint}
+        </p>
+
         <WalletButtons
-          appleUrl={result.wallet.apple}
-          googleUrl={result.wallet.google}
-          googleSaveUrl={googleUrl}
+          appleUrl={issued.wallet.apple}
+          googleUrl={issued.wallet.google}
+          googleSaveUrl={googleSaveUrl}
           appleLabel={dict.register.addAppleWallet}
           googleLabel={dict.register.addGoogleWallet}
           androidLabel={dict.register.downloadAndroid}
-          appleAvailable={result.walletAvailable.apple}
-          googleAvailable={result.walletAvailable.google}
+          appleAvailable={issued.walletAvailable.apple}
+          googleAvailable={issued.walletAvailable.google}
           appleUnavailableNote={dict.register.appleUnavailable}
         />
 
-        {!result.walletAvailable.apple && (
-          <SupportCallout showAppleNote className="mx-auto" />
+        {!issued.walletAvailable.apple && (
+          <SupportCallout showAppleNote className="mx-auto w-full" />
         )}
 
-        <Button variant="ghost" onClick={() => setResult(null)}>
+        <Button
+          variant="ghost"
+          className="mt-auto"
+          onClick={() => {
+            reset();
+            onReset?.();
+          }}
+        >
           {dict.register.registerAnother}
         </Button>
       </div>
@@ -256,9 +258,9 @@ export function RegistrationForm({
         )}
       </div>
 
-      {error && (
+      {submitError && (
         <p className="border border-vegalta-red/20 bg-vegalta-red/10 p-3 text-center text-sm text-vegalta-red">
-          {error}
+          {submitError}
         </p>
       )}
 

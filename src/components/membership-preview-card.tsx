@@ -2,29 +2,57 @@
 
 import { ClubLogo } from "@/components/club-logo";
 import { FakeQrCode } from "@/components/fake-qr-code";
+import { MemberQrCode } from "@/components/member-qr-code";
 import { useLocale } from "@/components/locale-provider";
 import { cn } from "@/lib/utils";
+import { PREVIEW_DISPLAY_ID } from "@/lib/constants";
+
+export type IssuedMemberCard = {
+  displayId: string;
+  firstName: string;
+  lastName: string;
+  createdAt?: string;
+};
 
 type MembershipPreviewCardProps = {
-  fullName: string;
+  previewName: string;
+  issued?: IssuedMemberCard | null;
+  verificationUrl?: string | null;
   className?: string;
 };
 
 export function MembershipPreviewCard({
-  fullName,
+  previewName,
+  issued = null,
+  verificationUrl = null,
   className,
 }: MembershipPreviewCardProps) {
-  const { dict } = useLocale();
-  const displayName =
-    fullName.trim().toUpperCase() || dict.previewCard.placeholderName;
+  const { locale, dict } = useLocale();
+  const isIssued = issued !== null && verificationUrl !== null;
+  const displayName = isIssued
+    ? `${issued.firstName} ${issued.lastName}`.trim().toUpperCase()
+    : previewName.trim().toUpperCase() || dict.previewCard.placeholderName;
+  const displayId = isIssued ? issued.displayId : PREVIEW_DISPLAY_ID;
+  const memberSince = isIssued && issued.createdAt
+    ? new Date(issued.createdAt).toLocaleDateString(
+        locale === "jp" ? "ja-JP" : "es-ES",
+        { year: "numeric", month: "short" }
+      ).toUpperCase()
+    : dict.previewCard.sincePlaceholder;
 
   return (
     <div
       className={cn(
         "portal-card-shadow relative flex w-full min-w-0 max-w-full flex-col justify-between overflow-hidden rounded-2xl bg-gradient-to-br from-portal-primary to-portal-primary-container p-5 text-white sm:p-6 lg:min-h-full lg:p-8",
+        isIssued && "ring-2 ring-portal-gold/60",
         className
       )}
     >
+      {isIssued && (
+        <span className="absolute right-4 top-4 z-20 rounded-full bg-portal-gold px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-portal-gold-text">
+          {dict.previewCard.issuedBadge}
+        </span>
+      )}
       {/* Bandera española 1:2:1 — tres franjas en esquina superior izquierda */}
       <div
         className="pointer-events-none absolute left-0 top-0 h-[70%] w-[75%] max-w-[18rem]"
@@ -69,21 +97,29 @@ export function MembershipPreviewCard({
           <div className="mt-3 flex gap-6 text-sm sm:mt-4">
             <div>
               <p className="text-xs opacity-60">{dict.previewCard.id}</p>
-              <p className="portal-label text-white">VS-0001</p>
+              <p className="portal-label text-white">{displayId}</p>
             </div>
             <div>
               <p className="text-xs opacity-60">{dict.previewCard.since}</p>
-              <p className="portal-label text-white">JUN 2026</p>
+              <p className="portal-label text-white">{memberSince}</p>
             </div>
           </div>
         </div>
 
         <div className="flex shrink-0 items-center justify-center gap-4 self-stretch border-t border-white/10 pt-4 lg:flex-col lg:gap-2 lg:self-auto lg:border-t-0 lg:pt-0">
           <ClubLogo className="h-14 w-14 drop-shadow-[0_3px_12px_rgba(0,0,0,0.45)] sm:h-16 sm:w-16 lg:h-20 lg:w-20 xl:h-[5.5rem] xl:w-[5.5rem]" />
-          <FakeQrCode
-            className="h-[4.5rem] w-[4.5rem] opacity-75 sm:h-20 sm:w-20 lg:h-24 lg:w-24"
-            label={dict.previewCard.qrPreviewLabel}
-          />
+          {isIssued && verificationUrl ? (
+            <MemberQrCode
+              url={verificationUrl}
+              size={88}
+              label={dict.verification.qrLabel}
+            />
+          ) : (
+            <FakeQrCode
+              className="h-[4.5rem] w-[4.5rem] opacity-75 sm:h-20 sm:w-20 lg:h-24 lg:w-24"
+              label={dict.previewCard.qrPreviewLabel}
+            />
+          )}
         </div>
       </div>
     </div>

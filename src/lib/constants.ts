@@ -20,6 +20,8 @@ export const HIMNO_YOUTUBE_EMBED_URL =
 
 export const MEMBER_ID_PREFIX = "VS";
 export const MEMBER_ID_PAD = 4;
+/** ID reservado para vista previa del carnet (no asignado a socios reales) */
+export const PREVIEW_DISPLAY_ID = "VS-0000";
 
 export function formatMemberId(memberNumber: number): string {
   return `${MEMBER_ID_PREFIX}-${String(memberNumber).padStart(MEMBER_ID_PAD, "0")}`;

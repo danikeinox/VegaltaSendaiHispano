@@ -16,9 +16,11 @@ const jp: Dictionary = {
       "デジタル会員証",
       "Peña Ibérica Vegalta Sendai",
     ],
+    ogTitle: "公式ファンウェブサイト",
     ogDescription:
       "ベガルタ仙台ヒスパノファンコミュニティ — 無料デジタル会員証・応援歌・テレグラム",
-    ogImageAlt: "ベガルタ仙台ヒスパノ コミュニティエンブレム",
+    ogImageAlt:
+      "Vegalta Sendai Hispano — Página web fan oficial / 公式ファンウェブサイト",
   },
   language: {
     label: "言語",
@@ -76,6 +78,8 @@ const jp: Dictionary = {
     placeholderName: "お名前",
     id: "ID",
     since: "入会",
+    sincePlaceholder: "2026年6月",
+    issuedBadge: "有効",
     disclaimer: "非公式 · 非営利 · MITライセンス",
     qrLabel: "会員証確認用QRコード",
     qrPreviewLabel: "プレビュー用QRコード（会員証取得まで無効）",
@@ -190,6 +194,9 @@ const jp: Dictionary = {
     title: "ヒスパノ会員証を作成",
     subtitle:
       "デジタルコミュニティの一員になろう。法的効力はありませんが、想いは本物です。",
+    successTitle: "会員証の準備ができました！",
+    successSubtitle:
+      "カードのQRコードが有効になりました。スキャンしてコミュニティ会員であることを確認できます。",
     firstName: "名",
     lastName: "姓",
     email: "メールアドレス",
@@ -288,6 +295,7 @@ const jp: Dictionary = {
     label: "見つかりません",
     message: "お探しのページまたは会員証が見つかりませんでした。",
     backHome: "ホームに戻る",
+    getCard: "無料会員証を取得",
   },
   common: {
     communitySubtitle: "ヒスパノコミュニティ",

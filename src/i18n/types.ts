@@ -3,6 +3,7 @@ export type Dictionary = {
     title: string;
     description: string;
     keywords: string[];
+    ogTitle: string;
     ogDescription: string;
     ogImageAlt: string;
   };
@@ -61,6 +62,8 @@ export type Dictionary = {
     placeholderName: string;
     id: string;
     since: string;
+    sincePlaceholder: string;
+    issuedBadge: string;
     disclaimer: string;
     qrLabel: string;
     qrPreviewLabel: string;
@@ -111,6 +114,8 @@ export type Dictionary = {
   register: {
     title: string;
     subtitle: string;
+    successTitle: string;
+    successSubtitle: string;
     firstName: string;
     lastName: string;
     email: string;
@@ -198,6 +203,7 @@ export type Dictionary = {
     label: string;
     message: string;
     backHome: string;
+    getCard: string;
   };
   common: {
     communitySubtitle: string;

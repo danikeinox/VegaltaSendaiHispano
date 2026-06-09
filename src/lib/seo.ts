@@ -14,7 +14,9 @@ export const SITE_URL =
 export const SITE_NAME = "Vegalta Sendai Hispano";
 export const SITE_DOMAIN = "vegalta.es";
 
-const OG_IMAGE_PATH = "/assets/branding/logo-hispano.png";
+const OG_IMAGE_PATH = "/assets/branding/og-vegalta-hispano.png";
+const OG_IMAGE_WIDTH = 1200;
+const OG_IMAGE_HEIGHT = 630;
 
 export function absoluteUrl(path = ""): string {
   const normalized = path.startsWith("/") ? path : `/${path}`;
@@ -87,13 +89,14 @@ export function buildPageMetadata({
       alternateLocale: alternateOgLocale,
       url: canonical,
       siteName: SITE_NAME,
-      title: pageTitle,
+      title: meta.ogTitle ?? pageTitle,
       description: meta.ogDescription,
       images: [
         {
-          url: OG_IMAGE_PATH,
-          width: 512,
-          height: 512,
+          url: absoluteUrl(OG_IMAGE_PATH),
+          secureUrl: absoluteUrl(OG_IMAGE_PATH),
+          width: OG_IMAGE_WIDTH,
+          height: OG_IMAGE_HEIGHT,
           alt: meta.ogImageAlt,
           type: "image/png",
         },
@@ -101,9 +104,9 @@ export function buildPageMetadata({
     },
     twitter: {
       card: "summary_large_image",
-      title: pageTitle,
+      title: meta.ogTitle ?? pageTitle,
       description: meta.ogDescription,
-      images: [OG_IMAGE_PATH],
+      images: [absoluteUrl(OG_IMAGE_PATH)],
     },
     robots: robots ?? {
       index: true,

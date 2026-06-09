@@ -1,10 +1,19 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
+import { PREVIEW_DISPLAY_ID } from "@/lib/constants";
 import { absoluteUrl } from "@/lib/seo";
 import type { Member } from "@/lib/members";
 
+export { PREVIEW_DISPLAY_ID };
 export const PREVIEW_MEMBER_ID = "__preview__";
-export const PREVIEW_DISPLAY_ID = "VS-0001";
 const TOKEN_LENGTH = 32;
+
+export function normalizeVerificationToken(raw: string): string {
+  try {
+    return decodeURIComponent(raw).trim();
+  } catch {
+    return raw.trim();
+  }
+}
 
 function getVerificationSecret(): string {
   const secret = process.env.MEMBER_VERIFICATION_SECRET?.trim();
@@ -23,7 +32,8 @@ export function createVerificationToken(
     .slice(0, TOKEN_LENGTH);
 }
 
-export function verifyMemberToken(member: Member, token: string): boolean {
+export function verifyMemberToken(member: Member, rawToken: string): boolean {
+  const token = normalizeVerificationToken(rawToken);
   if (!token || token.length !== TOKEN_LENGTH) return false;
 
   const expected = createVerificationToken(member.id, member.displayId);
@@ -38,7 +48,8 @@ export function verifyMemberToken(member: Member, token: string): boolean {
   }
 }
 
-export function isPreviewVerificationToken(token: string): boolean {
+export function isPreviewVerificationToken(rawToken: string): boolean {
+  const token = normalizeVerificationToken(rawToken);
   if (!token || token.length !== TOKEN_LENGTH) return false;
 
   const expected = createVerificationToken(

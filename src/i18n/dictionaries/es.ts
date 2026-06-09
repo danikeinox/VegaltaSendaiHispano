@@ -18,9 +18,11 @@ const es: Dictionary = {
       "J.League",
       "ベガルタ仙台",
     ],
+    ogTitle: "Página web fan oficial",
     ogDescription:
       "Comunidad hispana de fans del Vegalta Sendai — carnet digital gratuito, himno en español y Telegram.",
-    ogImageAlt: "Escudo Vegalta Sendai Hispano — comunidad de fans",
+    ogImageAlt:
+      "Vegalta Sendai Hispano — Página web fan oficial / 公式ファンウェブサイト",
   },
   language: {
     label: "Idioma",
@@ -78,6 +80,8 @@ const es: Dictionary = {
     placeholderName: "TU NOMBRE AQUÍ",
     id: "ID",
     since: "DESDE",
+    sincePlaceholder: "JUN 2026",
+    issuedBadge: "Activo",
     disclaimer: "No oficial — Sin fines de lucro. Licencia MIT.",
     qrLabel: "Código QR de verificación del carnet",
     qrPreviewLabel: "Código QR de vista previa (no válido hasta obtener el carnet)",
@@ -192,6 +196,9 @@ const es: Dictionary = {
     title: "Genera tu Carnet de Socio Hispano",
     subtitle:
       "Forma parte oficial de nuestra comunidad digital. No tiene validez legal, pero sí sentimental.",
+    successTitle: "¡Tu carnet está listo!",
+    successSubtitle:
+      "El QR de la tarjeta ya es válido. Escanéalo para verificar tu pertenencia a la comunidad.",
     firstName: "Nombre",
     lastName: "Apellidos",
     email: "Correo electrónico",
@@ -290,6 +297,7 @@ const es: Dictionary = {
     label: "NO ENCONTRADO",
     message: "No encontramos la página o el carnet que buscas.",
     backHome: "Volver al inicio",
+    getCard: "Obtener carnet gratuito",
   },
   common: {
     communitySubtitle: "Comunidad Hispana",
