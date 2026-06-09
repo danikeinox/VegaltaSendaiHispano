@@ -4,7 +4,13 @@ import type { ReactNode } from "react";
 import { FaGithub, FaTelegramPlane } from "react-icons/fa";
 import { SectionNavLink } from "@/components/section-nav-link";
 import { useLocale } from "@/components/locale-provider";
-import { GITHUB_REPO_URL } from "@/lib/site-links";
+import {
+  GITHUB_REPO_URL,
+  VEGALTA_OFFICIAL_URL,
+  VEGALTA_ONLINE_STORE_URL,
+  VEGALTA_SOCIO_FANCLUB_URL,
+  VEGALTA_TICKETS_URL,
+} from "@/lib/site-links";
 import { TELEGRAM_COMMUNITY_URL } from "@/lib/constants";
 import { localizedPath } from "@/i18n/navigation";
 
@@ -106,7 +112,7 @@ export function Footer() {
           <FooterLinkColumn title={dict.footer.official}>
             <li>
               <a
-                href="https://www.vegalta.co.jp/"
+                href={VEGALTA_OFFICIAL_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block transition-colors hover:text-white"
@@ -116,7 +122,7 @@ export function Footer() {
             </li>
             <li>
               <a
-                href="https://store.vegalta.co.jp/"
+                href={VEGALTA_ONLINE_STORE_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block transition-colors hover:text-white"
@@ -126,7 +132,7 @@ export function Footer() {
             </li>
             <li>
               <a
-                href="https://www.vegalta.co.jp/fanclub/"
+                href={VEGALTA_SOCIO_FANCLUB_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block transition-colors hover:text-white"
@@ -136,7 +142,7 @@ export function Footer() {
             </li>
             <li>
               <a
-                href="https://www.vegalta.co.jp/ticket/"
+                href={VEGALTA_TICKETS_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block transition-colors hover:text-white"
