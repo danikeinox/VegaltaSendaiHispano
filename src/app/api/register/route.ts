@@ -19,6 +19,7 @@ import {
   createMemberCarnetUrl,
   createMemberVerificationUrl,
 } from "@/lib/verification";
+import { isRegistrationDisabled } from "@/lib/registration-config";
 import { getSchemasForRequest } from "@/i18n/schemas";
 import { getLocaleFromRequest } from "@/i18n/get-locale-from-request";
 
@@ -30,6 +31,14 @@ export async function POST(request: Request) {
   const { dict, registrationSchema } = await getSchemasForRequest(request);
 
   try {
+    if (isRegistrationDisabled()) {
+      throw new ApiError(
+        503,
+        dict.api.registrationDisabled,
+        "REGISTRATION_DISABLED"
+      );
+    }
+
     if (!validateOrigin(request)) {
       throw new ApiError(403, dict.api.forbiddenOrigin, "FORBIDDEN_ORIGIN");
     }

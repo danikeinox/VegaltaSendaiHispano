@@ -49,6 +49,8 @@ const nextConfig: NextConfig = {
   },
   env: {
     NEXT_PUBLIC_APP_URL: appUrl,
+    NEXT_PUBLIC_REGISTRATION_DISABLED:
+      process.env.REGISTRATION_DISABLED ?? "true",
   },
 };
 

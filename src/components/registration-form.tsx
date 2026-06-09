@@ -17,6 +17,7 @@ import {
   createRegistrationSchema,
   type RegistrationInput,
 } from "@/lib/validations";
+import { isRegistrationDisabledClient } from "@/lib/registration-config";
 
 export type RegisterResult = {
   member: {
@@ -63,6 +64,7 @@ export function RegistrationForm({
   className,
 }: RegistrationFormProps) {
   const { locale, dict } = useLocale();
+  const registrationDisabled = isRegistrationDisabledClient();
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   const registrationSchema = useMemo(
@@ -176,6 +178,28 @@ export function RegistrationForm({
   }
 
   const isPortal = variant === "portal";
+
+  if (registrationDisabled && !issued) {
+    return (
+      <div
+        className={cn(
+          "flex w-full flex-col gap-4",
+          isPortal
+            ? "h-full min-w-0 max-w-full rounded-2xl border border-portal-outline-variant bg-white p-6 portal-card-shadow sm:p-8"
+            : "max-w-md border border-vegalta-royal-blue/10 bg-white p-5 shadow-sm sm:p-6 md:p-8",
+          className
+        )}
+        role="status"
+      >
+        <p className="text-sm leading-relaxed text-portal-on-surface-variant">
+          {dict.register.disabledMessage}
+        </p>
+        <p className="text-xs leading-relaxed text-portal-on-surface-variant">
+          {dict.register.disabledNote}
+        </p>
+      </div>
+    );
+  }
 
   return (
     <form

@@ -229,6 +229,13 @@ const es: Dictionary = {
       "Cartera de Apple no disponible aún. Usa Google Wallet o guarda el carnet en pantalla.",
     privacyAcceptPrefix: "He leído y acepto la",
     privacyAcceptLink: "política de privacidad",
+    disabledTitle: "Registro temporalmente cerrado",
+    disabledSubtitle:
+      "Estamos aplicando mejoras de seguridad antes de volver a abrir el alta de socios.",
+    disabledMessage:
+      "Por medidas de seguridad, el registro de nuevos socios está deshabilitado temporalmente. Se han eliminado todos los carnets existentes y se volverá a habilitar el registro una vez completadas las correcciones.",
+    disabledNote:
+      "Gracias por tu paciencia. Puedes seguir uniéndote a la comunidad en Telegram mientras tanto.",
   },
   support: {
     title: "Apoya el proyecto",
@@ -484,6 +491,8 @@ const es: Dictionary = {
       "Hoy se ha alcanzado el cupo diario de nuevos registros. Inténtalo mañana.",
     validationError: "Datos de entrada no válidos",
     internalError: "Error interno del servidor",
+    registrationDisabled:
+      "El registro está temporalmente cerrado por medidas de seguridad.",
   },
 };
 
