@@ -7,6 +7,27 @@
     "nodejs_compat",
     "global_fetch_strictly_public"
   ],
+  // Conserva variables del dashboard que no estén en este archivo.
+  "keep_vars": true,
+  "vars": {
+    "NODE_ENV": "production",
+    "NEXT_PUBLIC_APP_URL": "https://www.vegalta.es",
+    "NEXT_PUBLIC_SITE_URL": "https://www.vegalta.es",
+    "ALLOWED_ORIGIN": "https://www.vegalta.es",
+    "NEXT_PUBLIC_APPWRITE_PROJECT_ID": "6a2702ec000b42a91782",
+    "NEXT_PUBLIC_APPWRITE_PROJECT_NAME": "VegaltaSendaiHispano",
+    "NEXT_PUBLIC_APPWRITE_ENDPOINT": "https://fra.cloud.appwrite.io/v1",
+    "APPWRITE_DATABASE_ID": "vegalta_sendai",
+    "APPWRITE_MEMBERS_COLLECTION_ID": "members",
+    "APPWRITE_SEQUENCE_COLLECTION_ID": "id_sequence",
+    "APPWRITE_SEQUENCE_DOCUMENT_ID": "member_counter",
+    "REGISTRATION_DISABLED": "true",
+    "RECOVERY_EMAIL_FROM": "Vegalta Hispano <noreply@vegalta.es>",
+    "API_FOOTBALL_TEAM_ID": "289",
+    "API_FOOTBALL_SEASON": "2026",
+    "GOOGLE_WALLET_CLASS_ID": "vegalta_hispano_member",
+    "APPLE_PASS_TYPE_IDENTIFIER": "pass.com.vegalta.hispano"
+  },
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"
