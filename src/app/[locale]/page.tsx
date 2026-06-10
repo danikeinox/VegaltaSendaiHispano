@@ -11,6 +11,8 @@ import { isValidLocale } from "@/i18n/config";
 import { getVegaltaMatches } from "@/lib/football-api";
 import { notFound } from "next/navigation";
 
+export const dynamic = "force-dynamic";
+
 type PageProps = {
   params: Promise<{ locale: string }>;
 };
