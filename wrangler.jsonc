@@ -21,7 +21,7 @@
     "APPWRITE_MEMBERS_COLLECTION_ID": "members",
     "APPWRITE_SEQUENCE_COLLECTION_ID": "id_sequence",
     "APPWRITE_SEQUENCE_DOCUMENT_ID": "member_counter",
-    "REGISTRATION_DISABLED": "true",
+    "REGISTRATION_DISABLED": "false",
     "RECOVERY_EMAIL_FROM": "Vegalta Hispano <noreply@vegalta.es>",
     "API_FOOTBALL_TEAM_ID": "289",
     "API_FOOTBALL_SEASON": "2026",
