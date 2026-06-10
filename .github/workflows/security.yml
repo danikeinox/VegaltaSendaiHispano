@@ -38,6 +38,14 @@ jobs:
           MEMBER_VERIFICATION_SECRET: test-secret-for-ci
           ALLOWED_ORIGIN: https://www.vegalta.es
 
+      - name: Production build (typecheck)
+        run: npm run build
+        env:
+          MEMBER_VERIFICATION_SECRET: test-secret-for-ci
+          ALLOWED_ORIGIN: https://www.vegalta.es
+          NEXT_PUBLIC_APP_URL: https://www.vegalta.es
+          REGISTRATION_DISABLED: "true"
+
       - name: npm audit
         run: npm audit --audit-level=moderate
         continue-on-error: true
