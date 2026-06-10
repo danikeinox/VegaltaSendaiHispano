@@ -288,7 +288,8 @@ const es: Dictionary = {
     backHome: "← Volver al inicio",
     officialCard: "CARNET FAN OFICIAL",
     shareTitle: "Comparte tu carnet",
-    shareSubtitle: "Vista pública del carnet, sin código QR de verificación",
+    shareSubtitle: "Descarga o envía una imagen de tu carnet para redes o tu galería.",
+    shareSheetTitle: "Mi carnet — Vegalta Sendai Hispano",
     shareHint:
       "Descarga la imagen o compártela en redes. No incluye tu correo ni el QR de verificación de identidad.",
     sharePrivacyWarning:

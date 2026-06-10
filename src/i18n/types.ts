@@ -185,6 +185,7 @@ export type Dictionary = {
     officialCard: string;
     shareTitle: string;
     shareSubtitle: string;
+    shareSheetTitle: string;
     shareHint: string;
     sharePrivacyWarning: string;
     downloadImage: string;

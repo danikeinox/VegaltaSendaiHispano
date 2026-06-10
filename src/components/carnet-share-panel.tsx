@@ -1,18 +1,20 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { MembershipCard } from "@/components/membership-card";
 import { Button } from "@/components/ui/button";
-import { downloadBlob, exportCardSvgToPng } from "@/lib/export-card-image";
+import { downloadBlob, exportSvgStringToPng } from "@/lib/export-card-image";
 import { Download, Share2 } from "lucide-react";
 
 type CarnetSharePanelProps = {
   displayId: string;
+  accessToken: string;
   firstName: string;
   lastName: string;
   officialCardLabel: string;
   shareTitle: string;
   shareSubtitle: string;
+  shareSheetTitle: string;
   shareHint: string;
   sharePrivacyWarning: string;
   downloadLabel: string;
@@ -24,11 +26,13 @@ type CarnetSharePanelProps = {
 
 export function CarnetSharePanel({
   displayId,
+  accessToken,
   firstName,
   lastName,
   officialCardLabel,
   shareTitle,
   shareSubtitle,
+  shareSheetTitle,
   shareHint,
   sharePrivacyWarning,
   downloadLabel,
@@ -37,7 +41,6 @@ export function CarnetSharePanel({
   shareError,
   shareUnsupported,
 }: CarnetSharePanelProps) {
-  const cardRef = useRef<HTMLDivElement>(null);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [canNativeShare, setCanNativeShare] = useState(false);
@@ -46,12 +49,24 @@ export function CarnetSharePanel({
     setCanNativeShare(typeof navigator !== "undefined" && "share" in navigator);
   }, []);
 
-  async function createPngBlob(): Promise<Blob> {
-    if (!cardRef.current) {
-      throw new Error("Card container not ready");
+  async function fetchVerifiedCardSvg(): Promise<string> {
+    const query = new URLSearchParams({
+      displayId,
+      token: accessToken,
+    });
+
+    const response = await fetch(`/api/carnet/image?${query.toString()}`);
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch verified card image");
     }
 
-    return exportCardSvgToPng(cardRef.current);
+    return response.text();
+  }
+
+  async function createPngBlob(): Promise<Blob> {
+    const svgMarkup = await fetchVerifiedCardSvg();
+    return exportSvgStringToPng(svgMarkup);
   }
 
   function fileName(): string {
@@ -82,8 +97,7 @@ export function CarnetSharePanel({
 
       if (navigator.share && navigator.canShare?.({ files: [file] })) {
         await navigator.share({
-          title: shareTitle,
-          text: shareSubtitle,
+          title: shareSheetTitle,
           files: [file],
         });
         return;
@@ -91,8 +105,7 @@ export function CarnetSharePanel({
 
       if (navigator.share) {
         await navigator.share({
-          title: shareTitle,
-          text: shareSubtitle,
+          title: shareSheetTitle,
         });
         return;
       }
@@ -118,8 +131,7 @@ export function CarnetSharePanel({
       </div>
 
       <div
-        ref={cardRef}
-        className="w-full rounded-2xl bg-white p-4 shadow-lg ring-1 ring-vegalta-royal-blue/10 sm:p-6"
+        className="w-full rounded-2xl bg-white p-4 shadow-lg ring-1 ring-vegalta-royal-blue/10 sm:p-6 [&_svg]:h-auto [&_svg]:w-full [&_svg]:rounded-xl [&_svg]:shadow-2xl [&_svg]:ring-1 [&_svg]:ring-black/10"
         aria-label={shareTitle}
       >
         <MembershipCard
