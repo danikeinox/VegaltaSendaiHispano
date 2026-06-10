@@ -74,6 +74,14 @@ export async function POST(request: Request) {
       throw new ApiError(429, dict.api.rateLimited, "RATE_LIMITED");
     }
 
+    if (process.env.NODE_ENV === "production" && !isTurnstileConfigured()) {
+      throw new ApiError(
+        503,
+        dict.api.registrationDisabled,
+        "TURNSTILE_NOT_CONFIGURED"
+      );
+    }
+
     if (isTurnstileConfigured()) {
       const turnstileToken =
         typeof body === "object" && body !== null && "turnstileToken" in body

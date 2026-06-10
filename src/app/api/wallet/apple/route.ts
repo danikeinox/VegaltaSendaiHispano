@@ -2,6 +2,7 @@ import { findMemberByDisplayId } from "@/lib/members";
 import { corsHeaders } from "@/lib/security/cors";
 import { ApiError, handleApiError } from "@/lib/security/error-handler";
 import { assertMemberAccess } from "@/lib/security/member-access";
+import { isWalletsFeatureEnabled } from "@/lib/wallet/config";
 import {
   generateApplePass,
   isAppleWalletConfigured,
@@ -27,7 +28,7 @@ export async function GET(request: Request) {
       token
     );
 
-    if (!isAppleWalletConfigured()) {
+    if (!isWalletsFeatureEnabled() || !isAppleWalletConfigured()) {
       throw new ApiError(
         503,
         "Apple Wallet no configurado. Consulta docs/WALLET_SETUP.md",

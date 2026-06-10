@@ -37,6 +37,7 @@ jobs:
       NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${{ secrets.NEXT_PUBLIC_TURNSTILE_SITE_KEY }}
       NEXT_PUBLIC_BUYMEACOFFEE_URL: ${{ secrets.NEXT_PUBLIC_BUYMEACOFFEE_URL }}
       REGISTRATION_DISABLED: "false"
+      WALLETS_ENABLED: "false"
       # Worker secrets (runtime) — ver scripts/write-deploy-secrets.mjs
       APPWRITE_API_KEY: ${{ secrets.APPWRITE_API_KEY }}
       MEMBER_VERIFICATION_SECRET: ${{ secrets.MEMBER_VERIFICATION_SECRET }}

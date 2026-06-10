@@ -219,6 +219,11 @@ const jp: Dictionary = {
     welcomeExisting: "このメールアドレスでは既に会員証が登録されています。",
     addAppleWallet: "アップルウォレットに追加",
     addGoogleWallet: "グーグルウォレットに追加",
+    addSamsungWallet: "Samsung Walletに追加",
+    walletsDevelopmentTitle: "デジタルウォレット — 開発中",
+    walletsDevelopmentNote:
+      "Apple Wallet、Google Wallet、Samsung Walletは、証明書と有料アカウントの準備が整い次第提供します。それまではWeb会員証のリンクとQRを保存してください。",
+    walletsComingSoon: "近日公開",
     downloadAndroid: "Android端末用にダウンロード",
     registerAnother: "別の会員を登録",
     connectionError: "接続エラー。もう一度お試しください。",
@@ -258,6 +263,11 @@ const jp: Dictionary = {
     backToRegister: "登録に戻る",
     emailNotice:
       "メールは数分に1通のみ送信されます。既にリクエストした場合は、受信トレイと迷惑メールを確認してから再度お試しください。",
+    confirmTitle: "会員証の再取得を確認",
+    confirmDescription:
+      "ボタンを押して会員証にアクセスしてください。リンクは30分間有効で、1回のみ使用できます。メールアプリが自動でこのページを開いた場合でも、確認するまでリンクは有効です。",
+    confirmButton: "確認して会員証を開く",
+    confirming: "会員証を再取得しています...",
   },
   support: {
     title: "プロジェクトを支援",

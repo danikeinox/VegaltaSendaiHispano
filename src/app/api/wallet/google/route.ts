@@ -3,6 +3,7 @@ import { validateOrigin } from "@/lib/security/csrf";
 import { corsHeaders } from "@/lib/security/cors";
 import { ApiError, handleApiError, jsonSuccess } from "@/lib/security/error-handler";
 import { assertMemberAccess } from "@/lib/security/member-access";
+import { isWalletsFeatureEnabled } from "@/lib/wallet/config";
 import {
   generateGoogleWalletSaveUrl,
   getAndroidPkpassFallbackUrl,
@@ -29,16 +30,19 @@ export async function GET(request: Request) {
       token
     );
 
-    if (!isGoogleWalletConfigured()) {
+    if (!isWalletsFeatureEnabled() || !isGoogleWalletConfigured()) {
       return jsonSuccess(
         {
           configured: false,
-          fallback: {
-            type: "pkpass",
-            url: getAndroidPkpassFallbackUrl(member, token ?? ""),
-            message:
-              "Google Wallet API no configurada. Usa la descarga .pkpass compatible con apps Android.",
-          },
+          inDevelopment: !isWalletsFeatureEnabled(),
+          fallback: isWalletsFeatureEnabled()
+            ? {
+                type: "pkpass",
+                url: getAndroidPkpassFallbackUrl(member, token ?? ""),
+                message:
+                  "Google Wallet API no configurada. Usa la descarga .pkpass compatible con apps Android.",
+              }
+            : null,
         },
         200,
         request
@@ -87,14 +91,17 @@ export async function POST(request: Request) {
       token
     );
 
-    if (!isGoogleWalletConfigured()) {
+    if (!isWalletsFeatureEnabled() || !isGoogleWalletConfigured()) {
       return jsonSuccess(
         {
           configured: false,
-          fallback: {
-            type: "pkpass",
-            url: getAndroidPkpassFallbackUrl(member, token ?? ""),
-          },
+          inDevelopment: !isWalletsFeatureEnabled(),
+          fallback: isWalletsFeatureEnabled()
+            ? {
+                type: "pkpass",
+                url: getAndroidPkpassFallbackUrl(member, token ?? ""),
+              }
+            : null,
         },
         200,
         request

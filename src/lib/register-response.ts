@@ -1,6 +1,5 @@
 import type { Member } from "@/lib/members";
-import { isAppleWalletConfigured } from "@/lib/wallet/apple-pass";
-import { isGoogleWalletConfigured } from "@/lib/wallet/google-wallet";
+import { getWalletAvailability } from "@/lib/wallet/config";
 import {
   buildMemberAccessQuery,
   createMemberCarnetUrl,
@@ -20,11 +19,14 @@ export type RegisterSuccessPayload = {
   wallet: {
     apple: string | null;
     google: string | null;
+    samsung: string | null;
   };
   walletAvailable: {
     apple: boolean;
     google: boolean;
+    samsung: boolean;
   };
+  walletsInDevelopment: boolean;
   verification: {
     url: string;
   };
@@ -39,8 +41,7 @@ export function buildRegisterSuccessPayload(
   accessToken: string,
   options?: { isNew?: boolean }
 ): RegisterSuccessPayload {
-  const appleConfigured = isAppleWalletConfigured();
-  const googleConfigured = isGoogleWalletConfigured();
+  const wallets = getWalletAvailability();
   const accessQuery = buildMemberAccessQuery(member, accessToken);
 
   return {
@@ -60,12 +61,15 @@ export function buildRegisterSuccessPayload(
     },
     isNew: options?.isNew ?? true,
     wallet: {
-      apple: appleConfigured ? `/api/wallet/apple?${accessQuery}` : null,
-      google: googleConfigured ? `/api/wallet/google?${accessQuery}` : null,
+      apple: wallets.apple ? `/api/wallet/apple?${accessQuery}` : null,
+      google: wallets.google ? `/api/wallet/google?${accessQuery}` : null,
+      samsung: wallets.samsung ? `/api/wallet/google?${accessQuery}` : null,
     },
     walletAvailable: {
-      apple: appleConfigured,
-      google: googleConfigured,
+      apple: wallets.apple,
+      google: wallets.google,
+      samsung: wallets.samsung,
     },
+    walletsInDevelopment: wallets.inDevelopment,
   };
 }

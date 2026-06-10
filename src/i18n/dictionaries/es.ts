@@ -221,6 +221,11 @@ const es: Dictionary = {
     welcomeExisting: "Ya tenías un carnet registrado con este correo.",
     addAppleWallet: "Añadir a Cartera de Apple",
     addGoogleWallet: "Añadir a Cartera de Google",
+    addSamsungWallet: "Añadir a Samsung Wallet",
+    walletsDevelopmentTitle: "Carteras digitales — en desarrollo",
+    walletsDevelopmentNote:
+      "Apple Wallet, Google Wallet y Samsung Wallet estarán disponibles cuando activemos los certificados y cuentas de pago. Mientras tanto, guarda tu carnet web con el enlace y el QR.",
+    walletsComingSoon: "próximamente",
     downloadAndroid: "Descargar para dispositivos Android",
     registerAnother: "Registrar otro socio",
     connectionError: "Error de conexión. Inténtalo de nuevo.",
@@ -260,6 +265,11 @@ const es: Dictionary = {
     backToRegister: "Volver al registro",
     emailNotice:
       "Solo enviamos un enlace cada pocos minutos por email. Si ya lo solicitaste, revisa tu bandeja y spam antes de repetir la solicitud.",
+    confirmTitle: "Confirma la recuperación de tu carnet",
+    confirmDescription:
+      "Pulsa el botón para acceder a tu carnet. El enlace caduca en 30 minutos y solo puede usarse una vez. Si tu cliente de correo abrió esta página automáticamente, el enlace sigue siendo válido hasta que confirmes.",
+    confirmButton: "Confirmar y abrir mi carnet",
+    confirming: "Recuperando carnet...",
   },
   support: {
     title: "Apoya el proyecto",

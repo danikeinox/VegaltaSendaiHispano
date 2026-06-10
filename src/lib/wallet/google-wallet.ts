@@ -54,7 +54,7 @@ export function generateGoogleWalletSaveUrl(
     hexBackgroundColor: VEGALTA_COLORS.deepBlue.replace("#", ""),
     logo: {
       sourceUri: {
-        uri: `${appUrl}/api/wallet/assets/logo`,
+        uri: `${appUrl}/assets/wallet/logo.png`,
       },
     },
   };

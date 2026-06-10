@@ -7,29 +7,17 @@ import {
 } from "@/lib/locale-cookie";
 import { isAllowedSiteOrigin } from "@/lib/site-origin";
 
-function applySecurityHeaders(response: NextResponse, request: NextRequest) {
-  response.headers.set("X-Frame-Options", "DENY");
-  response.headers.set("X-Content-Type-Options", "nosniff");
-  response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
-  response.headers.set(
-    "Permissions-Policy",
-    "camera=(), microphone=(), geolocation=()"
-  );
-
-  if (process.env.NODE_ENV === "production") {
-    response.headers.set(
-      "Strict-Transport-Security",
-      "max-age=63072000; includeSubDomains; preload"
-    );
+/** CORS for /api only — security headers live in next.config.ts to avoid duplicates */
+function applyApiCors(response: NextResponse, request: NextRequest) {
+  if (!request.nextUrl.pathname.startsWith("/api/")) {
+    return response;
   }
 
-  if (request.nextUrl.pathname.startsWith("/api/")) {
-    const origin = request.headers.get("origin");
+  const origin = request.headers.get("origin");
 
-    if (origin && isAllowedSiteOrigin(origin)) {
-      response.headers.set("Access-Control-Allow-Origin", origin);
-      response.headers.set("Vary", "Origin");
-    }
+  if (origin && isAllowedSiteOrigin(origin)) {
+    response.headers.set("Access-Control-Allow-Origin", origin);
+    response.headers.set("Vary", "Origin");
   }
 
   return response;
@@ -40,7 +28,7 @@ export function handleSiteRequest(request: NextRequest) {
 
   if (pathname === "/ja" || pathname.startsWith("/ja/")) {
     const redirectPath = pathname.replace(/^\/ja/, "/jp");
-    return applySecurityHeaders(
+    return applyApiCors(
       NextResponse.redirect(new URL(redirectPath, request.url)),
       request
     );
@@ -55,7 +43,7 @@ export function handleSiteRequest(request: NextRequest) {
     pathname.endsWith(".svg") ||
     pathname.endsWith(".ico")
   ) {
-    return applySecurityHeaders(NextResponse.next(), request);
+    return applyApiCors(NextResponse.next(), request);
   }
 
   const pathnameLocale = pathname.split("/")[1];
@@ -75,13 +63,13 @@ export function handleSiteRequest(request: NextRequest) {
     const redirectPath =
       pathname === "/" ? `/${locale}` : `/${locale}${pathname}`;
 
-    return applySecurityHeaders(
+    return applyApiCors(
       NextResponse.redirect(new URL(redirectPath, request.url)),
       request
     );
   }
 
-  const response = applySecurityHeaders(NextResponse.next(), request);
+  const response = applyApiCors(NextResponse.next(), request);
 
   if (shouldPersistLocaleCookie(request)) {
     response.cookies.set(localeCookie, pathnameLocale, {
