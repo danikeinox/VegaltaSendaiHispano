@@ -20,6 +20,7 @@
 
 # cloudflare local secrets
 .dev.vars
+.deploy-secrets.env
 .wrangler/
 
 # production

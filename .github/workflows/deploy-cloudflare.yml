@@ -19,6 +19,35 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      # Build-time (NEXT_PUBLIC_* se embeben en el bundle)
+      NEXT_PUBLIC_APP_URL: https://www.vegalta.es
+      NEXT_PUBLIC_SITE_URL: https://www.vegalta.es
+      ALLOWED_ORIGIN: https://www.vegalta.es
+      NEXT_PUBLIC_APPWRITE_PROJECT_ID: 6a2702ec000b42a91782
+      NEXT_PUBLIC_APPWRITE_PROJECT_NAME: VegaltaSendaiHispano
+      NEXT_PUBLIC_APPWRITE_ENDPOINT: https://fra.cloud.appwrite.io/v1
+      NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${{ secrets.NEXT_PUBLIC_TURNSTILE_SITE_KEY }}
+      NEXT_PUBLIC_BUYMEACOFFEE_URL: ${{ secrets.NEXT_PUBLIC_BUYMEACOFFEE_URL }}
+      REGISTRATION_DISABLED: "true"
+      # Worker secrets (runtime) — ver scripts/write-deploy-secrets.mjs
+      APPWRITE_API_KEY: ${{ secrets.APPWRITE_API_KEY }}
+      MEMBER_VERIFICATION_SECRET: ${{ secrets.MEMBER_VERIFICATION_SECRET }}
+      UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
+      UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
+      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+      TURNSTILE_SECRET_KEY: ${{ secrets.TURNSTILE_SECRET_KEY }}
+      API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
+      GOOGLE_WALLET_ISSUER_ID: ${{ secrets.GOOGLE_WALLET_ISSUER_ID }}
+      GOOGLE_WALLET_SERVICE_ACCOUNT_EMAIL: ${{ secrets.GOOGLE_WALLET_SERVICE_ACCOUNT_EMAIL }}
+      GOOGLE_WALLET_SERVICE_ACCOUNT_PRIVATE_KEY: ${{ secrets.GOOGLE_WALLET_SERVICE_ACCOUNT_PRIVATE_KEY }}
+      APPLE_PASS_CERT: ${{ secrets.APPLE_PASS_CERT }}
+      APPLE_PASS_KEY: ${{ secrets.APPLE_PASS_KEY }}
+      APPLE_WWDR_CERT: ${{ secrets.APPLE_WWDR_CERT }}
+      APPLE_PASS_KEY_PASSPHRASE: ${{ secrets.APPLE_PASS_KEY_PASSPHRASE }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -35,6 +64,11 @@ jobs:
       - name: Generate wallet assets
         run: npm run wallet:assets
 
+      - name: Upload Worker secrets
+        run: |
+          node scripts/write-deploy-secrets.mjs
+          npx wrangler secret bulk .deploy-secrets.env
+
       - name: Cache Next.js build
         uses: actions/cache@v4
         with:
@@ -45,12 +79,3 @@ jobs:
 
       - name: Build and deploy
         run: npm run deploy
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          NEXT_PUBLIC_APP_URL: https://www.vegalta.es
-          NEXT_PUBLIC_SITE_URL: https://www.vegalta.es
-          ALLOWED_ORIGIN: https://www.vegalta.es
-          NEXT_PUBLIC_APPWRITE_PROJECT_ID: 6a2702ec000b42a91782
-          NEXT_PUBLIC_APPWRITE_ENDPOINT: https://fra.cloud.appwrite.io/v1
-          REGISTRATION_DISABLED: "true"
