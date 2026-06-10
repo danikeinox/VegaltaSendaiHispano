@@ -23,7 +23,9 @@ async function inlineSvgImages(svg: SVGSVGElement): Promise<void> {
         : href;
 
       const response = await fetch(assetUrl);
-      if (!response.ok) return;
+      if (!response.ok) {
+        throw new Error(`Failed to inline card asset: ${assetUrl}`);
+      }
 
       const dataUrl = await blobToDataUrl(await response.blob());
       image.setAttribute("href", dataUrl);
@@ -32,55 +34,73 @@ async function inlineSvgImages(svg: SVGSVGElement): Promise<void> {
   );
 }
 
-export async function exportCardSvgToPng(
-  container: HTMLElement,
-  scale = 2
-): Promise<Blob> {
-  const svg = container.querySelector("svg");
-  if (!svg) {
-    throw new Error("Card SVG not found");
+function parseSvgMarkup(svgMarkup: string): SVGSVGElement {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(svgMarkup, "image/svg+xml");
+  const parseError = doc.querySelector("parsererror");
+
+  if (parseError) {
+    throw new Error("Invalid card SVG markup");
   }
 
-  const clone = svg.cloneNode(true) as SVGSVGElement;
-  await inlineSvgImages(clone);
+  const svg = doc.documentElement;
+  if (!(svg instanceof SVGSVGElement)) {
+    throw new Error("Card SVG root not found");
+  }
 
-  const svgString = new XMLSerializer().serializeToString(clone);
+  return svg;
+}
+
+export async function exportSvgStringToPng(
+  svgMarkup: string,
+  scale = 2
+): Promise<Blob> {
+  const svg = parseSvgMarkup(svgMarkup);
+  await inlineSvgImages(svg);
+
+  const width = 520 * scale;
+  const height = 325 * scale;
+  svg.setAttribute("width", String(width));
+  svg.setAttribute("height", String(height));
+
+  const svgString = new XMLSerializer().serializeToString(svg);
   const objectUrl = URL.createObjectURL(
     new Blob([svgString], { type: "image/svg+xml;charset=utf-8" })
   );
 
-  try {
-    return await new Promise<Blob>((resolve, reject) => {
-      const image = new Image();
-      image.onload = () => {
-        const width = 520 * scale;
-        const height = 325 * scale;
-        const canvas = document.createElement("canvas");
-        canvas.width = width;
-        canvas.height = height;
+  return new Promise<Blob>((resolve, reject) => {
+    const image = new Image();
 
-        const context = canvas.getContext("2d");
-        if (!context) {
-          reject(new Error("Canvas not supported"));
-          return;
-        }
+    image.onload = () => {
+      URL.revokeObjectURL(objectUrl);
 
-        context.fillStyle = "#ffffff";
-        context.fillRect(0, 0, width, height);
-        context.drawImage(image, 0, 0, width, height);
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
 
-        canvas.toBlob((blob) => {
-          if (blob) resolve(blob);
-          else reject(new Error("Failed to export PNG"));
-        }, "image/png");
-      };
+      const context = canvas.getContext("2d");
+      if (!context) {
+        reject(new Error("Canvas not supported"));
+        return;
+      }
 
-      image.onerror = () => reject(new Error("Failed to render card image"));
-      image.src = objectUrl;
-    });
-  } finally {
-    URL.revokeObjectURL(objectUrl);
-  }
+      context.fillStyle = "#ffffff";
+      context.fillRect(0, 0, width, height);
+      context.drawImage(image, 0, 0, width, height);
+
+      canvas.toBlob((blob) => {
+        if (blob) resolve(blob);
+        else reject(new Error("Failed to export PNG"));
+      }, "image/png");
+    };
+
+    image.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      reject(new Error("Failed to render card image"));
+    };
+
+    image.src = objectUrl;
+  });
 }
 
 export function downloadBlob(blob: Blob, fileName: string): void {

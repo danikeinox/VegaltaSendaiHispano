@@ -101,11 +101,13 @@ export default async function CarnetPage({ params }: PageProps) {
 
         <CarnetSharePanel
           displayId={member.displayId}
+          accessToken={token}
           firstName={member.firstName}
           lastName={member.lastName}
           officialCardLabel={dict.carnet.officialCard}
           shareTitle={dict.carnet.shareTitle}
           shareSubtitle={dict.carnet.shareSubtitle}
+          shareSheetTitle={dict.carnet.shareSheetTitle}
           shareHint={dict.carnet.shareHint}
           sharePrivacyWarning={dict.carnet.sharePrivacyWarning}
           downloadLabel={dict.carnet.downloadImage}

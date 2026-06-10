@@ -286,7 +286,8 @@ const jp: Dictionary = {
     backHome: "← ホームに戻る",
     officialCard: "ファン公式カード",
     shareTitle: "会員証をシェア",
-    shareSubtitle: "確認用QRなしの公開ビュー",
+    shareSubtitle: "SNSやギャラリー用の会員証画像をダウンロードまたは送信できます。",
+    shareSheetTitle: "会員証 — Vegalta Sendai Hispano",
     shareHint:
       "画像をダウンロードするかSNSで共有できます。メールアドレスや本人確認用QRは含まれません。",
     sharePrivacyWarning:
