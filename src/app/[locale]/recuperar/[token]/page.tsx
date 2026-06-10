@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { RegistrationForm } from "@/components/registration-form";
+import { MemberIssuedSuccess } from "@/components/member-issued-success";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { isValidLocale } from "@/i18n/config";
@@ -50,9 +50,9 @@ export default async function RecoverPage({ params }: PageProps) {
     <div className="flex min-h-screen flex-col bg-portal-surface">
       <Header />
       <main className="container mx-auto flex flex-1 flex-col items-center px-4 py-10 sm:py-14">
-        <div className="w-full max-w-lg">
+        <div className="w-full max-w-portal">
           {!issued ? (
-            <div className="rounded-2xl border border-portal-outline-variant bg-white p-6 text-center portal-card-shadow sm:p-8">
+            <div className="mx-auto max-w-lg rounded-2xl border border-portal-outline-variant bg-white p-6 text-center portal-card-shadow sm:p-8">
               <p className="text-sm text-vegalta-red">{dict.recover.invalid}</p>
               <Link
                 href={`${localizedPath(rawLocale)}#registro`}
@@ -62,7 +62,7 @@ export default async function RecoverPage({ params }: PageProps) {
               </Link>
             </div>
           ) : (
-            <RegistrationForm variant="portal" issued={issued} />
+            <MemberIssuedSuccess issued={issued} showHeader />
           )}
         </div>
       </main>

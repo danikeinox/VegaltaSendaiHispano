@@ -151,6 +151,8 @@ export type Dictionary = {
     recoverPrompt: string;
     recoverLink: string;
     pendingExisting: string;
+    viewFullCarnet: string;
+    carnetLinkHint: string;
   };
   recover: {
     title: string;

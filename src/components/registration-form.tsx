@@ -42,6 +42,9 @@ export type RegisterResult = {
   verification: {
     url: string;
   };
+  carnet: {
+    url: string;
+  };
 };
 
 type RegistrationFormProps = {
@@ -98,6 +101,32 @@ export function RegistrationForm({
     if (!onPreviewNameChange || issued) return;
     onPreviewNameChange(`${firstName ?? ""} ${lastName ?? ""}`.trim());
   }, [firstName, lastName, onPreviewNameChange, issued]);
+
+  useEffect(() => {
+    if (!issued?.wallet.google || googleSaveUrl) return;
+
+    let cancelled = false;
+
+    async function loadGoogleSaveUrl() {
+      try {
+        const googleRes = await fetch(issued.wallet.google!, {
+          headers: { "X-Locale": locale },
+        });
+        const googleJson = await googleRes.json();
+        if (!cancelled && googleJson.saveUrl) {
+          onGoogleSaveUrl?.(googleJson.saveUrl);
+        }
+      } catch {
+        // Google Wallet opcional; no bloquear la vista del carnet.
+      }
+    }
+
+    void loadGoogleSaveUrl();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [issued, googleSaveUrl, locale, onGoogleSaveUrl]);
 
   async function onSubmit(data: RegistrationInput) {
     setSubmitError(null);
@@ -162,6 +191,17 @@ export function RegistrationForm({
           {issued.isNew
             ? dict.register.welcomeNew
             : dict.register.welcomeExisting}
+        </p>
+
+        <Link
+          href={issued.carnet.url}
+          className="inline-flex h-12 w-full items-center justify-center rounded-lg bg-portal-gold px-8 text-sm font-bold uppercase tracking-wider text-portal-gold-text transition-colors hover:bg-portal-gold-light"
+        >
+          {dict.register.viewFullCarnet}
+        </Link>
+
+        <p className="text-xs text-portal-on-surface-variant">
+          {dict.register.carnetLinkHint}
         </p>
 
         <p className="text-xs text-portal-on-surface-variant">

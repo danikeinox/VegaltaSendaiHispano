@@ -36,7 +36,8 @@ export type RegisterSuccessPayload = {
 export function buildRegisterSuccessPayload(
   member: Member,
   locale: string,
-  accessToken: string
+  accessToken: string,
+  options?: { isNew?: boolean }
 ): RegisterSuccessPayload {
   const appleConfigured = isAppleWalletConfigured();
   const googleConfigured = isGoogleWalletConfigured();
@@ -57,7 +58,7 @@ export function buildRegisterSuccessPayload(
     carnet: {
       url: createMemberCarnetUrl(locale, member, accessToken),
     },
-    isNew: true,
+    isNew: options?.isNew ?? true,
     wallet: {
       apple: appleConfigured ? `/api/wallet/apple?${accessQuery}` : null,
       google: googleConfigured ? `/api/wallet/google?${accessQuery}` : null,

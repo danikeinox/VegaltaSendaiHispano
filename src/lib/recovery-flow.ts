@@ -29,6 +29,8 @@ export async function initiateMemberRecovery(
     to: member.email,
     locale,
     recoveryToken,
+    firstName: member.firstName,
+    displayId: member.displayId,
   });
 }
 
@@ -55,5 +57,7 @@ export async function completeMemberRecovery(
     tokenVersion
   );
 
-  return buildRegisterSuccessPayload(member, locale, accessToken);
+  return buildRegisterSuccessPayload(member, locale, accessToken, {
+    isNew: false,
+  });
 }

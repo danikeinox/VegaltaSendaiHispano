@@ -240,6 +240,9 @@ const es: Dictionary = {
     recoverLink: "Recupéralo por email",
     pendingExisting:
       "Si este email ya está registrado, recibirás instrucciones para recuperar tu carnet.",
+    viewFullCarnet: "Abrir carnet completo con QR",
+    carnetLinkHint:
+      "Guarda este enlace o añade el carnet a tu cartera digital. Si lo pierdes, puedes recuperarlo de nuevo por email.",
   },
   recover: {
     title: "Recuperar carnet",

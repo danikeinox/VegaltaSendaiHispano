@@ -238,6 +238,9 @@ const jp: Dictionary = {
     recoverLink: "メールで再取得",
     pendingExisting:
       "このメールアドレスが登録済みの場合、会員証を再取得する手順をお送りします。",
+    viewFullCarnet: "QR付き会員証を開く",
+    carnetLinkHint:
+      "このリンクを保存するか、ウォレットに追加してください。紛失した場合はメールで再取得できます。",
   },
   recover: {
     title: "会員証の再取得",
