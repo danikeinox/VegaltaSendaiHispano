@@ -278,8 +278,7 @@ export function RegistrationForm({
   }
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
+    <div
       className={cn(
         "flex w-full flex-col gap-5",
         isPortal
@@ -287,6 +286,10 @@ export function RegistrationForm({
           : "max-w-md border border-vegalta-royal-blue/10 bg-white p-5 shadow-sm sm:p-6 md:p-8",
         className
       )}
+    >
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="flex w-full flex-col gap-5"
       noValidate
     >
       <div className="space-y-2">
@@ -428,11 +431,12 @@ export function RegistrationForm({
         disabled={isSubmitting}
         className={cn(
           "w-full portal-label rounded-lg",
-          isPortal && "mt-auto bg-portal-gold text-portal-gold-text hover:bg-portal-gold-light",
+          isPortal && "bg-portal-gold text-portal-gold-text hover:bg-portal-gold-light",
         )}
       >
         {isSubmitting ? dict.register.submitting : dict.register.submit}
       </Button>
+    </form>
 
       <div className="space-y-3 text-center text-sm text-portal-on-surface-variant">
         <p>
@@ -453,6 +457,6 @@ export function RegistrationForm({
           {dict.register.disclaimer}
         </p>
       )}
-    </form>
+    </div>
   );
 }

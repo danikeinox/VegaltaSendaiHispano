@@ -58,7 +58,13 @@ export async function POST(request: Request) {
 
     const member = await findMemberByEmail(email);
     if (member) {
-      await initiateMemberRecovery(member, locale);
+      try {
+        await initiateMemberRecovery(member, locale);
+      } catch (error) {
+        if (process.env.NODE_ENV === "development") {
+          console.error("[recover] failed to initiate recovery", error);
+        }
+      }
     }
 
     return jsonSuccess(
