@@ -1,6 +1,13 @@
-import { Client, Databases, ID, Query } from "node-appwrite";
+import {
+  createAppwriteDatabases,
+  ID,
+  Query,
+  type AppwriteDatabases,
+} from "@/lib/appwrite-fetch";
 
-function getServerClient(): Client {
+export { ID, Query };
+
+function getCredentials() {
   const endpoint =
     process.env.APPWRITE_ENDPOINT ??
     process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT ??
@@ -15,14 +22,17 @@ function getServerClient(): Client {
     throw new Error("APPWRITE_API_KEY is not set");
   }
 
-  return new Client()
-    .setEndpoint(endpoint)
-    .setProject(projectId)
-    .setKey(apiKey);
+  return { endpoint, projectId, apiKey };
 }
 
-export function getDatabases(): Databases {
-  return new Databases(getServerClient());
+let databasesClient: AppwriteDatabases | null = null;
+
+export function getDatabases(): AppwriteDatabases {
+  if (!databasesClient) {
+    const { endpoint, projectId, apiKey } = getCredentials();
+    databasesClient = createAppwriteDatabases({ endpoint, projectId, apiKey });
+  }
+  return databasesClient;
 }
 
 export function getAppwriteConfig() {
@@ -45,5 +55,3 @@ export function getAppwriteConfig() {
     sequenceDocumentId,
   };
 }
-
-export { ID, Query };

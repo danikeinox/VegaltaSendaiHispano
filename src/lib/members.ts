@@ -1,6 +1,6 @@
-import { AppwriteException, type Models } from "node-appwrite";
 import { formatMemberId } from "@/lib/constants";
 import { buildCapacityStatus } from "@/lib/limits";
+import { AppwriteException } from "@/lib/appwrite-fetch";
 import {
   getAppwriteConfig,
   getDatabases,
@@ -38,7 +38,9 @@ export type Member = {
   createdAt: Date;
 };
 
-type MemberDocument = Models.Document & {
+type MemberDocument = {
+  $id: string;
+  $createdAt: string;
   memberNumber: number;
   displayId: string;
   firstName: string;
