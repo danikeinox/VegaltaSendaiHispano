@@ -24,7 +24,7 @@ const btnBase =
   "inline-flex w-full min-h-12 items-center justify-center gap-2 rounded-sm px-4 py-3 text-center text-[0.7rem] leading-snug tracking-wide transition-colors sm:min-h-11 sm:text-xs sm:tracking-wider";
 
 const disabledBtnBase =
-  "inline-flex w-full min-h-12 cursor-not-allowed items-center justify-center gap-2 rounded-sm border-2 border-dashed border-vegalta-royal-blue/25 bg-vegalta-royal-blue/5 px-4 py-3 text-center text-[0.7rem] leading-snug tracking-wide text-vegalta-blue/50 sm:min-h-11 sm:text-xs sm:tracking-wider";
+  "flex w-full min-w-0 min-h-[4.5rem] cursor-not-allowed flex-col items-center justify-center gap-1 rounded-sm border-2 border-dashed border-vegalta-royal-blue/25 bg-vegalta-royal-blue/5 px-3 py-3 text-center text-[0.7rem] leading-snug tracking-wide text-vegalta-blue/50 sm:min-h-20 sm:text-xs sm:tracking-wider";
 
 export function WalletButtons({
   appleUrl,
@@ -49,7 +49,7 @@ export function WalletButtons({
 
   if (inDevelopment) {
     return (
-      <div className="w-full max-w-md space-y-3 rounded-xl border border-vegalta-royal-blue/15 bg-vegalta-royal-blue/5 px-4 py-4">
+      <div className="w-full min-w-0 space-y-3 rounded-xl border border-vegalta-royal-blue/15 bg-vegalta-royal-blue/5 px-4 py-4">
         {developmentTitle && (
           <p className="text-center text-sm font-semibold text-vegalta-royal-blue">
             {developmentTitle}
@@ -60,28 +60,28 @@ export function WalletButtons({
             {developmentNote}
           </p>
         )}
-        <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-stretch">
-          <span className={`${disabledBtnBase} flex-1`}>
+        <div className="grid w-full min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
+          <span className={disabledBtnBase}>
             <FaApple className="shrink-0 text-lg opacity-60" aria-hidden />
-            <span>{appleLabel}</span>
+            <span className="max-w-full break-words">{appleLabel}</span>
             {comingSoonLabel && (
               <span className="text-[0.65rem] uppercase opacity-80">
                 ({comingSoonLabel})
               </span>
             )}
           </span>
-          <span className={`${disabledBtnBase} flex-1`}>
+          <span className={disabledBtnBase}>
             <FaGoogle className="shrink-0 text-lg opacity-60" aria-hidden />
-            <span>{googleLabel}</span>
+            <span className="max-w-full break-words">{googleLabel}</span>
             {comingSoonLabel && (
               <span className="text-[0.65rem] uppercase opacity-80">
                 ({comingSoonLabel})
               </span>
             )}
           </span>
-          <span className={`${disabledBtnBase} flex-1`}>
+          <span className={`${disabledBtnBase} sm:col-span-2 xl:col-span-1`}>
             <SiSamsung className="shrink-0 text-lg opacity-60" aria-hidden />
-            <span>{samsungLabel}</span>
+            <span className="max-w-full break-words">{samsungLabel}</span>
             {comingSoonLabel && (
               <span className="text-[0.65rem] uppercase opacity-80">
                 ({comingSoonLabel})
@@ -102,17 +102,17 @@ export function WalletButtons({
   }
 
   return (
-    <div className="flex w-full max-w-md flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-stretch">
+    <div className="grid w-full min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
       {appleAvailable && appleUrl ? (
         <a
           href={appleUrl}
-          className={`${btnBase} flex-1 bg-vegalta-royal-blue text-white hover:bg-vegalta-blue-light vegalta-section-title`}
+          className={`${btnBase} bg-vegalta-royal-blue text-white hover:bg-vegalta-blue-light vegalta-section-title`}
         >
           <FaApple className="shrink-0 text-lg" aria-hidden />
           <span>{appleLabel}</span>
         </a>
       ) : appleUnavailableNote ? (
-        <p className="w-full rounded-sm border border-vegalta-royal-blue/15 bg-vegalta-royal-blue/5 px-4 py-3 text-center text-xs text-vegalta-blue/70">
+        <p className="col-span-full rounded-sm border border-vegalta-royal-blue/15 bg-vegalta-royal-blue/5 px-4 py-3 text-center text-xs text-vegalta-blue/70">
           {appleUnavailableNote}
         </p>
       ) : null}
@@ -122,7 +122,7 @@ export function WalletButtons({
           href={googleHref}
           target={googleSaveUrl ? "_blank" : undefined}
           rel={googleSaveUrl ? "noopener noreferrer" : undefined}
-          className={`${btnBase} flex-1 border-2 border-vegalta-royal-blue bg-white text-vegalta-royal-blue hover:bg-vegalta-royal-blue/5 vegalta-section-title`}
+          className={`${btnBase} border-2 border-vegalta-royal-blue bg-white text-vegalta-royal-blue hover:bg-vegalta-royal-blue/5 vegalta-section-title`}
         >
           <FaGoogle className="shrink-0 text-lg" aria-hidden />
           <span>{googleSaveUrl ? googleLabel : androidLabel}</span>
@@ -134,7 +134,7 @@ export function WalletButtons({
           href={samsungUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className={`${btnBase} flex-1 border-2 border-vegalta-royal-blue bg-white text-vegalta-royal-blue hover:bg-vegalta-royal-blue/5 vegalta-section-title`}
+          className={`${btnBase} border-2 border-vegalta-royal-blue bg-white text-vegalta-royal-blue hover:bg-vegalta-royal-blue/5 vegalta-section-title sm:col-span-2 xl:col-span-1`}
         >
           <SiSamsung className="shrink-0 text-lg" aria-hidden />
           <span>{samsungLabel}</span>
