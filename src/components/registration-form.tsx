@@ -8,7 +8,9 @@ import { CountrySelect } from "@/components/country-select";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { RecoverMemberForm } from "@/components/recover-member-form";
 import { SupportCallout } from "@/components/support-callout";
+import { TurnstileWidget } from "@/components/turnstile-widget";
 import { WalletButtons } from "@/components/wallet-buttons";
 import { useLocale } from "@/components/locale-provider";
 import { localizedPath } from "@/i18n/navigation";
@@ -66,6 +68,11 @@ export function RegistrationForm({
   const { locale, dict } = useLocale();
   const registrationDisabled = isRegistrationDisabledClient();
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [pendingMessage, setPendingMessage] = useState<string | null>(null);
+  const [showRecover, setShowRecover] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const turnstileSiteKey =
+    process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim() ?? "";
 
   const registrationSchema = useMemo(
     () => createRegistrationSchema(dict.validation),
@@ -94,7 +101,13 @@ export function RegistrationForm({
 
   async function onSubmit(data: RegistrationInput) {
     setSubmitError(null);
+    setPendingMessage(null);
     onGoogleSaveUrl?.(null);
+
+    if (turnstileSiteKey && !turnstileToken) {
+      setSubmitError(dict.register.registerError);
+      return;
+    }
 
     try {
       const res = await fetch("/api/register", {
@@ -103,13 +116,21 @@ export function RegistrationForm({
           "Content-Type": "application/json",
           "X-Locale": locale,
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          ...data,
+          ...(turnstileSiteKey ? { turnstileToken } : {}),
+        }),
       });
 
       const json = await res.json();
 
       if (!res.ok) {
         setSubmitError(json.error ?? dict.register.registerError);
+        return;
+      }
+
+      if (json.pending) {
+        setPendingMessage(json.message ?? dict.register.pendingExisting);
         return;
       }
 
@@ -319,10 +340,24 @@ export function RegistrationForm({
         )}
       </div>
 
+      {pendingMessage && (
+        <p className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-center text-sm text-emerald-800">
+          {pendingMessage}
+        </p>
+      )}
+
       {submitError && (
         <p className="border border-vegalta-red/20 bg-vegalta-red/10 p-3 text-center text-sm text-vegalta-red">
           {submitError}
         </p>
+      )}
+
+      {turnstileSiteKey && (
+        <TurnstileWidget
+          siteKey={turnstileSiteKey}
+          onToken={setTurnstileToken}
+          className="flex justify-center"
+        />
       )}
 
       <Button
@@ -336,6 +371,20 @@ export function RegistrationForm({
       >
         {isSubmitting ? dict.register.submitting : dict.register.submit}
       </Button>
+
+      <div className="space-y-3 text-center text-sm text-portal-on-surface-variant">
+        <p>
+          {dict.register.recoverPrompt}{" "}
+          <button
+            type="button"
+            onClick={() => setShowRecover((value) => !value)}
+            className="font-semibold text-portal-primary underline-offset-2 hover:underline"
+          >
+            {dict.register.recoverLink}
+          </button>
+        </p>
+        {showRecover && <RecoverMemberForm />}
+      </div>
 
       {!isPortal && (
         <p className="text-center text-xs leading-relaxed text-portal-on-surface-variant">

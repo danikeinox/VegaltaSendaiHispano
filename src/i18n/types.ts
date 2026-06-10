@@ -148,6 +148,21 @@ export type Dictionary = {
     disabledSubtitle: string;
     disabledMessage: string;
     disabledNote: string;
+    recoverPrompt: string;
+    recoverLink: string;
+    pendingExisting: string;
+  };
+  recover: {
+    title: string;
+    subtitle: string;
+    emailLabel: string;
+    submit: string;
+    submitting: string;
+    requestError: string;
+    connectionError: string;
+    loading: string;
+    invalid: string;
+    backToRegister: string;
   };
   carnet: {
     title: string;
@@ -280,5 +295,7 @@ export type Dictionary = {
     validationError: string;
     internalError: string;
     registrationDisabled: string;
+    existingMemberRecovery: string;
+    recoveryInvalid: string;
   };
 };

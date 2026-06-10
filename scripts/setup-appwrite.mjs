@@ -2,9 +2,9 @@
  * Crea la base de datos, colecciones e índices en Appwrite.
  * Requiere APPWRITE_API_KEY con permisos de databases.write
  *
- * Uso: node scripts/setup-appwrite.mjs
+ * Uso: node --env-file=.env scripts/setup-appwrite.mjs
  */
-import { Client, Databases, Permission, Role } from "node-appwrite";
+import { Client, Databases } from "node-appwrite";
 
 const endpoint =
   process.env.APPWRITE_ENDPOINT ??
@@ -29,6 +29,9 @@ const SEQUENCE_COLLECTION_ID =
 const SEQUENCE_DOCUMENT_ID =
   process.env.APPWRITE_SEQUENCE_DOCUMENT_ID ?? "member_counter";
 
+/** Sin permisos públicos: solo acceso server-side con API key. */
+const SERVER_ONLY_PERMISSIONS = [];
+
 const client = new Client()
   .setEndpoint(endpoint)
   .setProject(projectId)
@@ -46,7 +49,63 @@ async function ensureDatabase() {
   }
 }
 
+async function ensureSecureCollectionPermissions(collectionId) {
+  await databases.updateCollection(
+    DATABASE_ID,
+    collectionId,
+    undefined,
+    SERVER_ONLY_PERMISSIONS
+  );
+  console.log(`Permisos de '${collectionId}' actualizados (solo servidor)`);
+}
+
+async function ensureStringAttribute(
+  collectionId,
+  key,
+  size,
+  required,
+  defaultValue = undefined
+) {
+  try {
+    await databases.getAttribute(DATABASE_ID, collectionId, key);
+  } catch {
+    await databases.createStringAttribute(
+      DATABASE_ID,
+      collectionId,
+      key,
+      size,
+      required,
+      defaultValue
+    );
+    console.log(`Atributo '${key}' añadido a '${collectionId}'`);
+  }
+}
+
+async function ensureIntegerAttribute(
+  collectionId,
+  key,
+  required,
+  defaultValue = undefined
+) {
+  try {
+    await databases.getAttribute(DATABASE_ID, collectionId, key);
+  } catch {
+    await databases.createIntegerAttribute(
+      DATABASE_ID,
+      collectionId,
+      key,
+      required,
+      undefined,
+      undefined,
+      defaultValue
+    );
+    console.log(`Atributo '${key}' añadido a '${collectionId}'`);
+  }
+}
+
 async function ensureMembersCollection() {
+  let created = false;
+
   try {
     await databases.getCollection(DATABASE_ID, MEMBERS_COLLECTION_ID);
     console.log(`Collection '${MEMBERS_COLLECTION_ID}' ya existe`);
@@ -55,15 +114,12 @@ async function ensureMembersCollection() {
       DATABASE_ID,
       MEMBERS_COLLECTION_ID,
       "Members",
-      [
-        Permission.read(Role.any()),
-        Permission.create(Role.any()),
-        Permission.update(Role.any()),
-      ],
+      SERVER_ONLY_PERMISSIONS,
       true,
       true
     );
     console.log(`Collection '${MEMBERS_COLLECTION_ID}' creada`);
+    created = true;
 
     await databases.createIntegerAttribute(
       DATABASE_ID,
@@ -105,6 +161,20 @@ async function ensureMembersCollection() {
       56,
       false
     );
+    await databases.createStringAttribute(
+      DATABASE_ID,
+      MEMBERS_COLLECTION_ID,
+      "accessTokenHash",
+      64,
+      false
+    );
+    await databases.createIntegerAttribute(
+      DATABASE_ID,
+      MEMBERS_COLLECTION_ID,
+      "tokenVersion",
+      false,
+      0
+    );
 
     await waitForAttributes(MEMBERS_COLLECTION_ID);
 
@@ -131,6 +201,24 @@ async function ensureMembersCollection() {
     );
     console.log("Índices de members creados");
   }
+
+  if (!created) {
+    await ensureStringAttribute(
+      MEMBERS_COLLECTION_ID,
+      "accessTokenHash",
+      64,
+      false
+    );
+    await ensureIntegerAttribute(
+      MEMBERS_COLLECTION_ID,
+      "tokenVersion",
+      false,
+      0
+    );
+    await waitForAttributes(MEMBERS_COLLECTION_ID);
+  }
+
+  await ensureSecureCollectionPermissions(MEMBERS_COLLECTION_ID);
 }
 
 async function ensureSequenceCollection() {
@@ -142,7 +230,7 @@ async function ensureSequenceCollection() {
       DATABASE_ID,
       SEQUENCE_COLLECTION_ID,
       "ID Sequence",
-      [Permission.read(Role.any()), Permission.update(Role.any())],
+      SERVER_ONLY_PERMISSIONS,
       true,
       true
     );
@@ -158,6 +246,8 @@ async function ensureSequenceCollection() {
 
     await waitForAttributes(SEQUENCE_COLLECTION_ID);
   }
+
+  await ensureSecureCollectionPermissions(SEQUENCE_COLLECTION_ID);
 
   try {
     await databases.getDocument(
@@ -203,6 +293,9 @@ async function main() {
   console.log(`APPWRITE_SEQUENCE_COLLECTION_ID=${SEQUENCE_COLLECTION_ID}`);
   console.log(`APPWRITE_SEQUENCE_DOCUMENT_ID=${SEQUENCE_DOCUMENT_ID}`);
   console.log("\nSetup completado.");
+  console.log(
+    "\nIMPORTANTE: Las colecciones quedan sin permisos públicos. Todo acceso debe pasar por la API server-side."
+  );
 }
 
 main().catch((err) => {
