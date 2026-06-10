@@ -287,6 +287,19 @@ const es: Dictionary = {
     memberSince: "Miembro desde",
     backHome: "← Volver al inicio",
     officialCard: "CARNET FAN OFICIAL",
+    shareTitle: "Comparte tu carnet",
+    shareSubtitle: "Vista pública del carnet, sin código QR de verificación",
+    shareHint:
+      "Descarga la imagen o compártela en redes. No incluye tu correo ni el QR de verificación de identidad.",
+    sharePrivacyWarning:
+      "La imagen del carnet incluye tu nombre y apellidos completos y tu ID de socio. Compártela solo donde te sientas cómodo exponiendo esos datos.",
+    downloadImage: "Descargar imagen",
+    shareImage: "Compartir",
+    exportingImage: "Generando imagen...",
+    shareError: "No se pudo generar la imagen. Inténtalo de nuevo.",
+    shareUnsupported:
+      "Tu navegador no permite compartir archivos. Usa «Descargar imagen» y súbela manualmente.",
+    verificationSection: "Verificación de identidad",
   },
   verification: {
     title: "Verificación de socio",
@@ -367,6 +380,7 @@ const es: Dictionary = {
             "El titular no garantiza la disponibilidad ininterrumpida del servicio ni la ausencia de errores, aunque se procura mantener el sitio operativo.",
             "Los enlaces externos (Telegram, YouTube, web oficial del club, etc.) son responsabilidad de sus respectivos titulares.",
             "El usuario es responsable del uso que haga de su carnet digital y de no suplantar la identidad de otros miembros.",
+            "La imagen del carnet que puedes descargar o compartir incluye tu nombre y apellidos completos. Su publicación en internet o redes sociales es voluntaria y bajo tu propia responsabilidad.",
           ],
         },
       ],
@@ -428,9 +442,11 @@ const es: Dictionary = {
           ],
         },
         {
-          heading: "Enlaces privados del carnet",
+          heading: "Enlaces privados e imagen del carnet",
           paragraphs: [
             "Tu carnet incluye enlaces privados con acceso personal. No los compartas en redes sociales, chats públicos ni capturas de pantalla. Si crees que alguien ha accedido a tu enlace, solicita un nuevo acceso desde la opción de recuperación por email.",
+            "La función de descargar o compartir imagen genera una vista pública del carnet que muestra tu nombre y apellidos completos y tu identificador VS-XXXX. No incluye tu correo electrónico ni el código QR de verificación, pero sí datos personales identificativos.",
+            "Al descargar o compartir esa imagen, tú decides dónde publicarla. Evalúa el riesgo antes de subirla a redes sociales, foros o chats públicos.",
           ],
         },
         {

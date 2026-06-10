@@ -3,8 +3,8 @@ import { headers } from "next/headers";
 import { getClientIpFromHeaders } from "@/lib/security/error-handler";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { CarnetSharePanel } from "@/components/carnet-share-panel";
 import { MemberQrCode } from "@/components/member-qr-code";
-import { MembershipCard } from "@/components/membership-card";
 import { SupportCallout } from "@/components/support-callout";
 import { WalletButtons } from "@/components/wallet-buttons";
 import { getWalletAvailability } from "@/lib/wallet/config";
@@ -99,15 +99,27 @@ export default async function CarnetPage({ params }: PageProps) {
           subtitle={dict.carnet.subtitle}
         />
 
-        <MembershipCard
+        <CarnetSharePanel
           displayId={member.displayId}
           firstName={member.firstName}
           lastName={member.lastName}
           officialCardLabel={dict.carnet.officialCard}
+          shareTitle={dict.carnet.shareTitle}
+          shareSubtitle={dict.carnet.shareSubtitle}
+          shareHint={dict.carnet.shareHint}
+          sharePrivacyWarning={dict.carnet.sharePrivacyWarning}
+          downloadLabel={dict.carnet.downloadImage}
+          shareLabel={dict.carnet.shareImage}
+          exportingLabel={dict.carnet.exportingImage}
+          shareError={dict.carnet.shareError}
+          shareUnsupported={dict.carnet.shareUnsupported}
         />
 
-        <div className="flex w-full max-w-md flex-col items-center gap-3 rounded-xl border border-vegalta-royal-blue/10 bg-white px-6 py-4 shadow-sm">
-          <p className="text-xs uppercase tracking-wide text-vegalta-blue/60">
+        <div className="flex w-full max-w-md flex-col items-center gap-3 rounded-xl border border-dashed border-vegalta-royal-blue/20 bg-white px-6 py-4 shadow-sm">
+          <p className="text-center text-xs font-semibold uppercase tracking-wide text-vegalta-blue/60">
+            {dict.carnet.verificationSection}
+          </p>
+          <p className="text-center text-xs text-vegalta-blue/50">
             {dict.verification.qrLabel}
           </p>
           <MemberQrCode

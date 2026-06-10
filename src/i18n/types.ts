@@ -183,6 +183,16 @@ export type Dictionary = {
     memberSince: string;
     backHome: string;
     officialCard: string;
+    shareTitle: string;
+    shareSubtitle: string;
+    shareHint: string;
+    sharePrivacyWarning: string;
+    downloadImage: string;
+    shareImage: string;
+    exportingImage: string;
+    shareError: string;
+    shareUnsupported: string;
+    verificationSection: string;
   };
   verification: {
     title: string;
