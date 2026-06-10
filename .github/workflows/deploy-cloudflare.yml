@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - master
+  workflow_dispatch:
 
 concurrency:
   group: cloudflare-deploy-${{ github.ref }}
