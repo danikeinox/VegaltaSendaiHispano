@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useLocale } from "@/components/locale-provider";
+import { FIELD_LIMITS } from "@/lib/validations";
 
 export function RecoverMemberForm() {
   const { locale, dict } = useLocale();
@@ -59,6 +60,7 @@ export function RecoverMemberForm() {
           id="recover-email"
           type="email"
           autoComplete="email"
+          maxLength={FIELD_LIMITS.email}
           value={email}
           onChange={(event) => setEmail(event.target.value)}
           required

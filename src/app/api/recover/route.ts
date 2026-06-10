@@ -1,4 +1,3 @@
-import { z } from "zod";
 import { findMemberByEmail } from "@/lib/members";
 import { initiateMemberRecovery } from "@/lib/recovery-flow";
 import { validateOrigin } from "@/lib/security/csrf";
@@ -17,16 +16,12 @@ import { isRegistrationDisabled } from "@/lib/registration-config";
 import { getSchemasForRequest } from "@/i18n/schemas";
 import { getLocaleFromRequest } from "@/i18n/get-locale-from-request";
 
-const recoverSchema = z.object({
-  email: z.string().trim().toLowerCase().email().max(254),
-});
-
 export async function OPTIONS(request: Request) {
   return new Response(null, { status: 204, headers: corsHeaders(request) });
 }
 
 export async function POST(request: Request) {
-  const { dict } = await getSchemasForRequest(request);
+  const { dict, recoverEmailSchema } = await getSchemasForRequest(request);
 
   try {
     if (isRegistrationDisabled()) {
@@ -43,7 +38,7 @@ export async function POST(request: Request) {
 
     const ip = getClientIp(request);
     const body = await request.json();
-    const { email } = recoverSchema.parse(body);
+    const { email } = recoverEmailSchema.parse(body);
     const locale = getLocaleFromRequest(request);
 
     const ipLimit = await checkRecoveryIpRateLimit(ip);

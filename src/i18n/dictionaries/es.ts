@@ -544,9 +544,12 @@ const es: Dictionary = {
   validation: {
     firstNameRequired: "El nombre es obligatorio",
     firstNameInvalid: "Nombre no válido",
+    firstNameTooLong: "El nombre no puede superar 50 caracteres",
     lastNameRequired: "El apellido es obligatorio",
     lastNameInvalid: "Apellido no válido",
+    lastNameTooLong: "Los apellidos no pueden superar 50 caracteres",
     emailInvalid: "Correo electrónico no válido",
+    emailTooLong: "El correo no puede superar 254 caracteres",
     countryInvalid: "País no válido",
     displayIdInvalid: "Identificador de socio no válido",
     privacyRequired: "Debes aceptar la política de privacidad para registrarte",

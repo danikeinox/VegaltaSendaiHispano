@@ -9,6 +9,7 @@ import {
   type CountryCode,
 } from "@/lib/countries";
 import { cn } from "@/lib/utils";
+import { FIELD_LIMITS } from "@/lib/validations";
 
 type CountrySelectProps = {
   id?: string;
@@ -141,6 +142,7 @@ export function CountrySelect({
                 ref={searchRef}
                 type="search"
                 value={query}
+                maxLength={FIELD_LIMITS.country}
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder={searchPlaceholder}
                 className="h-10 w-full rounded-lg border border-portal-outline-variant bg-portal-surface pl-9 pr-9 text-sm text-portal-on-surface placeholder:text-portal-on-surface-variant/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-portal-primary/20"

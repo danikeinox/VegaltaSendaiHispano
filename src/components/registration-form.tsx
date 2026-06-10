@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils";
 import {
   createRegistrationSchema,
   type RegistrationInput,
+  FIELD_LIMITS,
 } from "@/lib/validations";
 import { isRegistrationDisabledClient } from "@/lib/registration-config";
 
@@ -299,6 +300,7 @@ export function RegistrationForm({
         <Input
           id="firstName"
           autoComplete="given-name"
+          maxLength={FIELD_LIMITS.firstName}
           className="rounded-lg border-portal-outline-variant focus-visible:ring-portal-primary"
           {...register("firstName")}
         />
@@ -314,6 +316,7 @@ export function RegistrationForm({
         <Input
           id="lastName"
           autoComplete="family-name"
+          maxLength={FIELD_LIMITS.lastName}
           className="rounded-lg border-portal-outline-variant focus-visible:ring-portal-primary"
           {...register("lastName")}
         />
@@ -330,6 +333,7 @@ export function RegistrationForm({
           id="email"
           type="email"
           autoComplete="email"
+          maxLength={FIELD_LIMITS.email}
           className="rounded-lg border-portal-outline-variant focus-visible:ring-portal-primary"
           {...register("email")}
         />

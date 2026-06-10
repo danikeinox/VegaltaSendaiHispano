@@ -303,9 +303,12 @@ export type Dictionary = {
   validation: {
     firstNameRequired: string;
     firstNameInvalid: string;
+    firstNameTooLong: string;
     lastNameRequired: string;
     lastNameInvalid: string;
+    lastNameTooLong: string;
     emailInvalid: string;
+    emailTooLong: string;
     countryInvalid: string;
     displayIdInvalid: string;
     privacyRequired: string;

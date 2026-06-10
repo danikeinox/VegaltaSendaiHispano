@@ -542,9 +542,12 @@ const jp: Dictionary = {
   validation: {
     firstNameRequired: "名は必須です",
     firstNameInvalid: "名が無効です",
+    firstNameTooLong: "名は50文字以内で入力してください",
     lastNameRequired: "姓は必須です",
     lastNameInvalid: "姓が無効です",
+    lastNameTooLong: "姓は50文字以内で入力してください",
     emailInvalid: "メールアドレスが無効です",
+    emailTooLong: "メールアドレスは254文字以内で入力してください",
     countryInvalid: "国名が無効です",
     displayIdInvalid: "会員識別番号が無効です",
     privacyRequired: "登録にはプライバシーポリシーへの同意が必要です",
