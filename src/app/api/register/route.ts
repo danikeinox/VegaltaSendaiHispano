@@ -37,20 +37,15 @@ async function handleExistingEmail(
   email: string,
   locale: Locale,
   request: Request,
-  message: string
+  message: string,
+  hint: string
 ) {
   const existing = await findMemberByEmail(email);
   if (existing) {
-    try {
-      await initiateMemberRecovery(existing, locale);
-    } catch (error) {
-      if (process.env.NODE_ENV === "development") {
-        console.error("[register] recovery initiation failed", error);
-      }
-    }
+    await initiateMemberRecovery(existing, locale);
   }
 
-  return jsonSuccess({ pending: true, message }, 200, request);
+  return jsonSuccess({ pending: true, message, hint }, 200, request);
 }
 
 export async function POST(request: Request) {
@@ -103,7 +98,8 @@ export async function POST(request: Request) {
         data.email,
         locale,
         request,
-        dict.api.existingMemberRecovery
+        dict.api.existingMemberRecovery,
+        dict.register.recoverEmailNotice
       );
     }
 
@@ -126,7 +122,8 @@ export async function POST(request: Request) {
           data.email,
           locale,
           request,
-          dict.api.existingMemberRecovery
+          dict.api.existingMemberRecovery,
+          dict.register.recoverEmailNotice
         );
       }
       throw error;

@@ -151,6 +151,7 @@ export type Dictionary = {
     recoverPrompt: string;
     recoverLink: string;
     pendingExisting: string;
+    recoverEmailNotice: string;
     viewFullCarnet: string;
     carnetLinkHint: string;
   };
@@ -165,6 +166,7 @@ export type Dictionary = {
     loading: string;
     invalid: string;
     backToRegister: string;
+    emailNotice: string;
   };
   carnet: {
     title: string;
@@ -298,6 +300,7 @@ export type Dictionary = {
     internalError: string;
     registrationDisabled: string;
     existingMemberRecovery: string;
+    recoveryRateLimited: string;
     recoveryInvalid: string;
   };
 };

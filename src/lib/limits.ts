@@ -14,6 +14,10 @@ export const FREE_TIER_LIMITS = {
   appwriteDocumentBudget: 45_000,
   /** Nuevos registros por día (global) */
   dailyNewRegistrations: 150,
+  /** Correos de recuperación por día (global, margen bajo techo del proveedor) */
+  dailyRecoveryEmails: 80,
+  /** Mínimo entre correos de recuperación al mismo email */
+  memberRecoveryEmailCooldownMinutes: 5,
 } as const;
 
 export const MAX_MEMBERS = Math.min(

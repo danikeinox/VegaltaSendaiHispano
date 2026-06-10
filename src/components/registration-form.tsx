@@ -72,6 +72,7 @@ export function RegistrationForm({
   const registrationDisabled = isRegistrationDisabledClient();
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [pendingMessage, setPendingMessage] = useState<string | null>(null);
+  const [pendingHint, setPendingHint] = useState<string | null>(null);
   const [showRecover, setShowRecover] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const turnstileSiteKey =
@@ -103,13 +104,15 @@ export function RegistrationForm({
   }, [firstName, lastName, onPreviewNameChange, issued]);
 
   useEffect(() => {
-    if (!issued?.wallet.google || googleSaveUrl) return;
+    const googleWalletUrl = issued?.wallet.google;
+    if (!googleWalletUrl || googleSaveUrl) return;
 
+    const walletUrl: string = googleWalletUrl;
     let cancelled = false;
 
     async function loadGoogleSaveUrl() {
       try {
-        const googleRes = await fetch(issued.wallet.google!, {
+        const googleRes = await fetch(walletUrl, {
           headers: { "X-Locale": locale },
         });
         const googleJson = await googleRes.json();
@@ -131,6 +134,7 @@ export function RegistrationForm({
   async function onSubmit(data: RegistrationInput) {
     setSubmitError(null);
     setPendingMessage(null);
+    setPendingHint(null);
     onGoogleSaveUrl?.(null);
 
     if (turnstileSiteKey && !turnstileToken) {
@@ -160,6 +164,7 @@ export function RegistrationForm({
 
       if (json.pending) {
         setPendingMessage(json.message ?? dict.register.pendingExisting);
+        setPendingHint(json.hint ?? dict.register.recoverEmailNotice);
         return;
       }
 
@@ -381,9 +386,16 @@ export function RegistrationForm({
       </div>
 
       {pendingMessage && (
-        <p className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-center text-sm text-emerald-800">
-          {pendingMessage}
-        </p>
+        <div className="space-y-2">
+          <p className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-center text-sm text-emerald-800">
+            {pendingMessage}
+          </p>
+          {pendingHint && (
+            <p className="text-center text-xs leading-relaxed text-portal-on-surface-variant">
+              {pendingHint}
+            </p>
+          )}
+        </div>
       )}
 
       {submitError && (

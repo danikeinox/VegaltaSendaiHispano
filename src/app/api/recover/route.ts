@@ -9,7 +9,10 @@ import {
   handleApiError,
   jsonSuccess,
 } from "@/lib/security/error-handler";
-import { checkRecoveryRateLimit } from "@/lib/security/rate-limit";
+import {
+  checkRecoveryIpRateLimit,
+  checkRecoveryRateLimit,
+} from "@/lib/security/rate-limit";
 import { isRegistrationDisabled } from "@/lib/registration-config";
 import { getSchemasForRequest } from "@/i18n/schemas";
 import { getLocaleFromRequest } from "@/i18n/get-locale-from-request";
@@ -43,24 +46,27 @@ export async function POST(request: Request) {
     const { email } = recoverSchema.parse(body);
     const locale = getLocaleFromRequest(request);
 
+    const ipLimit = await checkRecoveryIpRateLimit(ip);
+    if (!ipLimit.success) {
+      throw new ApiError(429, dict.api.recoveryRateLimited, "RATE_LIMITED");
+    }
+
     const rateLimit = await checkRecoveryRateLimit(`${ip}:${email}`);
     if (!rateLimit.success) {
-      throw new ApiError(429, dict.api.rateLimited, "RATE_LIMITED");
+      throw new ApiError(429, dict.api.recoveryRateLimited, "RATE_LIMITED");
     }
 
     const member = await findMemberByEmail(email);
     if (member) {
-      try {
-        await initiateMemberRecovery(member, locale);
-      } catch (error) {
-        if (process.env.NODE_ENV === "development") {
-          console.error("[recover] failed", error);
-        }
-      }
+      await initiateMemberRecovery(member, locale);
     }
 
     return jsonSuccess(
-      { pending: true, message: dict.api.existingMemberRecovery },
+      {
+        pending: true,
+        message: dict.api.existingMemberRecovery,
+        hint: dict.recover.emailNotice,
+      },
       200,
       request
     );

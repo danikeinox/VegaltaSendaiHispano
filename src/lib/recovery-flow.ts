@@ -6,6 +6,10 @@ import {
 } from "@/lib/members";
 import { buildRegisterSuccessPayload } from "@/lib/register-response";
 import {
+  checkDailyRecoveryEmailQuota,
+  checkMemberRecoveryEmailRateLimit,
+} from "@/lib/security/rate-limit";
+import {
   consumeRecoveryToken,
   generateRecoveryToken,
   storeRecoveryToken,
@@ -16,22 +20,41 @@ import {
 } from "@/lib/verification";
 import type { Locale } from "@/i18n/config";
 
+export type RecoveryEmailSendResult =
+  | "sent"
+  | "cooldown"
+  | "quota"
+  | "not_configured";
+
 export async function initiateMemberRecovery(
   member: Member,
   locale: Locale
-): Promise<void> {
+): Promise<RecoveryEmailSendResult> {
+  const dailyQuota = await checkDailyRecoveryEmailQuota();
+  if (!dailyQuota.success) {
+    return "quota";
+  }
+
+  const memberEmailLimit = await checkMemberRecoveryEmailRateLimit(member.email);
+  if (!memberEmailLimit.success) {
+    return "cooldown";
+  }
+
   const recoveryToken = generateRecoveryToken();
   await storeRecoveryToken(recoveryToken, {
     memberId: member.id,
     displayId: member.displayId,
   });
-  await sendRecoveryEmail({
+
+  const sent = await sendRecoveryEmail({
     to: member.email,
     locale,
     recoveryToken,
     firstName: member.firstName,
     displayId: member.displayId,
   });
+
+  return sent ? "sent" : "not_configured";
 }
 
 export async function completeMemberRecovery(

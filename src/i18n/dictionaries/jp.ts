@@ -238,6 +238,8 @@ const jp: Dictionary = {
     recoverLink: "メールで再取得",
     pendingExisting:
       "このメールアドレスが登録済みの場合、会員証を再取得する手順をお送りします。",
+    recoverEmailNotice:
+      "リンクは数分に1通のみ送信されます。再試行する前に受信トレイと迷惑メールをご確認ください。",
     viewFullCarnet: "QR付き会員証を開く",
     carnetLinkHint:
       "このリンクを保存するか、ウォレットに追加してください。紛失した場合はメールで再取得できます。",
@@ -254,6 +256,8 @@ const jp: Dictionary = {
     loading: "再取得リンクを確認しています...",
     invalid: "再取得リンクが無効か、期限切れです。",
     backToRegister: "登録に戻る",
+    emailNotice:
+      "メールは数分に1通のみ送信されます。既にリクエストした場合は、受信トレイと迷惑メールを確認してから再度お試しください。",
   },
   support: {
     title: "プロジェクトを支援",
@@ -531,6 +535,8 @@ const jp: Dictionary = {
       "セキュリティ対策のため、登録は一時的に停止しています。",
     existingMemberRecovery:
       "このメールアドレスが登録済みの場合、会員証を再取得する手順をお送りします。",
+    recoveryRateLimited:
+      "再取得リクエストが多すぎます。数分待ってからもう一度お試しください。",
     recoveryInvalid: "再取得リンクが無効か、期限切れです。",
   },
 };

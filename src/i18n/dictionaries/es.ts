@@ -240,6 +240,8 @@ const es: Dictionary = {
     recoverLink: "Recupéralo por email",
     pendingExisting:
       "Si este email ya está registrado, recibirás instrucciones para recuperar tu carnet.",
+    recoverEmailNotice:
+      "Solo enviamos un enlace cada pocos minutos. Revisa tu bandeja y la carpeta de spam antes de volver a intentarlo.",
     viewFullCarnet: "Abrir carnet completo con QR",
     carnetLinkHint:
       "Guarda este enlace o añade el carnet a tu cartera digital. Si lo pierdes, puedes recuperarlo de nuevo por email.",
@@ -256,6 +258,8 @@ const es: Dictionary = {
     loading: "Validando enlace de recuperación...",
     invalid: "El enlace de recuperación no es válido o ha expirado.",
     backToRegister: "Volver al registro",
+    emailNotice:
+      "Solo enviamos un enlace cada pocos minutos por email. Si ya lo solicitaste, revisa tu bandeja y spam antes de repetir la solicitud.",
   },
   support: {
     title: "Apoya el proyecto",
@@ -533,6 +537,8 @@ const es: Dictionary = {
       "El registro está temporalmente cerrado por medidas de seguridad.",
     existingMemberRecovery:
       "Si este email ya está registrado, recibirás instrucciones para recuperar tu carnet.",
+    recoveryRateLimited:
+      "Demasiadas solicitudes de recuperación. Espera unos minutos e inténtalo de nuevo.",
     recoveryInvalid: "El enlace de recuperación no es válido o ha expirado.",
   },
 };

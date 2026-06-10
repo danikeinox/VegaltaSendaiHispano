@@ -10,12 +10,14 @@ export function RecoverMemberForm() {
   const { locale, dict } = useLocale();
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState<string | null>(null);
+  const [hint, setHint] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   async function onSubmit(event: React.FormEvent) {
     event.preventDefault();
     setMessage(null);
+    setHint(null);
     setError(null);
     setSubmitting(true);
 
@@ -36,6 +38,7 @@ export function RecoverMemberForm() {
       }
 
       setMessage(json.message ?? dict.api.existingMemberRecovery);
+      setHint(json.hint ?? dict.recover.emailNotice);
       setEmail("");
     } catch {
       setError(dict.recover.connectionError);
@@ -46,6 +49,10 @@ export function RecoverMemberForm() {
 
   return (
     <form onSubmit={onSubmit} className="space-y-4">
+      <p className="text-xs leading-relaxed text-portal-on-surface-variant">
+        {dict.recover.emailNotice}
+      </p>
+
       <div className="space-y-2">
         <Label htmlFor="recover-email">{dict.recover.emailLabel}</Label>
         <Input
@@ -59,9 +66,16 @@ export function RecoverMemberForm() {
       </div>
 
       {message && (
-        <p className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">
-          {message}
-        </p>
+        <div className="space-y-2">
+          <p className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">
+            {message}
+          </p>
+          {hint && (
+            <p className="text-xs leading-relaxed text-portal-on-surface-variant">
+              {hint}
+            </p>
+          )}
+        </div>
       )}
 
       {error && (

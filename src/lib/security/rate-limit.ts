@@ -52,6 +52,9 @@ let registrationLimiter: Ratelimit | null = null;
 let dailyRegistrationLimiter: Ratelimit | null = null;
 let memberLookupLimiter: Ratelimit | null = null;
 let recoveryLimiter: Ratelimit | null = null;
+let recoveryIpLimiter: Ratelimit | null = null;
+let dailyRecoveryEmailLimiter: Ratelimit | null = null;
+let memberRecoveryEmailLimiter: Ratelimit | null = null;
 
 function getRedis(): Redis | null {
   const url = process.env.UPSTASH_REDIS_REST_URL?.trim();
@@ -109,6 +112,60 @@ function getRecoveryLimiter(): Ratelimit | null {
   }
 
   return recoveryLimiter;
+}
+
+function getRecoveryIpLimiter(): Ratelimit | null {
+  const redis = getRedis();
+  if (!redis) return null;
+
+  if (!recoveryIpLimiter) {
+    recoveryIpLimiter = new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(8, "1 h"),
+      analytics: true,
+      prefix: "vegalta:recover:ip",
+    });
+  }
+
+  return recoveryIpLimiter;
+}
+
+function getDailyRecoveryEmailLimiter(): Ratelimit | null {
+  const redis = getRedis();
+  if (!redis) return null;
+
+  if (!dailyRecoveryEmailLimiter) {
+    dailyRecoveryEmailLimiter = new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(
+        FREE_TIER_LIMITS.dailyRecoveryEmails,
+        "1 d"
+      ),
+      analytics: true,
+      prefix: "vegalta:recover:email:daily",
+    });
+  }
+
+  return dailyRecoveryEmailLimiter;
+}
+
+function getMemberRecoveryEmailLimiter(): Ratelimit | null {
+  const redis = getRedis();
+  if (!redis) return null;
+
+  if (!memberRecoveryEmailLimiter) {
+    memberRecoveryEmailLimiter = new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(
+        1,
+        `${FREE_TIER_LIMITS.memberRecoveryEmailCooldownMinutes} m`
+      ),
+      analytics: true,
+      prefix: "vegalta:recover:email:member",
+    });
+  }
+
+  return memberRecoveryEmailLimiter;
 }
 
 export async function checkDailyRegistrationQuota(): Promise<RateLimitResult> {
@@ -203,4 +260,67 @@ export async function checkRecoveryRateLimit(
   }
 
   return memoryRateLimit(`recover:${identifier}`, 3, 900_000);
+}
+
+export async function checkRecoveryIpRateLimit(
+  ip: string
+): Promise<RateLimitResult> {
+  requireUpstashOrDev();
+  const upstash = getRecoveryIpLimiter();
+
+  if (upstash) {
+    const result = await upstash.limit(ip);
+    return {
+      success: result.success,
+      limit: result.limit,
+      remaining: result.remaining,
+      reset: result.reset,
+    };
+  }
+
+  return memoryRateLimit(`recover:ip:${ip}`, 8, 3_600_000);
+}
+
+export async function checkDailyRecoveryEmailQuota(): Promise<RateLimitResult> {
+  requireUpstashOrDev();
+  const upstash = getDailyRecoveryEmailLimiter();
+
+  if (upstash) {
+    const result = await upstash.limit("global");
+    return {
+      success: result.success,
+      limit: result.limit,
+      remaining: result.remaining,
+      reset: result.reset,
+    };
+  }
+
+  return memoryRateLimit(
+    "recover:email:daily:global",
+    FREE_TIER_LIMITS.dailyRecoveryEmails,
+    86_400_000
+  );
+}
+
+export async function checkMemberRecoveryEmailRateLimit(
+  email: string
+): Promise<RateLimitResult> {
+  requireUpstashOrDev();
+  const upstash = getMemberRecoveryEmailLimiter();
+
+  if (upstash) {
+    const result = await upstash.limit(email.toLowerCase());
+    return {
+      success: result.success,
+      limit: result.limit,
+      remaining: result.remaining,
+      reset: result.reset,
+    };
+  }
+
+  return memoryRateLimit(
+    `recover:email:member:${email.toLowerCase()}`,
+    1,
+    FREE_TIER_LIMITS.memberRecoveryEmailCooldownMinutes * 60_000
+  );
 }
