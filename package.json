@@ -54,7 +54,7 @@
     "sharp": "^0.34.5",
     "tailwindcss": "^4",
     "typescript": "^5",
-    "vitest": "^3.2.4",
+    "vitest": "^4.1.8",
     "wrangler": "^4.99.0"
   },
   "overrides": {
