@@ -4,6 +4,7 @@ import {
   buildMemberAccessQuery,
   createMemberVerificationUrl,
 } from "@/lib/verification";
+import { resolveSiteBaseUrl } from "@/lib/site-origin";
 
 export type GooglePassMemberData = {
   id: string;
@@ -43,8 +44,7 @@ export function generateGoogleWalletSaveUrl(
 
   const objectId = `${issuerId}.${member.displayId.replace(/-/g, "_").toLowerCase()}`;
   const classSuffix = classId;
-  const appUrl =
-    process.env.NEXT_PUBLIC_APP_URL ?? "https://vegalta-hispano.example.com";
+  const appUrl = resolveSiteBaseUrl();
   const verificationUrl = createMemberVerificationUrl("es", member);
 
   const genericClass = {
@@ -114,7 +114,6 @@ export function getAndroidPkpassFallbackUrl(
   member: Pick<GooglePassMemberData, "displayId">,
   accessToken: string
 ): string {
-  const appUrl =
-    process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  const appUrl = resolveSiteBaseUrl();
   return `${appUrl}/api/wallet/apple?${buildMemberAccessQuery(member, accessToken)}`;
 }

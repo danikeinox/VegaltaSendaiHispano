@@ -5,11 +5,9 @@ import {
   HIMNO_YOUTUBE_URL,
   TELEGRAM_COMMUNITY_URL,
 } from "@/lib/constants";
+import { resolveSiteBaseUrl } from "@/lib/site-origin";
 
-export const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ??
-  process.env.NEXT_PUBLIC_APP_URL ??
-  "https://www.vegalta.es";
+export const SITE_URL = resolveSiteBaseUrl();
 
 export const SITE_NAME = "Vegalta Sendai Hispano";
 export const SITE_DOMAIN = "vegalta.es";

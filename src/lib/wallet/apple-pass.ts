@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import { PKPass } from "passkit-generator";
 import { VEGALTA_COLORS } from "@/lib/constants";
+import { resolveSiteBaseUrl } from "@/lib/site-origin";
 import { createMemberVerificationUrl } from "@/lib/verification";
 
 const PROJECT_ROOT = path.join(/* turbopackIgnore: true */ process.cwd());
@@ -74,8 +75,7 @@ async function loadAsset(filename: string): Promise<Buffer> {
     return fs.readFileSync(filePath);
   }
 
-  const baseUrl =
-    process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  const baseUrl = resolveSiteBaseUrl();
   const response = await fetch(`${baseUrl}/assets/wallet/${filename}`);
 
   if (!response.ok) {

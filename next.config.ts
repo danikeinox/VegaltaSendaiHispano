@@ -1,7 +1,11 @@
 import type { NextConfig } from "next";
 import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
+import { normalizeSiteUrl } from "./src/lib/site-origin";
 
-const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://www.vegalta.es";
+const appUrl =
+  normalizeSiteUrl(process.env.NEXT_PUBLIC_APP_URL) ||
+  normalizeSiteUrl(process.env.NEXT_PUBLIC_SITE_URL) ||
+  "https://www.vegalta.es";
 const isDev = process.env.NODE_ENV !== "production";
 
 const scriptSrc = [
