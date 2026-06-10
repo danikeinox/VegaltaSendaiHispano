@@ -137,6 +137,10 @@ export type Dictionary = {
     welcomeExisting: string;
     addAppleWallet: string;
     addGoogleWallet: string;
+    addSamsungWallet: string;
+    walletsDevelopmentTitle: string;
+    walletsDevelopmentNote: string;
+    walletsComingSoon: string;
     downloadAndroid: string;
     registerAnother: string;
     connectionError: string;
@@ -167,6 +171,10 @@ export type Dictionary = {
     invalid: string;
     backToRegister: string;
     emailNotice: string;
+    confirmTitle: string;
+    confirmDescription: string;
+    confirmButton: string;
+    confirming: string;
   };
   carnet: {
     title: string;

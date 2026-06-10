@@ -77,12 +77,20 @@ const nextConfig: NextConfig = {
           { key: "Referrer-Policy", value: "no-referrer" },
         ],
       },
+      {
+        source: "/api/wallet/:path*",
+        headers: [
+          ...securityHeaders.filter((h) => h.key !== "Referrer-Policy"),
+          { key: "Referrer-Policy", value: "no-referrer" },
+        ],
+      },
     ];
   },
   env: {
     NEXT_PUBLIC_APP_URL: appUrl,
     NEXT_PUBLIC_REGISTRATION_DISABLED:
       process.env.REGISTRATION_DISABLED ?? "true",
+    NEXT_PUBLIC_WALLETS_ENABLED: process.env.WALLETS_ENABLED ?? "false",
   },
 };
 

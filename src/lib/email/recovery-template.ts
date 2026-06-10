@@ -34,7 +34,7 @@ export function buildRecoveryEmailContent(params: RecoveryEmailParams): {
           intro:
             "ベガルタ仙台ヒスパーノの会員証を再取得するリクエストを受け付けました。",
           memberLine: `会員ID: ${safeId}`,
-          cta: "会員証を開く",
+          cta: "再取得を確認する",
           expiry: "このリンクは30分間有効で、1回のみ使用できます。",
           ignore: "心当たりがない場合は、このメールを無視してください。",
           footer:
@@ -47,7 +47,7 @@ export function buildRecoveryEmailContent(params: RecoveryEmailParams): {
           intro:
             "Has solicitado recuperar tu carnet de la comunidad Vegalta Sendai Hispano.",
           memberLine: `ID de socio: ${safeId}`,
-          cta: "Ver mi carnet",
+          cta: "Confirmar recuperación",
           expiry:
             "El enlace es válido 30 minutos y solo puede usarse una vez.",
           ignore: "Si no solicitaste esto, ignora este correo.",

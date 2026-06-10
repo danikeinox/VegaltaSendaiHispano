@@ -28,6 +28,14 @@ export function assertProductionSecurityConfig(): void {
     missing.push("APPWRITE_API_KEY");
   }
 
+  if (!process.env.TURNSTILE_SECRET_KEY?.trim()) {
+    missing.push("TURNSTILE_SECRET_KEY");
+  }
+
+  if (!process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim()) {
+    missing.push("NEXT_PUBLIC_TURNSTILE_SITE_KEY");
+  }
+
   if (missing.length > 0) {
     throw new Error(
       `Production security misconfiguration. Missing: ${missing.join(", ")}`

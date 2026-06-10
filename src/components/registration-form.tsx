@@ -34,11 +34,14 @@ export type RegisterResult = {
   wallet: {
     apple: string | null;
     google: string | null;
+    samsung: string | null;
   };
   walletAvailable: {
     apple: boolean;
     google: boolean;
+    samsung: boolean;
   };
+  walletsInDevelopment?: boolean;
   verification: {
     url: string;
   };
@@ -216,16 +219,23 @@ export function RegistrationForm({
         <WalletButtons
           appleUrl={issued.wallet.apple}
           googleUrl={issued.wallet.google}
+          samsungUrl={issued.wallet.samsung}
           googleSaveUrl={googleSaveUrl}
           appleLabel={dict.register.addAppleWallet}
           googleLabel={dict.register.addGoogleWallet}
+          samsungLabel={dict.register.addSamsungWallet}
           androidLabel={dict.register.downloadAndroid}
           appleAvailable={issued.walletAvailable.apple}
           googleAvailable={issued.walletAvailable.google}
+          samsungAvailable={issued.walletAvailable.samsung}
+          inDevelopment={issued.walletsInDevelopment}
+          developmentTitle={dict.register.walletsDevelopmentTitle}
+          developmentNote={dict.register.walletsDevelopmentNote}
+          comingSoonLabel={dict.register.walletsComingSoon}
           appleUnavailableNote={dict.register.appleUnavailable}
         />
 
-        {!issued.walletAvailable.apple && (
+        {issued.walletsInDevelopment && (
           <SupportCallout showAppleNote className="mx-auto w-full" />
         )}
 

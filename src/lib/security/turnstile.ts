@@ -5,12 +5,18 @@ export function isTurnstileConfigured(): boolean {
   );
 }
 
+function isProductionRuntime(): boolean {
+  return process.env.NODE_ENV === "production";
+}
+
 export async function verifyTurnstileToken(
   token: string | undefined,
   remoteIp: string
 ): Promise<boolean> {
   const secret = process.env.TURNSTILE_SECRET_KEY?.trim();
-  if (!secret) return true;
+  if (!secret) {
+    return !isProductionRuntime();
+  }
 
   if (!token?.trim()) return false;
 

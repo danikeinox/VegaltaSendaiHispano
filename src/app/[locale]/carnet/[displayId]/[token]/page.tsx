@@ -7,8 +7,7 @@ import { MemberQrCode } from "@/components/member-qr-code";
 import { MembershipCard } from "@/components/membership-card";
 import { SupportCallout } from "@/components/support-callout";
 import { WalletButtons } from "@/components/wallet-buttons";
-import { isAppleWalletConfigured } from "@/lib/wallet/apple-pass";
-import { isGoogleWalletConfigured } from "@/lib/wallet/google-wallet";
+import { getWalletAvailability } from "@/lib/wallet/config";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { SectionHeading } from "@/components/section-heading";
@@ -77,10 +76,12 @@ export default async function CarnetPage({ params }: PageProps) {
   }
 
   const accessQuery = buildMemberAccessQuery(member, token);
-  const appleConfigured = isAppleWalletConfigured();
-  const googleConfigured = isGoogleWalletConfigured();
-  const appleUrl = appleConfigured ? `/api/wallet/apple?${accessQuery}` : null;
-  const googleApiUrl = googleConfigured
+  const wallets = getWalletAvailability();
+  const appleUrl = wallets.apple ? `/api/wallet/apple?${accessQuery}` : null;
+  const googleApiUrl = wallets.google
+    ? `/api/wallet/google?${accessQuery}`
+    : null;
+  const samsungUrl = wallets.samsung
     ? `/api/wallet/google?${accessQuery}`
     : null;
   const dateLocale = rawLocale === "jp" ? "ja-JP" : "es-ES";
@@ -138,15 +139,22 @@ export default async function CarnetPage({ params }: PageProps) {
         <WalletButtons
           appleUrl={appleUrl}
           googleUrl={googleApiUrl}
+          samsungUrl={samsungUrl}
           appleLabel={dict.headline.appleWallet}
           googleLabel={dict.headline.googleWallet}
+          samsungLabel={dict.register.addSamsungWallet}
           androidLabel={dict.register.downloadAndroid}
-          appleAvailable={appleConfigured}
-          googleAvailable={googleConfigured}
+          appleAvailable={wallets.apple}
+          googleAvailable={wallets.google}
+          samsungAvailable={wallets.samsung}
+          inDevelopment={wallets.inDevelopment}
+          developmentTitle={dict.register.walletsDevelopmentTitle}
+          developmentNote={dict.register.walletsDevelopmentNote}
+          comingSoonLabel={dict.register.walletsComingSoon}
           appleUnavailableNote={dict.register.appleUnavailable}
         />
 
-        {!appleConfigured && (
+        {wallets.inDevelopment && (
           <SupportCallout showAppleNote className="mx-auto" />
         )}
 
