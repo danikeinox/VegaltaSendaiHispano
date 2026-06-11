@@ -18,16 +18,22 @@ export function corsHeaders(request?: Request): Record<string, string> {
     };
   }
 
-  const allowOrigin =
-    origin && allowedOrigins.includes(origin)
-      ? origin
-      : allowedOrigins[0] ?? "http://localhost:3000";
-
-  return {
-    "Access-Control-Allow-Origin": allowOrigin,
+  const headers: Record<string, string> = {
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type, X-Requested-With, X-Locale",
     "Access-Control-Max-Age": "86400",
     Vary: "Origin",
   };
+
+  if (origin && allowedOrigins.includes(origin)) {
+    headers["Access-Control-Allow-Origin"] = origin;
+    return headers;
+  }
+
+  if (!isProductionRuntime() && !origin) {
+    headers["Access-Control-Allow-Origin"] =
+      allowedOrigins[0] ?? "http://localhost:3000";
+  }
+
+  return headers;
 }
