@@ -56,6 +56,12 @@ Este script crea automáticamente:
 
 El contador usa `incrementDocumentAttribute` de Appwrite (operación atómica en servidor), equivalente seguro al `SELECT FOR UPDATE` de PostgreSQL.
 
+### Protección de datos
+
+Las colecciones quedan sin permisos públicos y deben operarse desde las API
+server-side. Para borrado de socios, rotación de tokens y respuesta ante
+incidentes, consulta [DATA_PROTECTION_RUNBOOK.md](DATA_PROTECTION_RUNBOOK.md).
+
 ## 4. Verificar conexión
 
 ```bash
