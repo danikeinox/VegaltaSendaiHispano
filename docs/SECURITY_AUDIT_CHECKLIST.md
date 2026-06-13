@@ -55,6 +55,7 @@ curl -sI -X OPTIONS "https://www.vegalta.es/api/register" \
 
 curl -sI "https://www.vegalta.es/sitemap.xml" | grep -i location
 curl -sI "https://www.vegalta.es/.well-known/security.txt" | head
+curl -sI "https://www.vegalta.es/llms.txt" | head
 ```
 
 ## Related docs
