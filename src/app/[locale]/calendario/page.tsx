@@ -11,6 +11,8 @@ import { localizedPath } from "@/i18n/navigation";
 import { getSeasonFixtures } from "@/lib/football-api";
 import { buildPageMetadata } from "@/lib/seo";
 
+export const dynamic = "force-dynamic";
+
 type PageProps = { params: Promise<{ locale: string }> };
 
 export async function generateMetadata({

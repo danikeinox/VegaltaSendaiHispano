@@ -2,10 +2,15 @@ import { Redis } from "@upstash/redis";
 import { unstable_cache } from "next/cache";
 
 const API_BASE = "https://v3.football.api-sports.io";
-const CACHE_KEY = "football:vegalta:season";
+const THESPORTSDB_BASE = "https://www.thesportsdb.com/api/v1/json/3";
+const CACHE_KEY = "football:vegalta:season:v2";
 const CACHE_TTL_SECONDS = 86_400;
+const EMPTY_CACHE_TTL_SECONDS = 300;
 const DAILY_REQUEST_KEY_PREFIX = "football:api:requests:";
 const DAILY_REQUEST_LIMIT = 50;
+const OFFICIAL_SCHEDULE_URL = "https://www.vegalta.co.jp/game/";
+const VEGALTA_THESPORTSDB_TEAM_ID = "137718";
+const J2_THESPORTSDB_LEAGUE_ID = "4824";
 
 const FINISHED_STATUSES = new Set(["FT", "AET", "PEN", "AWD", "WO", "ABD"]);
 
@@ -43,9 +48,14 @@ export type SeasonFixture = {
 
 export type SeasonFixturesData = {
   season: string;
+  requestedSeason: string;
   fixtures: SeasonFixture[];
   source: "api" | "fallback";
+  provider: "api-football" | "thesportsdb" | "none";
   updatedAt: string;
+  /** True when API returned an older season than configured (free plan limit). */
+  seasonLimited?: boolean;
+  officialScheduleUrl?: string;
 };
 
 export type LastMatch = {
@@ -97,6 +107,22 @@ type ApiResponse = {
   paging?: { current: number; total: number };
 };
 
+type TheSportsDbEvent = {
+  idEvent: string;
+  strEvent: string;
+  strTimestamp?: string;
+  dateEvent: string;
+  strTime?: string;
+  strHomeTeam: string;
+  strAwayTeam: string;
+  idHomeTeam: string;
+  intHomeScore: string | null;
+  intAwayScore: string | null;
+  intRound?: string;
+  strVenue?: string;
+  strStatus?: string;
+};
+
 let memoryCache: { value: SeasonFixturesData; expiresAt: number } | null = null;
 
 function getRedis(): Redis | null {
@@ -111,8 +137,24 @@ function getTeamId(): number {
   return Number.isFinite(configured) && configured > 0 ? configured : 289;
 }
 
-function getSeason(): string {
-  return process.env.API_FOOTBALL_SEASON?.trim() || String(new Date().getFullYear());
+function getRequestedSeason(): string {
+  return (
+    process.env.API_FOOTBALL_SEASON?.trim() || String(new Date().getFullYear())
+  );
+}
+
+export function getSeasonsToTry(requestedSeason = getRequestedSeason()): string[] {
+  const year = new Date().getFullYear();
+  const candidates = [
+    requestedSeason,
+    String(year),
+    String(year - 1),
+    "2024",
+    "2023",
+    "2022",
+  ];
+
+  return [...new Set(candidates.filter(Boolean))];
 }
 
 function getApiKey(): string | null {
@@ -143,6 +185,12 @@ async function trackApiRequest(redis: Redis | null): Promise<void> {
 
 function isFinished(status: string): boolean {
   return FINISHED_STATUSES.has(status);
+}
+
+function isPlanSeasonError(errors: Record<string, string> | undefined): boolean {
+  if (!errors) return false;
+  const message = Object.values(errors).join(" ").toLowerCase();
+  return message.includes("season") || message.includes("free plans");
 }
 
 function mapApiFixture(fixture: ApiFixture, teamId: number): SeasonFixture {
@@ -177,20 +225,59 @@ function mapApiFixture(fixture: ApiFixture, teamId: number): SeasonFixture {
   };
 }
 
-async function fetchSeasonFixturesFromApi(): Promise<SeasonFixture[]> {
-  const apiKey = getApiKey();
-  if (!apiKey) return [];
+function mapTheSportsDbEvent(event: TheSportsDbEvent): SeasonFixture {
+  const isVegaltaHome = event.idHomeTeam === VEGALTA_THESPORTSDB_TEAM_ID;
+  const timestamp =
+    event.strTimestamp ||
+    `${event.dateEvent}T${event.strTime ?? "00:00:00"}`;
 
-  const redis = getRedis();
-  if (!(await canMakeApiRequest(redis))) {
-    return [];
+  const homeGoals =
+    event.intHomeScore != null && event.intHomeScore !== ""
+      ? Number(event.intHomeScore)
+      : null;
+  const awayGoals =
+    event.intAwayScore != null && event.intAwayScore !== ""
+      ? Number(event.intAwayScore)
+      : null;
+
+  return {
+    id: Number(event.idEvent),
+    date: timestamp,
+    status: event.strStatus?.trim() || "NS",
+    statusLong: event.strStatus?.trim() || "Not Started",
+    homeTeam: event.strHomeTeam,
+    awayTeam: event.strAwayTeam,
+    homeGoals: Number.isFinite(homeGoals) ? homeGoals : null,
+    awayGoals: Number.isFinite(awayGoals) ? awayGoals : null,
+    round: event.intRound ? `J${event.intRound}` : undefined,
+    venue: event.strVenue?.trim() || undefined,
+    isVegaltaHome,
+  };
+}
+
+function dedupeFixtures(fixtures: SeasonFixture[]): SeasonFixture[] {
+  const byKey = new Map<string, SeasonFixture>();
+
+  for (const fixture of fixtures) {
+    const key = `${fixture.date.slice(0, 10)}:${fixture.homeTeam}:${fixture.awayTeam}`;
+    byKey.set(key, fixture);
   }
 
-  const season = getSeason();
+  return Array.from(byKey.values()).sort(
+    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+  );
+}
+
+async function fetchFixturesForSeasonFromApi(
+  season: string,
+  apiKey: string,
+  redis: Redis | null
+): Promise<{ fixtures: SeasonFixture[]; planLimited: boolean }> {
   const teamId = getTeamId();
   const allFixtures: ApiFixture[] = [];
   let page = 1;
   let totalPages = 1;
+  let planLimited = false;
 
   while (page <= totalPages) {
     const params = new URLSearchParams({
@@ -217,6 +304,10 @@ async function fetchSeasonFixturesFromApi(): Promise<SeasonFixture[]> {
 
     const json = (await response.json()) as ApiResponse;
     if (json.errors && Object.keys(json.errors).length > 0) {
+      if (isPlanSeasonError(json.errors)) {
+        planLimited = true;
+        return { fixtures: [], planLimited };
+      }
       throw new Error(`API-Football error: ${JSON.stringify(json.errors)}`);
     }
 
@@ -225,38 +316,184 @@ async function fetchSeasonFixturesFromApi(): Promise<SeasonFixture[]> {
     page += 1;
   }
 
-  return allFixtures
-    .map((fixture) => mapApiFixture(fixture, teamId))
-    .sort(
-      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-    );
+  return {
+    fixtures: allFixtures
+      .map((fixture) => mapApiFixture(fixture, teamId))
+      .sort(
+        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+      ),
+    planLimited,
+  };
 }
 
-function buildFallbackSeasonData(): SeasonFixturesData {
+async function fetchSeasonFixturesFromApiFootball(
+  requestedSeason: string
+): Promise<{
+  fixtures: SeasonFixture[];
+  resolvedSeason: string;
+  seasonLimited: boolean;
+} | null> {
+  const apiKey = getApiKey();
+  if (!apiKey) return null;
+
+  const redis = getRedis();
+  if (!(await canMakeApiRequest(redis))) {
+    return null;
+  }
+
+  let seasonLimited = false;
+
+  for (const season of getSeasonsToTry(requestedSeason)) {
+    const result = await fetchFixturesForSeasonFromApi(season, apiKey, redis);
+    if (result.planLimited) {
+      seasonLimited = true;
+      continue;
+    }
+    if (result.fixtures.length > 0) {
+      return {
+        fixtures: result.fixtures,
+        resolvedSeason: season,
+        seasonLimited: season !== requestedSeason || seasonLimited,
+      };
+    }
+  }
+
+  if (seasonLimited) {
+    return {
+      fixtures: [],
+      resolvedSeason: requestedSeason,
+      seasonLimited: true,
+    };
+  }
+
+  return null;
+}
+
+async function fetchVegaltaFixturesFromTheSportsDb(
+  season: string
+): Promise<SeasonFixture[]> {
+  const urls = [
+    `${THESPORTSDB_BASE}/eventsseason.php?id=${J2_THESPORTSDB_LEAGUE_ID}&s=${season}`,
+    `${THESPORTSDB_BASE}/eventslast.php?id=${VEGALTA_THESPORTSDB_TEAM_ID}`,
+    `${THESPORTSDB_BASE}/searchevents.php?e=Vegalta_Sendai`,
+  ];
+
+  const fixtures: SeasonFixture[] = [];
+
+  for (const url of urls) {
+    try {
+      const response = await fetch(url, {
+        next: { revalidate: CACHE_TTL_SECONDS },
+      });
+      if (!response.ok) continue;
+
+      const json = (await response.json()) as {
+        events?: TheSportsDbEvent[] | null;
+        event?: TheSportsDbEvent[] | null;
+        results?: TheSportsDbEvent[] | null;
+      };
+
+      const events = [
+        ...(json.events ?? []),
+        ...(json.event ?? []),
+        ...(json.results ?? []),
+      ];
+
+      for (const event of events) {
+        if (
+          !event.strHomeTeam?.includes("Vegalta") &&
+          !event.strAwayTeam?.includes("Vegalta")
+        ) {
+          continue;
+        }
+        fixtures.push(mapTheSportsDbEvent(event));
+      }
+    } catch {
+      // Best-effort secondary provider.
+    }
+  }
+
+  return dedupeFixtures(fixtures);
+}
+
+function buildFallbackSeasonData(requestedSeason: string): SeasonFixturesData {
   return {
-    season: getSeason(),
+    season: requestedSeason,
+    requestedSeason,
     fixtures: [],
     source: "fallback",
+    provider: "none",
     updatedAt: new Date().toISOString(),
+    seasonLimited: true,
+    officialScheduleUrl: OFFICIAL_SCHEDULE_URL,
   };
 }
 
 async function fetchSeasonFixturesData(): Promise<SeasonFixturesData> {
-  try {
-    const fixtures = await fetchSeasonFixturesFromApi();
+  const requestedSeason = getRequestedSeason();
 
-    if (fixtures.length === 0) {
-      return buildFallbackSeasonData();
+  try {
+    const apiResult = await fetchSeasonFixturesFromApiFootball(requestedSeason);
+    if (apiResult && apiResult.fixtures.length > 0) {
+      let fixtures = apiResult.fixtures;
+      let provider: SeasonFixturesData["provider"] = "api-football";
+
+      const hasUpcoming = fixtures.some(
+        (fixture) => !isFinished(fixture.status)
+      );
+      const needsCurrentSeasonData =
+        apiResult.seasonLimited ||
+        apiResult.resolvedSeason !== requestedSeason ||
+        !hasUpcoming;
+
+      if (needsCurrentSeasonData) {
+        const supplemental = await fetchVegaltaFixturesFromTheSportsDb(
+          requestedSeason
+        );
+        if (supplemental.length > 0) {
+          fixtures = dedupeFixtures([...fixtures, ...supplemental]);
+          provider = "thesportsdb";
+        }
+      }
+
+      return {
+        season: apiResult.resolvedSeason,
+        requestedSeason,
+        fixtures,
+        source: "api",
+        provider,
+        updatedAt: new Date().toISOString(),
+        seasonLimited: apiResult.seasonLimited,
+        officialScheduleUrl: apiResult.seasonLimited
+          ? OFFICIAL_SCHEDULE_URL
+          : undefined,
+      };
     }
 
-    return {
-      season: getSeason(),
-      fixtures,
-      source: "api",
-      updatedAt: new Date().toISOString(),
-    };
+    const supplemental = await fetchVegaltaFixturesFromTheSportsDb(requestedSeason);
+    if (supplemental.length > 0) {
+      return {
+        season: requestedSeason,
+        requestedSeason,
+        fixtures: supplemental,
+        source: "api",
+        provider: "thesportsdb",
+        updatedAt: new Date().toISOString(),
+        seasonLimited: true,
+        officialScheduleUrl: OFFICIAL_SCHEDULE_URL,
+      };
+    }
+
+    if (apiResult?.seasonLimited) {
+      return {
+        ...buildFallbackSeasonData(requestedSeason),
+        seasonLimited: true,
+      };
+    }
+
+    return buildFallbackSeasonData(requestedSeason);
   } catch {
-    return buildFallbackSeasonData();
+    return buildFallbackSeasonData(requestedSeason);
   }
 }
 
@@ -274,21 +511,24 @@ async function readCachedSeasonData(): Promise<SeasonFixturesData | null> {
 }
 
 async function writeCachedSeasonData(data: SeasonFixturesData): Promise<void> {
+  const ttl =
+    data.fixtures.length === 0 ? EMPTY_CACHE_TTL_SECONDS : CACHE_TTL_SECONDS;
   const redis = getRedis();
+
   if (redis) {
-    await redis.set(CACHE_KEY, data, { ex: CACHE_TTL_SECONDS });
+    await redis.set(CACHE_KEY, data, { ex: ttl });
     return;
   }
 
   memoryCache = {
     value: data,
-    expiresAt: Date.now() + CACHE_TTL_SECONDS * 1000,
+    expiresAt: Date.now() + ttl * 1000,
   };
 }
 
 const getCachedSeasonData = unstable_cache(
   fetchSeasonFixturesData,
-  ["vegalta-football-season"],
+  ["vegalta-football-season-v2"],
   { revalidate: CACHE_TTL_SECONDS }
 );
 
@@ -359,3 +599,5 @@ export async function getVegaltaMatches(): Promise<VegaltaMatches> {
   const seasonData = await getSeasonFixtures();
   return deriveMatchesFromSeason(seasonData);
 }
+
+export { OFFICIAL_SCHEDULE_URL };

@@ -63,6 +63,9 @@ const jp: Dictionary = {
     statusLive: "試合中",
     statusUpcoming: "予定",
     statusPostponed: "延期",
+    seasonLimitedNote:
+      "シーズン {season} を表示しています。API-Football 無料プランでは {requestedSeason} シーズンにアクセスできません。最新の試合日程は公式サイトをご確認ください。",
+    officialScheduleLink: "ベガルタ仙台 公式試合日程",
   },
   communityCta: {
     title: "コミュニティの一員になろう",

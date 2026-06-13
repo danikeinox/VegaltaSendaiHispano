@@ -47,6 +47,8 @@ export type Dictionary = {
     statusLive: string;
     statusUpcoming: string;
     statusPostponed: string;
+    seasonLimitedNote: string;
+    officialScheduleLink: string;
   };
   communityCta: {
     title: string;

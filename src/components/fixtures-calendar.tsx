@@ -77,6 +77,19 @@ function groupByMonth(
   });
 }
 
+function OfficialScheduleLink({ url, label }: { url: string; label: string }) {
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="mt-4 inline-block text-sm font-semibold text-portal-primary underline-offset-2 hover:underline"
+    >
+      {label}
+    </a>
+  );
+}
+
 export function FixturesCalendar({ data }: FixturesCalendarProps) {
   const { locale, dict } = useLocale();
   const groups = groupByMonth(data.fixtures, locale);
@@ -84,6 +97,11 @@ export function FixturesCalendar({ data }: FixturesCalendarProps) {
     "{updatedAt}",
     formatUpdatedAt(data.updatedAt, locale)
   );
+  const showSeasonLimited =
+    data.seasonLimited && data.season !== data.requestedSeason;
+  const seasonLimitedNote = dict.calendar.seasonLimitedNote
+    .replace("{season}", data.season)
+    .replace("{requestedSeason}", data.requestedSeason);
 
   if (data.fixtures.length === 0) {
     return (
@@ -91,15 +109,42 @@ export function FixturesCalendar({ data }: FixturesCalendarProps) {
         <p className="text-sm text-portal-on-surface-variant">
           {dict.calendar.noFixtures}
         </p>
+        {data.seasonLimited && (
+          <p className="mt-3 text-xs leading-relaxed text-portal-on-surface-variant">
+            {seasonLimitedNote}
+          </p>
+        )}
+        {data.officialScheduleUrl && (
+          <OfficialScheduleLink
+            url={data.officialScheduleUrl}
+            label={dict.calendar.officialScheduleLink}
+          />
+        )}
       </div>
     );
   }
 
   return (
     <div className="space-y-8">
-      <p className="text-sm text-portal-on-surface-variant">
-        {dict.calendar.seasonLabel.replace("{season}", data.season)}
-      </p>
+      <div className="space-y-3">
+        <p className="text-sm text-portal-on-surface-variant">
+          {dict.calendar.seasonLabel.replace(
+            "{season}",
+            data.seasonLimited ? data.requestedSeason : data.season
+          )}
+        </p>
+        {(showSeasonLimited || data.seasonLimited) && (
+          <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-relaxed text-amber-950">
+            <p>{seasonLimitedNote}</p>
+            {data.officialScheduleUrl && (
+              <OfficialScheduleLink
+                url={data.officialScheduleUrl}
+                label={dict.calendar.officialScheduleLink}
+              />
+            )}
+          </div>
+        )}
+      </div>
 
       {groups.map((group) => (
         <section key={group.key}>

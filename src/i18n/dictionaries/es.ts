@@ -65,6 +65,9 @@ const es: Dictionary = {
     statusLive: "En juego",
     statusUpcoming: "Próximo",
     statusPostponed: "Aplazado",
+    seasonLimitedNote:
+      "Mostrando la temporada {season}. El plan gratuito de API-Football no incluye la temporada {requestedSeason}. Para el calendario completo y próximos partidos, consulta el sitio oficial o usa una API key de pago.",
+    officialScheduleLink: "Ver calendario oficial del Vegalta Sendai",
   },
   communityCta: {
     title: "Forma parte de la comunidad",
