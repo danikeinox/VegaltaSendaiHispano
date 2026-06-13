@@ -7,6 +7,14 @@ import {
 } from "@/lib/locale-cookie";
 import { isAllowedSiteOrigin } from "@/lib/site-origin";
 
+const ROOT_METADATA_PATHS = new Set([
+  "/favicon.ico",
+  "/icon.svg",
+  "/manifest.webmanifest",
+  "/robots.txt",
+  "/sitemap.xml",
+]);
+
 /** CORS for /api only — security headers live in next.config.ts to avoid duplicates */
 function applyApiCors(response: NextResponse, request: NextRequest) {
   if (!request.nextUrl.pathname.startsWith("/api/")) {
@@ -23,6 +31,20 @@ function applyApiCors(response: NextResponse, request: NextRequest) {
   return response;
 }
 
+export function shouldBypassLocaleRedirect(pathname: string): boolean {
+  return (
+    pathname.startsWith("/api/") ||
+    pathname.startsWith("/_next/") ||
+    pathname.startsWith("/assets/") ||
+    pathname.startsWith("/.well-known/") ||
+    pathname.startsWith("/.") ||
+    ROOT_METADATA_PATHS.has(pathname) ||
+    pathname.endsWith(".png") ||
+    pathname.endsWith(".svg") ||
+    pathname.endsWith(".ico")
+  );
+}
+
 export function handleSiteRequest(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
@@ -34,15 +56,7 @@ export function handleSiteRequest(request: NextRequest) {
     );
   }
 
-  if (
-    pathname.startsWith("/api/") ||
-    pathname.startsWith("/_next/") ||
-    pathname.startsWith("/assets/") ||
-    pathname === "/icon.svg" ||
-    pathname.endsWith(".png") ||
-    pathname.endsWith(".svg") ||
-    pathname.endsWith(".ico")
-  ) {
+  if (shouldBypassLocaleRedirect(pathname)) {
     return applyApiCors(NextResponse.next(), request);
   }
 

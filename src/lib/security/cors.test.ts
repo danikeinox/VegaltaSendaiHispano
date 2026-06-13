@@ -34,4 +34,17 @@ describe("corsHeaders", () => {
 
     expect(headers["Access-Control-Allow-Origin"]).toBe("https://www.vegalta.es");
   });
+
+  it("does not expose an allow-origin header for disallowed origins", () => {
+    process.env.NODE_ENV = "production";
+    process.env.ALLOWED_ORIGIN = "https://www.vegalta.es";
+
+    const headers = corsHeaders(
+      new Request("https://www.vegalta.es/api/register", {
+        headers: { origin: "https://evil.example" },
+      })
+    );
+
+    expect(headers["Access-Control-Allow-Origin"]).toBeUndefined();
+  });
 });
