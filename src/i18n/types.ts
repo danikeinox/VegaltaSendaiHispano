@@ -60,6 +60,8 @@ export type Dictionary = {
     pickDayHint: string;
     selectedDayLabel: string;
     sofascoreLink: string;
+    jleagueLiveLink: string;
+    jleagueLiveNote: string;
   };
   communityCta: {
     title: string;

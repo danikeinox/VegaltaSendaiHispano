@@ -79,6 +79,9 @@ const jp: Dictionary = {
     pickDayHint: "カレンダーで日付を選ぶと試合が表示されます。",
     selectedDayLabel: "{date} の試合",
     sofascoreLink: "SofaScoreで全試合を見る",
+    jleagueLiveLink: "Jリーグ公式の試合速報",
+    jleagueLiveNote:
+      "当日の試合は jleague.jp から5分ごとに更新されます。",
   },
   communityCta: {
     title: "コミュニティの一員になろう",

@@ -5,10 +5,18 @@ import {
   VEGALTA_JLEAGUE_TICKETS_URL,
 } from "@/lib/site-links";
 import { mergeOfficialFixtures } from "@/lib/official-fixtures";
+import {
+  fetchJLeagueLiveFixtures,
+  isFinishedJLeagueFixture,
+  JLEAGUE_LIVE_CACHE_KEY,
+  JLEAGUE_LIVE_TTL_SECONDS,
+  JLEAGUE_PERSISTED_KEY,
+  mergeJLeagueFixtures,
+} from "@/lib/jleague-live-scraper";
 
 const API_BASE = "https://v3.football.api-sports.io";
 const THESPORTSDB_BASE = "https://www.thesportsdb.com/api/v1/json/3";
-const CACHE_KEY = "football:vegalta:season:v6";
+const CACHE_KEY = "football:vegalta:season:v7";
 const CACHE_TTL_SECONDS = 86_400;
 const EMPTY_CACHE_TTL_SECONDS = 300;
 const DAILY_REQUEST_KEY_PREFIX = "football:api:requests:";
@@ -38,7 +46,7 @@ export type SeasonFixturesData = {
   requestedSeason: string;
   fixtures: SeasonFixture[];
   source: "api" | "fallback";
-  provider: "api-football" | "thesportsdb" | "none";
+  provider: "api-football" | "thesportsdb" | "jleague" | "none";
   updatedAt: string;
   /** True when API returned an older season than configured (free plan limit). */
   seasonLimited?: boolean;
@@ -581,19 +589,102 @@ async function writeCachedSeasonData(data: SeasonFixturesData): Promise<void> {
   };
 }
 
+let jleagueOverlayCache: {
+  fixtures: SeasonFixture[];
+  expiresAt: number;
+} | null = null;
+
+async function readPersistedJLeagueFixtures(): Promise<SeasonFixture[]> {
+  const redis = getRedis();
+  if (!redis) return [];
+  return (await redis.get<SeasonFixture[]>(JLEAGUE_PERSISTED_KEY)) ?? [];
+}
+
+async function writePersistedJLeagueFixtures(
+  fixtures: SeasonFixture[]
+): Promise<void> {
+  const redis = getRedis();
+  if (!redis || fixtures.length === 0) return;
+  await redis.set(JLEAGUE_PERSISTED_KEY, fixtures, { ex: 90 * 86_400 });
+}
+
+async function getJLeagueOverlayFixtures(): Promise<SeasonFixture[]> {
+  const now = Date.now();
+  const redis = getRedis();
+
+  if (redis) {
+    const cached = await redis.get<{
+      fixtures: SeasonFixture[];
+      expiresAt: number;
+    }>(JLEAGUE_LIVE_CACHE_KEY);
+    if (cached && cached.expiresAt > now) {
+      return cached.fixtures;
+    }
+  } else if (jleagueOverlayCache && jleagueOverlayCache.expiresAt > now) {
+    return jleagueOverlayCache.fixtures;
+  }
+
+  const live = await fetchJLeagueLiveFixtures();
+  const persisted = await readPersistedJLeagueFixtures();
+  const finishedLive = live.filter(isFinishedJLeagueFixture);
+  const persistedMerged = mergeJLeagueFixtures(persisted, finishedLive);
+
+  if (finishedLive.length > 0) {
+    await writePersistedJLeagueFixtures(persistedMerged);
+  }
+
+  const overlay = mergeJLeagueFixtures(persistedMerged, live);
+  const expiresAt = now + JLEAGUE_LIVE_TTL_SECONDS * 1000;
+
+  if (redis) {
+    await redis.set(
+      JLEAGUE_LIVE_CACHE_KEY,
+      { fixtures: overlay, expiresAt },
+      { ex: JLEAGUE_LIVE_TTL_SECONDS * 2 }
+    );
+  } else {
+    jleagueOverlayCache = { fixtures: overlay, expiresAt };
+  }
+
+  return overlay;
+}
+
+function applyJLeagueOverlay(
+  data: SeasonFixturesData,
+  overlay: SeasonFixture[]
+): SeasonFixturesData {
+  if (overlay.length === 0) return data;
+
+  return {
+    ...data,
+    fixtures: mergeJLeagueFixtures(data.fixtures, overlay),
+    updatedAt: new Date().toISOString(),
+    provider:
+      data.provider === "none" || data.provider === "thesportsdb"
+        ? "jleague"
+        : data.provider,
+  };
+}
+
 const getCachedSeasonData = unstable_cache(
   fetchSeasonFixturesData,
-  ["vegalta-football-season-v6"],
+  ["vegalta-football-season-v7"],
   { revalidate: CACHE_TTL_SECONDS }
 );
 
 export async function getSeasonFixtures(): Promise<SeasonFixturesData> {
   const cached = await readCachedSeasonData();
-  if (cached) return cached;
+  let base: SeasonFixturesData;
 
-  const fresh = await getCachedSeasonData();
-  await writeCachedSeasonData(fresh);
-  return fresh;
+  if (cached) {
+    base = cached;
+  } else {
+    base = await getCachedSeasonData();
+    await writeCachedSeasonData(base);
+  }
+
+  const overlay = await getJLeagueOverlayFixtures();
+  return applyJLeagueOverlay(base, overlay);
 }
 
 function mapToLastMatch(fixture: SeasonFixture): LastMatch {
