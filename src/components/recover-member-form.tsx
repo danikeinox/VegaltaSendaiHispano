@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { TurnstileWidget } from "@/components/turnstile-widget";
 import { useLocale } from "@/components/locale-provider";
 import { FIELD_LIMITS } from "@/lib/validations";
 
@@ -14,12 +15,21 @@ export function RecoverMemberForm() {
   const [hint, setHint] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const turnstileSiteKey =
+    process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim() ?? "";
 
   async function onSubmit(event: React.FormEvent) {
     event.preventDefault();
     setMessage(null);
     setHint(null);
     setError(null);
+
+    if (turnstileSiteKey && !turnstileToken) {
+      setError(dict.recover.requestError);
+      return;
+    }
+
     setSubmitting(true);
 
     try {
@@ -29,7 +39,10 @@ export function RecoverMemberForm() {
           "Content-Type": "application/json",
           "X-Locale": locale,
         },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({
+          email,
+          ...(turnstileSiteKey ? { turnstileToken } : {}),
+        }),
       });
       const json = await res.json();
 
@@ -41,6 +54,7 @@ export function RecoverMemberForm() {
       setMessage(json.message ?? dict.api.existingMemberRecovery);
       setHint(json.hint ?? dict.recover.emailNotice);
       setEmail("");
+      setTurnstileToken(null);
     } catch {
       setError(dict.recover.connectionError);
     } finally {
@@ -66,6 +80,13 @@ export function RecoverMemberForm() {
           required
         />
       </div>
+
+      {turnstileSiteKey && (
+        <TurnstileWidget
+          siteKey={turnstileSiteKey}
+          onToken={setTurnstileToken}
+        />
+      )}
 
       {message && (
         <div className="space-y-2">

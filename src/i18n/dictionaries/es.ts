@@ -59,15 +59,18 @@ const es: Dictionary = {
     backHome: "← Volver al inicio",
     seasonLabel: "Temporada {season}",
     venue: "Estadio",
-    noFixtures: "No hay partidos disponibles para esta temporada.",
+    noFixtures:
+      "No hay partidos disponibles por ahora. Consulta el sitio oficial del Vegalta Sendai para el calendario más reciente.",
     updatedNote: "Actualizado: {updatedAt}",
     statusFinished: "Finalizado",
     statusLive: "En juego",
     statusUpcoming: "Próximo",
     statusPostponed: "Aplazado",
     seasonLimitedNote:
-      "Mostrando la temporada {season}. El plan gratuito de API-Football no incluye la temporada {requestedSeason}. Para el calendario completo y próximos partidos, consulta el sitio oficial o usa una API key de pago.",
-    officialScheduleLink: "Ver calendario oficial del Vegalta Sendai",
+      "Mostramos partidos de la temporada {season}. Para la {requestedSeason} y fechas actualizadas, consulta el sitio oficial del club.",
+    scheduleDisclaimer:
+      "El calendario puede estar incompleto. Para fechas oficiales y próximos partidos confirmados, consulta el sitio web del Vegalta Sendai.",
+    officialScheduleLink: "Sitio oficial del Vegalta Sendai",
   },
   communityCta: {
     title: "Forma parte de la comunidad",
@@ -559,6 +562,8 @@ const es: Dictionary = {
   },
   api: {
     forbiddenOrigin: "Origen no permitido",
+    turnstileFailed:
+      "No se pudo verificar el desafío anti-abuso. Recarga la página e inténtalo de nuevo.",
     rateLimited: "Demasiados intentos de registro. Inténtalo de nuevo en un minuto.",
     capacityFull:
       "Hemos alcanzado el límite gratuito de carnets de la comunidad. Vuelve a intentarlo más adelante.",

@@ -48,6 +48,7 @@ export type Dictionary = {
     statusUpcoming: string;
     statusPostponed: string;
     seasonLimitedNote: string;
+    scheduleDisclaimer: string;
     officialScheduleLink: string;
   };
   communityCta: {
@@ -317,6 +318,7 @@ export type Dictionary = {
   };
   api: {
     forbiddenOrigin: string;
+    turnstileFailed: string;
     rateLimited: string;
     capacityFull: string;
     dailyQuotaFull: string;

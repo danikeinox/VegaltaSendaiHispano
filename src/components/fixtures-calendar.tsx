@@ -90,6 +90,11 @@ function OfficialScheduleLink({ url, label }: { url: string; label: string }) {
   );
 }
 
+function isUpcomingFixture(fixture: SeasonFixture): boolean {
+  if (FINISHED.has(fixture.status)) return false;
+  return new Date(fixture.date).getTime() > Date.now();
+}
+
 export function FixturesCalendar({ data }: FixturesCalendarProps) {
   const { locale, dict } = useLocale();
   const groups = groupByMonth(data.fixtures, locale);
@@ -97,11 +102,13 @@ export function FixturesCalendar({ data }: FixturesCalendarProps) {
     "{updatedAt}",
     formatUpdatedAt(data.updatedAt, locale)
   );
-  const showSeasonLimited =
+  const hasUpcoming = data.fixtures.some(isUpcomingFixture);
+  const showSeasonNote =
     data.seasonLimited && data.season !== data.requestedSeason;
   const seasonLimitedNote = dict.calendar.seasonLimitedNote
     .replace("{season}", data.season)
     .replace("{requestedSeason}", data.requestedSeason);
+  const officialUrl = data.officialScheduleUrl;
 
   if (data.fixtures.length === 0) {
     return (
@@ -109,14 +116,9 @@ export function FixturesCalendar({ data }: FixturesCalendarProps) {
         <p className="text-sm text-portal-on-surface-variant">
           {dict.calendar.noFixtures}
         </p>
-        {data.seasonLimited && (
-          <p className="mt-3 text-xs leading-relaxed text-portal-on-surface-variant">
-            {seasonLimitedNote}
-          </p>
-        )}
-        {data.officialScheduleUrl && (
+        {officialUrl && (
           <OfficialScheduleLink
-            url={data.officialScheduleUrl}
+            url={officialUrl}
             label={dict.calendar.officialScheduleLink}
           />
         )}
@@ -133,15 +135,18 @@ export function FixturesCalendar({ data }: FixturesCalendarProps) {
             data.seasonLimited ? data.requestedSeason : data.season
           )}
         </p>
-        {(showSeasonLimited || data.seasonLimited) && (
+        {showSeasonNote && (
           <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-relaxed text-amber-950">
             <p>{seasonLimitedNote}</p>
-            {data.officialScheduleUrl && (
-              <OfficialScheduleLink
-                url={data.officialScheduleUrl}
-                label={dict.calendar.officialScheduleLink}
-              />
-            )}
+          </div>
+        )}
+        {!hasUpcoming && officialUrl && (
+          <div className="rounded-xl border border-portal-outline-variant bg-portal-surface p-4 text-sm leading-relaxed text-portal-on-surface-variant">
+            <p>{dict.calendar.scheduleDisclaimer}</p>
+            <OfficialScheduleLink
+              url={officialUrl}
+              label={dict.calendar.officialScheduleLink}
+            />
           </div>
         )}
       </div>

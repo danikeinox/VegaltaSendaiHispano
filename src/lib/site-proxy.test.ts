@@ -6,6 +6,7 @@ describe("shouldBypassLocaleRedirect", () => {
     expect(shouldBypassLocaleRedirect("/robots.txt")).toBe(true);
     expect(shouldBypassLocaleRedirect("/sitemap.xml")).toBe(true);
     expect(shouldBypassLocaleRedirect("/manifest.webmanifest")).toBe(true);
+    expect(shouldBypassLocaleRedirect("/llms.txt")).toBe(true);
   });
 
   it("does not redirect dotfiles or well-known routes through the locale prefix", () => {

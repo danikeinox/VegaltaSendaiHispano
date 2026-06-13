@@ -57,15 +57,18 @@ const jp: Dictionary = {
     backHome: "← ホームに戻る",
     seasonLabel: "シーズン {season}",
     venue: "会場",
-    noFixtures: "このシーズンの試合データがありません。",
+    noFixtures:
+      "現在、表示できる試合がありません。最新の日程はベガルタ仙台の公式サイトをご確認ください。",
     updatedNote: "更新: {updatedAt}",
     statusFinished: "終了",
     statusLive: "試合中",
     statusUpcoming: "予定",
     statusPostponed: "延期",
     seasonLimitedNote:
-      "シーズン {season} を表示しています。API-Football 無料プランでは {requestedSeason} シーズンにアクセスできません。最新の試合日程は公式サイトをご確認ください。",
-    officialScheduleLink: "ベガルタ仙台 公式試合日程",
+      "シーズン {season} の試合を表示しています。{requestedSeason} の最新日程はクラブ公式サイトをご確認ください。",
+    scheduleDisclaimer:
+      "日程がすべて掲載されていない場合があります。公式の試合日程はベガルタ仙台の公式サイトでご確認ください。",
+    officialScheduleLink: "ベガルタ仙台 公式サイト",
   },
   communityCta: {
     title: "コミュニティの一員になろう",
@@ -557,6 +560,8 @@ const jp: Dictionary = {
   },
   api: {
     forbiddenOrigin: "許可されていないオリジンです",
+    turnstileFailed:
+      "不正利用防止の確認に失敗しました。ページを再読み込みしてもう一度お試しください。",
     rateLimited: "登録の試行回数が多すぎます。1分後にもう一度お試しください。",
     capacityFull:
       "無料プランの会員カード上限に達しました。後でもう一度お試しください。",

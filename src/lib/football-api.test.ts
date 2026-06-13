@@ -36,7 +36,7 @@ describe("deriveMatchesFromSeason", () => {
         },
         {
           id: 2,
-          date: "2024-04-01T05:00:00.000Z",
+          date: "2030-04-01T05:00:00.000Z",
           status: "NS",
           statusLong: "Not Started",
           homeTeam: "Team B",
@@ -52,5 +52,46 @@ describe("deriveMatchesFromSeason", () => {
     expect(matches.last?.awayTeam).toBe("TEAM A");
     expect(matches.next?.opponent).toBe("Team B");
     expect(matches.source).toBe("api");
+  });
+
+  it("returns null matches when there is no data", () => {
+    const data: SeasonFixturesData = {
+      season: "2026",
+      requestedSeason: "2026",
+      source: "fallback",
+      provider: "none",
+      updatedAt: "2026-01-01T00:00:00.000Z",
+      fixtures: [],
+    };
+
+    const matches = deriveMatchesFromSeason(data);
+    expect(matches.last).toBeNull();
+    expect(matches.next).toBeNull();
+  });
+
+  it("does not treat stale not-started fixtures as upcoming", () => {
+    const data: SeasonFixturesData = {
+      season: "2024",
+      requestedSeason: "2026",
+      source: "api",
+      provider: "api-football",
+      updatedAt: "2026-01-01T00:00:00.000Z",
+      fixtures: [
+        {
+          id: 1,
+          date: "2024-04-01T05:00:00.000Z",
+          status: "NS",
+          statusLong: "Not Started",
+          homeTeam: "Team B",
+          awayTeam: "Vegalta Sendai",
+          homeGoals: null,
+          awayGoals: null,
+          isVegaltaHome: false,
+        },
+      ],
+    };
+
+    const matches = deriveMatchesFromSeason(data);
+    expect(matches.next).toBeNull();
   });
 });

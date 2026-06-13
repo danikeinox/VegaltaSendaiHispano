@@ -1,5 +1,6 @@
 import { Redis } from "@upstash/redis";
 import { unstable_cache } from "next/cache";
+import { VEGALTA_OFFICIAL_URL } from "@/lib/site-links";
 
 const API_BASE = "https://v3.football.api-sports.io";
 const THESPORTSDB_BASE = "https://www.thesportsdb.com/api/v1/json/3";
@@ -8,29 +9,10 @@ const CACHE_TTL_SECONDS = 86_400;
 const EMPTY_CACHE_TTL_SECONDS = 300;
 const DAILY_REQUEST_KEY_PREFIX = "football:api:requests:";
 const DAILY_REQUEST_LIMIT = 50;
-const OFFICIAL_SCHEDULE_URL = "https://www.vegalta.co.jp/game/";
-const VEGALTA_THESPORTSDB_TEAM_ID = "137718";
-const J2_THESPORTSDB_LEAGUE_ID = "4824";
 
 const FINISHED_STATUSES = new Set(["FT", "AET", "PEN", "AWD", "WO", "ABD"]);
-
-const FALLBACK_LAST = {
-  homeTeam: "VEGALTA SENDAI",
-  awayTeam: "KATORE TOYAMA",
-  homeGoals: 1,
-  awayGoals: 1,
-  status: "FT",
-  round: "4 PK 2",
-  date: new Date().toISOString(),
-  isVegaltaHome: true,
-};
-
-const FALLBACK_NEXT = {
-  opponent: "Yokohama FC",
-  date: new Date(Date.now() + 7 * 86_400_000).toISOString(),
-  venue: "Yurtec Stadium Sendai",
-  isVegaltaHome: true,
-};
+const VEGALTA_THESPORTSDB_TEAM_ID = "137718";
+const J2_THESPORTSDB_LEAGUE_ID = "4824";
 
 export type SeasonFixture = {
   id: number;
@@ -425,7 +407,7 @@ function buildFallbackSeasonData(requestedSeason: string): SeasonFixturesData {
     provider: "none",
     updatedAt: new Date().toISOString(),
     seasonLimited: true,
-    officialScheduleUrl: OFFICIAL_SCHEDULE_URL,
+    officialScheduleUrl: VEGALTA_OFFICIAL_URL,
   };
 }
 
@@ -464,9 +446,7 @@ async function fetchSeasonFixturesData(): Promise<SeasonFixturesData> {
         provider,
         updatedAt: new Date().toISOString(),
         seasonLimited: apiResult.seasonLimited,
-        officialScheduleUrl: apiResult.seasonLimited
-          ? OFFICIAL_SCHEDULE_URL
-          : undefined,
+        officialScheduleUrl: VEGALTA_OFFICIAL_URL,
       };
     }
 
@@ -480,7 +460,7 @@ async function fetchSeasonFixturesData(): Promise<SeasonFixturesData> {
         provider: "thesportsdb",
         updatedAt: new Date().toISOString(),
         seasonLimited: true,
-        officialScheduleUrl: OFFICIAL_SCHEDULE_URL,
+        officialScheduleUrl: VEGALTA_OFFICIAL_URL,
       };
     }
 
@@ -567,13 +547,18 @@ function mapToNextMatch(fixture: SeasonFixture): NextMatch {
   };
 }
 
+function isUpcoming(fixture: SeasonFixture): boolean {
+  if (isFinished(fixture.status)) return false;
+  return new Date(fixture.date).getTime() > Date.now();
+}
+
 export function deriveMatchesFromSeason(
   data: SeasonFixturesData
 ): VegaltaMatches {
   if (data.source === "fallback" || data.fixtures.length === 0) {
     return {
-      last: FALLBACK_LAST,
-      next: FALLBACK_NEXT,
+      last: null,
+      next: null,
       source: "fallback",
       updatedAt: data.updatedAt,
     };
@@ -584,7 +569,7 @@ export function deriveMatchesFromSeason(
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
 
   const next = data.fixtures
-    .filter((fixture) => !isFinished(fixture.status))
+    .filter((fixture) => isUpcoming(fixture))
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())[0];
 
   return {
@@ -599,5 +584,3 @@ export async function getVegaltaMatches(): Promise<VegaltaMatches> {
   const seasonData = await getSeasonFixtures();
   return deriveMatchesFromSeason(seasonData);
 }
-
-export { OFFICIAL_SCHEDULE_URL };

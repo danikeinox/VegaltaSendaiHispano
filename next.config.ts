@@ -34,6 +34,26 @@ const ContentSecurityPolicy = `
   .replace(/\s{2,}/g, " ")
   .trim();
 
+/** Stricter target policy — report-only until Next.js inline scripts migrate to nonces. */
+const ContentSecurityPolicyReportOnly = `
+  default-src 'self';
+  script-src 'self' https://challenges.cloudflare.com;
+  style-src 'self';
+  img-src 'self' data: blob: https://i.ytimg.com https://www.youtube.com;
+  font-src 'self' data: https://fonts.gstatic.com;
+  connect-src 'self' https://pay.google.com https://fra.cloud.appwrite.io https://challenges.cloudflare.com;
+  frame-src 'self' https://www.youtube-nocookie.com https://www.youtube.com https://challenges.cloudflare.com;
+  frame-ancestors 'none';
+  object-src 'none';
+  manifest-src 'self';
+  worker-src 'self';
+  base-uri 'self';
+  form-action 'self';
+  upgrade-insecure-requests;
+`
+  .replace(/\s{2,}/g, " ")
+  .trim();
+
 const securityHeaders = [
   { key: "X-Frame-Options", value: "DENY" },
   { key: "X-Content-Type-Options", value: "nosniff" },
@@ -48,6 +68,10 @@ const securityHeaders = [
   {
     key: "Content-Security-Policy",
     value: ContentSecurityPolicy,
+  },
+  {
+    key: "Content-Security-Policy-Report-Only",
+    value: ContentSecurityPolicyReportOnly,
   },
   {
     key: "Permissions-Policy",

@@ -29,7 +29,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Lint security modules
         run: npx eslint src/lib/football-api.ts src/lib/security src/lib/verification.ts src/lib/recovery-flow.ts src/lib/register-response.ts src/app/api/register src/app/api/recover src/app/api/recover/complete src/app/api/wallet/google/route.ts
 
       - name: Unit tests
