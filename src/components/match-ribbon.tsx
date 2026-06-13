@@ -111,17 +111,17 @@ export function MatchRibbon({ matches }: MatchRibbonProps) {
               {last ? (
                 <div className="min-w-0 flex-1 space-y-2 md:space-y-0">
                   <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-x-2 gap-y-1 sm:gap-x-3">
-                    <span className="portal-label truncate text-right text-[11px] leading-tight sm:text-sm">
+                    <span className="portal-label line-clamp-2 text-right text-[11px] leading-tight sm:text-sm">
                       {last.homeTeam}
                     </span>
                     <span className="font-display whitespace-nowrap px-1 text-xl font-extrabold text-portal-gold-light sm:text-2xl md:text-3xl">
                       {lastScore}
                     </span>
-                    <span className="portal-label truncate text-left text-[11px] leading-tight sm:text-sm">
+                    <span className="portal-label line-clamp-2 text-left text-[11px] leading-tight sm:text-sm">
                       {last.awayTeam}
                     </span>
                   </div>
-                  <p className="text-center text-[11px] text-white/60 md:text-left md:text-xs">
+                  <p className="line-clamp-2 text-center text-[11px] text-white/60 md:text-left md:text-xs">
                     {lastMeta}
                   </p>
                 </div>

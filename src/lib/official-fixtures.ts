@@ -7,6 +7,19 @@ import {
 /** Partidos publicados en fuentes oficiales cuando las APIs externas van retrasadas. */
 export const VEGALTA_OFFICIAL_FIXTURES: SeasonFixture[] = [
   {
+    id: 9_100_003,
+    date: "2026-06-06T05:00:00.000Z",
+    status: "PEN",
+    statusLong: "Match Finished",
+    homeTeam: "Vegalta Sendai",
+    awayTeam: "Kataller Toyama",
+    homeGoals: 1,
+    awayGoals: 1,
+    round: "Centenario J2/J3 · Playoffs 2 · 4 PK 2",
+    venue: "Yurtec Stadium Sendai",
+    isVegaltaHome: true,
+  },
+  {
     id: 9_100_002,
     date: "2026-06-13T04:00:00.000Z",
     status: "NS",
