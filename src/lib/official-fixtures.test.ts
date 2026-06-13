@@ -11,7 +11,16 @@ describe("mergeOfficialFixtures", () => {
       merged.some(
         (fixture) =>
           fixture.homeTeam === "J2/J3 EAST-A" &&
-          fixture.awayTeam === "J2/J3 EAST-B"
+          fixture.awayTeam === "J2/J3 WEST-B" &&
+          fixture.status === "NS"
+      )
+    ).toBe(true);
+    expect(
+      merged.some(
+        (fixture) =>
+          fixture.homeTeam === "J2/J3 EAST-A" &&
+          fixture.awayTeam === "J2/J3 EAST-B" &&
+          fixture.homeGoals === 2
       )
     ).toBe(true);
   });

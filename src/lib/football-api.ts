@@ -8,7 +8,7 @@ import { mergeOfficialFixtures } from "@/lib/official-fixtures";
 
 const API_BASE = "https://v3.football.api-sports.io";
 const THESPORTSDB_BASE = "https://www.thesportsdb.com/api/v1/json/3";
-const CACHE_KEY = "football:vegalta:season:v4";
+const CACHE_KEY = "football:vegalta:season:v5";
 const CACHE_TTL_SECONDS = 86_400;
 const EMPTY_CACHE_TTL_SECONDS = 300;
 const DAILY_REQUEST_KEY_PREFIX = "football:api:requests:";
@@ -583,7 +583,7 @@ async function writeCachedSeasonData(data: SeasonFixturesData): Promise<void> {
 
 const getCachedSeasonData = unstable_cache(
   fetchSeasonFixturesData,
-  ["vegalta-football-season-v4"],
+  ["vegalta-football-season-v5"],
   { revalidate: CACHE_TTL_SECONDS }
 );
 

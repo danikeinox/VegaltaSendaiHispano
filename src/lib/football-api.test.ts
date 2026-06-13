@@ -74,23 +74,24 @@ describe("deriveMatchesFromSeason", () => {
           isVegaltaHome: true,
         },
         {
-          id: 9_100_002,
-          date: "2030-06-13T04:00:00.000Z",
+          id: 9_100_005,
+          date: "2030-06-13T10:35:00.000Z",
           status: "NS",
           statusLong: "Not Started",
           homeTeam: "J2/J3 EAST-A",
-          awayTeam: "J2/J3 EAST-B",
+          awayTeam: "J2/J3 WEST-B",
           homeGoals: null,
           awayGoals: null,
           isVegaltaHome: true,
-          round: "J.League All-Star DAZN Cup · 1ª ronda",
+          round: "J.League All-Star DAZN Cup · Final",
         },
       ],
     };
 
     const matches = deriveMatchesFromSeason(data);
     expect(matches.last?.awayTeam).toBe("KATALLER TOYAMA");
-    expect(matches.next?.opponent).toBe("J2/J3 EAST-B");
+    expect(matches.next?.opponent).toBe("J2/J3 WEST-B");
+    expect(matches.next?.round).toContain("Final");
     expect(matches.source).toBe("api");
   });
 
