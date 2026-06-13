@@ -10,6 +10,9 @@ export const VEGALTA_EMPEROR_CUP_MATCH_NEWS_URL =
 /** Entradas oficiales J.League para Vegalta Sendai. */
 export const VEGALTA_JLEAGUE_TICKETS_URL =
   "https://www.jleague-ticket.jp/club/vs/";
+/** J.League All-Star DAZN Cup 2026 (Vegalta en J2/J3 EAST-A). */
+export const JLEAGUE_ALLSTAR_2026_URL =
+  "https://www.jleague.co/jleagueallstar2026/";
 export const VEGALTA_ONLINE_STORE_URL = "https://onlinestore.vegalta.co.jp/";
 export const VEGALTA_SOCIO_FANCLUB_URL =
   "https://www.vegalta-socio-club.com/";

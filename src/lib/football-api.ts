@@ -62,6 +62,7 @@ export type NextMatch = {
   date: string;
   venue?: string;
   isVegaltaHome: boolean;
+  round?: string;
 };
 
 export type VegaltaMatches = {
@@ -557,6 +558,7 @@ function mapToNextMatch(fixture: SeasonFixture): NextMatch {
     date: fixture.date,
     venue: fixture.venue,
     isVegaltaHome: fixture.isVegaltaHome,
+    round: fixture.round,
   };
 }
 

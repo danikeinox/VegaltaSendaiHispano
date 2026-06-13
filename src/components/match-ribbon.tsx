@@ -120,7 +120,9 @@ export function MatchRibbon({ matches }: MatchRibbonProps) {
                 <>
                   <div className="min-w-0 flex-1">
                     <p className="portal-label truncate text-sm">
-                      {dict.match.vs} {next.opponent}
+                      {next.round
+                        ? `${next.round} · ${dict.match.vs} ${next.opponent}`
+                        : `${dict.match.vs} ${next.opponent}`}
                     </p>
                     <p className="mt-0.5 text-xs leading-snug text-white/80 sm:text-[13px]">
                       {formatNextMatchLine(next, locale)}
