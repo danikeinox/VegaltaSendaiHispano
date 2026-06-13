@@ -315,6 +315,7 @@ export type Dictionary = {
   };
   api: {
     forbiddenOrigin: string;
+    turnstileFailed: string;
     rateLimited: string;
     capacityFull: string;
     dailyQuotaFull: string;

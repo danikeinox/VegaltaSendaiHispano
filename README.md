@@ -79,6 +79,15 @@ El runbook operativo para datos de socios, borrado, rotación de tokens y
 respuesta ante incidentes está en
 **[docs/DATA_PROTECTION_RUNBOOK.md](docs/DATA_PROTECTION_RUNBOOK.md)**.
 
+## Seguridad (auditoría)
+
+Checklist operativo post-auditoría y plan CSP:
+**[docs/SECURITY_AUDIT_CHECKLIST.md](docs/SECURITY_AUDIT_CHECKLIST.md)**,
+**[docs/CSP_MIGRATION.md](docs/CSP_MIGRATION.md)**.
+
+Contacto para reporte responsable:
+**https://www.vegalta.es/.well-known/security.txt**
+
 ## Estructura del proyecto
 
 ```

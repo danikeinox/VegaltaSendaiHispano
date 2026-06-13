@@ -12,6 +12,7 @@ import {
   checkRecoveryIpRateLimit,
   checkRecoveryRateLimit,
 } from "@/lib/security/rate-limit";
+import { requireTurnstileForRequest } from "@/lib/security/turnstile";
 import { isRegistrationDisabled } from "@/lib/registration-config";
 import { getSchemasForRequest } from "@/i18n/schemas";
 import { getLocaleFromRequest } from "@/i18n/get-locale-from-request";
@@ -50,6 +51,11 @@ export async function POST(request: Request) {
     if (!rateLimit.success) {
       throw new ApiError(429, dict.api.recoveryRateLimited, "RATE_LIMITED");
     }
+
+    await requireTurnstileForRequest(body, ip, {
+      serviceUnavailable: dict.api.registrationDisabled,
+      verificationFailed: dict.api.turnstileFailed,
+    });
 
     const member = await findMemberByEmail(email);
     if (member) {

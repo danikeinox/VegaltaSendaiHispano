@@ -10,6 +10,7 @@ import { isAllowedSiteOrigin } from "@/lib/site-origin";
 const ROOT_METADATA_PATHS = new Set([
   "/favicon.ico",
   "/icon.svg",
+  "/llms.txt",
   "/manifest.webmanifest",
   "/robots.txt",
   "/sitemap.xml",

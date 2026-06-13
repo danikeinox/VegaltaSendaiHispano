@@ -18,7 +18,7 @@ import {
   checkDailyRegistrationQuota,
   checkRegistrationRateLimit,
 } from "@/lib/security/rate-limit";
-import { isTurnstileConfigured, verifyTurnstileToken } from "@/lib/security/turnstile";
+import { requireTurnstileForRequest } from "@/lib/security/turnstile";
 import {
   generateAccessToken,
   hashAccessToken,
@@ -74,25 +74,10 @@ export async function POST(request: Request) {
       throw new ApiError(429, dict.api.rateLimited, "RATE_LIMITED");
     }
 
-    if (process.env.NODE_ENV === "production" && !isTurnstileConfigured()) {
-      throw new ApiError(
-        503,
-        dict.api.registrationDisabled,
-        "TURNSTILE_NOT_CONFIGURED"
-      );
-    }
-
-    if (isTurnstileConfigured()) {
-      const turnstileToken =
-        typeof body === "object" && body !== null && "turnstileToken" in body
-          ? String((body as { turnstileToken?: string }).turnstileToken ?? "")
-          : undefined;
-
-      const turnstileValid = await verifyTurnstileToken(turnstileToken, ip);
-      if (!turnstileValid) {
-        throw new ApiError(403, dict.api.forbiddenOrigin, "TURNSTILE_FAILED");
-      }
-    }
+    await requireTurnstileForRequest(body, ip, {
+      serviceUnavailable: dict.api.registrationDisabled,
+      verificationFailed: dict.api.turnstileFailed,
+    });
 
     const countryCode = data.country?.trim();
     const country =

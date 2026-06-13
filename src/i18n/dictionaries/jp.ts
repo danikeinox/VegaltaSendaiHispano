@@ -554,6 +554,8 @@ const jp: Dictionary = {
   },
   api: {
     forbiddenOrigin: "許可されていないオリジンです",
+    turnstileFailed:
+      "不正利用防止の確認に失敗しました。ページを再読み込みしてもう一度お試しください。",
     rateLimited: "登録の試行回数が多すぎます。1分後にもう一度お試しください。",
     capacityFull:
       "無料プランの会員カード上限に達しました。後でもう一度お試しください。",

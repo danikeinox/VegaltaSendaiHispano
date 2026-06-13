@@ -123,3 +123,5 @@ documents while investigating.
   access checks.
 - After any deploy workflow change: confirm runtime secrets are scoped to the
   minimum required steps.
+- Security contact for researchers: `/.well-known/security.txt` (see
+  [SECURITY_AUDIT_CHECKLIST.md](SECURITY_AUDIT_CHECKLIST.md)).

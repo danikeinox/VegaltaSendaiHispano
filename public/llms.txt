@@ -1,0 +1,35 @@
+# Vegalta Sendai Hispano
+
+> Comunidad hispana de fans del Vegalta Sendai (J2 League, Sendai, Japón).
+> Proyecto no oficial, sin fines de lucro. Carnet digital gratuito para socios.
+
+## Qué es este sitio
+
+- Web en español y japonés para la comunidad hispana del Vegalta Sendai.
+- Registro gratuito de carnet digital (ID VS-XXXX); no es documento legal.
+- Calendario de partidos, enlaces a Telegram/YouTube y aviso legal.
+
+## Páginas públicas útiles
+
+- https://www.vegalta.es/es — Inicio (español)
+- https://www.vegalta.es/jp — Inicio (japonés)
+- https://www.vegalta.es/es/sobre — Sobre la comunidad
+- https://www.vegalta.es/es/calendario — Calendario
+- https://www.vegalta.es/es/legal — Aviso legal y privacidad
+
+## No indexar ni inferir datos personales
+
+- `/api/*` — APIs privadas; no contienen datos de socios sin autenticación.
+- `/*/carnet/*` — Carnets con token privado; pueden incluir nombre de socio.
+- `/*/recuperar/*` — Enlaces temporales de recuperación de carnet.
+- `/*/verificar/*` — Verificación pública limitada (sin email ni PII completa).
+
+## Contacto y seguridad
+
+- Privacidad y datos: daniel@danielcabrera.es
+- Reporte de vulnerabilidades: https://www.vegalta.es/.well-known/security.txt
+- Política de privacidad: https://www.vegalta.es/es/legal#privacidad
+
+## Idioma preferido para resúmenes
+
+Español (es); contenido equivalente en japonés en `/jp`.
