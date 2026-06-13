@@ -4,6 +4,7 @@ import { mergeOfficialFixtures } from "@/lib/official-fixtures";
 describe("mergeOfficialFixtures", () => {
   it("adds official fixtures when APIs have no data", () => {
     const merged = mergeOfficialFixtures([]);
+    expect(merged.length).toBeGreaterThanOrEqual(25);
     expect(merged.some((fixture) => fixture.awayTeam === "Tochigi City")).toBe(
       true
     );

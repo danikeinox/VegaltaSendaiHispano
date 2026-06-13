@@ -52,6 +52,14 @@ export type Dictionary = {
     officialScheduleLink: string;
     ticketsLink: string;
     matchInfoLink: string;
+    viewList: string;
+    viewCalendar: string;
+    prevMonth: string;
+    nextMonth: string;
+    noMatchesDay: string;
+    pickDayHint: string;
+    selectedDayLabel: string;
+    sofascoreLink: string;
   };
   communityCta: {
     title: string;

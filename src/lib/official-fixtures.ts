@@ -1,4 +1,5 @@
 import type { SeasonFixture } from "@/lib/football-api";
+import { VEGALTA_CURATED_SEASON_FIXTURES } from "@/lib/curated-season-fixtures";
 import {
   JLEAGUE_ALLSTAR_2026_URL,
   VEGALTA_EMPEROR_CUP_MATCH_NEWS_URL,
@@ -77,17 +78,41 @@ export const VEGALTA_OFFICIAL_FIXTURES: SeasonFixture[] = [
   },
 ];
 
+function fixtureKey(fixture: SeasonFixture): string {
+  return `${fixture.date.slice(0, 10)}:${fixture.homeTeam}:${fixture.awayTeam}`;
+}
+
+function fixtureRichness(fixture: SeasonFixture): number {
+  let score = 0;
+  if (fixture.homeGoals != null && fixture.awayGoals != null) score += 4;
+  if (fixture.infoUrl) score += 2;
+  if (fixture.venue) score += 1;
+  if (fixture.round) score += 1;
+  return score;
+}
+
+function pickRicherFixture(
+  existing: SeasonFixture,
+  incoming: SeasonFixture
+): SeasonFixture {
+  return fixtureRichness(incoming) > fixtureRichness(existing)
+    ? incoming
+    : existing;
+}
+
 export function mergeOfficialFixtures(
   fixtures: SeasonFixture[]
 ): SeasonFixture[] {
   const byKey = new Map<string, SeasonFixture>();
 
-  for (const fixture of [...fixtures, ...VEGALTA_OFFICIAL_FIXTURES]) {
-    const key = `${fixture.date.slice(0, 10)}:${fixture.homeTeam}:${fixture.awayTeam}`;
+  for (const fixture of [
+    ...fixtures,
+    ...VEGALTA_CURATED_SEASON_FIXTURES,
+    ...VEGALTA_OFFICIAL_FIXTURES,
+  ]) {
+    const key = fixtureKey(fixture);
     const existing = byKey.get(key);
-    if (!existing || fixture.infoUrl) {
-      byKey.set(key, fixture);
-    }
+    byKey.set(key, existing ? pickRicherFixture(existing, fixture) : fixture);
   }
 
   return Array.from(byKey.values()).sort(
