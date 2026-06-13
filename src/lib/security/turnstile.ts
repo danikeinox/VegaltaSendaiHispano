@@ -1,3 +1,5 @@
+import { ApiError } from "@/lib/security/error-handler";
+
 export function isTurnstileConfigured(): boolean {
   return Boolean(
     process.env.TURNSTILE_SECRET_KEY?.trim() &&
@@ -39,4 +41,40 @@ export async function verifyTurnstileToken(
 
   const result = (await response.json()) as { success?: boolean };
   return result.success === true;
+}
+
+export function extractTurnstileToken(body: unknown): string | undefined {
+  if (typeof body === "object" && body !== null && "turnstileToken" in body) {
+    return String((body as { turnstileToken?: string }).turnstileToken ?? "");
+  }
+  return undefined;
+}
+
+export async function requireTurnstileForRequest(
+  body: unknown,
+  remoteIp: string,
+  messages: {
+    serviceUnavailable: string;
+    verificationFailed: string;
+  }
+): Promise<void> {
+  if (isProductionRuntime() && !isTurnstileConfigured()) {
+    throw new ApiError(
+      503,
+      messages.serviceUnavailable,
+      "TURNSTILE_NOT_CONFIGURED"
+    );
+  }
+
+  if (!isTurnstileConfigured()) {
+    return;
+  }
+
+  const valid = await verifyTurnstileToken(
+    extractTurnstileToken(body),
+    remoteIp
+  );
+  if (!valid) {
+    throw new ApiError(403, messages.verificationFailed, "TURNSTILE_FAILED");
+  }
 }

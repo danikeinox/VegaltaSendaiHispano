@@ -556,6 +556,8 @@ const es: Dictionary = {
   },
   api: {
     forbiddenOrigin: "Origen no permitido",
+    turnstileFailed:
+      "No se pudo verificar el desafío anti-abuso. Recarga la página e inténtalo de nuevo.",
     rateLimited: "Demasiados intentos de registro. Inténtalo de nuevo en un minuto.",
     capacityFull:
       "Hemos alcanzado el límite gratuito de carnets de la comunidad. Vuelve a intentarlo más adelante.",
