@@ -73,6 +73,12 @@ npm run deploy
 
 Guía: **[docs/DEPLOY_CLOUDFLARE.md](docs/DEPLOY_CLOUDFLARE.md)**
 
+## Protección de datos
+
+El runbook operativo para datos de socios, borrado, rotación de tokens y
+respuesta ante incidentes está en
+**[docs/DATA_PROTECTION_RUNBOOK.md](docs/DATA_PROTECTION_RUNBOOK.md)**.
+
 ## Estructura del proyecto
 
 ```
