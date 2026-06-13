@@ -47,6 +47,19 @@ export type Dictionary = {
     statusLive: string;
     statusUpcoming: string;
     statusPostponed: string;
+    seasonLimitedNote: string;
+    scheduleDisclaimer: string;
+    officialScheduleLink: string;
+    ticketsLink: string;
+    matchInfoLink: string;
+    viewList: string;
+    viewCalendar: string;
+    prevMonth: string;
+    nextMonth: string;
+    noMatchesDay: string;
+    pickDayHint: string;
+    selectedDayLabel: string;
+    sofascoreLink: string;
   };
   communityCta: {
     title: string;

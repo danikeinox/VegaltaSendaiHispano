@@ -57,6 +57,28 @@ function MatchBadge({
   );
 }
 
+function CalendarLink({
+  href,
+  label,
+  className,
+}: {
+  href: string;
+  label: string;
+  className?: string;
+}) {
+  return (
+    <Link
+      href={href}
+      className={cn(
+        "portal-label inline-flex w-full shrink-0 items-center justify-center rounded-lg bg-white/10 px-4 py-2.5 text-xs transition-colors hover:bg-white/20 sm:w-auto sm:py-2",
+        className
+      )}
+    >
+      {label}
+    </Link>
+  );
+}
+
 export function MatchRibbon({ matches }: MatchRibbonProps) {
   const { locale, dict } = useLocale();
   const last = matches.last;
@@ -89,17 +111,17 @@ export function MatchRibbon({ matches }: MatchRibbonProps) {
               {last ? (
                 <div className="min-w-0 flex-1 space-y-2 md:space-y-0">
                   <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-x-2 gap-y-1 sm:gap-x-3">
-                    <span className="portal-label truncate text-right text-[11px] leading-tight sm:text-sm">
+                    <span className="portal-label line-clamp-2 text-right text-[11px] leading-tight sm:text-sm">
                       {last.homeTeam}
                     </span>
                     <span className="font-display whitespace-nowrap px-1 text-xl font-extrabold text-portal-gold-light sm:text-2xl md:text-3xl">
                       {lastScore}
                     </span>
-                    <span className="portal-label truncate text-left text-[11px] leading-tight sm:text-sm">
+                    <span className="portal-label line-clamp-2 text-left text-[11px] leading-tight sm:text-sm">
                       {last.awayTeam}
                     </span>
                   </div>
-                  <p className="text-center text-[11px] text-white/60 md:text-left md:text-xs">
+                  <p className="line-clamp-2 text-center text-[11px] text-white/60 md:text-left md:text-xs">
                     {lastMeta}
                   </p>
                 </div>
@@ -116,28 +138,38 @@ export function MatchRibbon({ matches }: MatchRibbonProps) {
             <div className="flex flex-col gap-3 sm:gap-4 lg:flex-row lg:items-center lg:gap-5">
               <MatchBadge variant="next">{dict.match.nextLabel}</MatchBadge>
 
-              {next ? (
-                <>
-                  <div className="min-w-0 flex-1">
-                    <p className="portal-label truncate text-sm">
-                      {dict.match.vs} {next.opponent}
+              <div className="min-w-0 flex-1">
+                {next ? (
+                  <>
+                    <p className="portal-label text-sm leading-snug">
+                      {next.round ? (
+                        <>
+                          <span className="block">{next.round}</span>
+                          <span className="mt-0.5 block text-white/90">
+                            {dict.match.vs} {next.opponent}
+                          </span>
+                        </>
+                      ) : (
+                        <span className="block">
+                          {dict.match.vs} {next.opponent}
+                        </span>
+                      )}
                     </p>
-                    <p className="mt-0.5 text-xs leading-snug text-white/80 sm:text-[13px]">
+                    <p className="mt-1 text-xs leading-snug text-white/80 sm:text-[13px]">
                       {formatNextMatchLine(next, locale)}
                     </p>
-                  </div>
-                  <Link
-                    href={calendarPath}
-                    className="portal-label inline-flex w-full shrink-0 items-center justify-center rounded-lg bg-white/10 px-4 py-2.5 text-xs transition-colors hover:bg-white/20 sm:w-auto sm:py-2"
-                  >
-                    {dict.match.fullCalendar}
-                  </Link>
-                </>
-              ) : (
-                <span className="text-sm text-white/70">
-                  {dict.match.unavailable}
-                </span>
-              )}
+                  </>
+                ) : (
+                  <span className="text-sm text-white/70">
+                    {dict.match.unavailable}
+                  </span>
+                )}
+              </div>
+
+              <CalendarLink
+                href={calendarPath}
+                label={dict.match.fullCalendar}
+              />
             </div>
           </div>
         </div>

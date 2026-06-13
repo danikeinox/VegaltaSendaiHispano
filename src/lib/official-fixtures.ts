@@ -1,0 +1,121 @@
+import type { SeasonFixture } from "@/lib/football-api";
+import { VEGALTA_CURATED_SEASON_FIXTURES } from "@/lib/curated-season-fixtures";
+import {
+  JLEAGUE_ALLSTAR_2026_URL,
+  VEGALTA_EMPEROR_CUP_MATCH_NEWS_URL,
+} from "@/lib/site-links";
+
+/** Partidos publicados en fuentes oficiales cuando las APIs externas van retrasadas. */
+export const VEGALTA_OFFICIAL_FIXTURES: SeasonFixture[] = [
+  {
+    id: 9_100_003,
+    date: "2026-06-06T05:00:00.000Z",
+    status: "PEN",
+    statusLong: "Match Finished",
+    homeTeam: "Vegalta Sendai",
+    awayTeam: "Kataller Toyama",
+    homeGoals: 1,
+    awayGoals: 1,
+    round: "Centenario J2/J3 · Playoffs 2 · 4 PK 2",
+    venue: "Yurtec Stadium Sendai",
+    isVegaltaHome: true,
+  },
+  {
+    id: 9_100_002,
+    date: "2026-06-13T04:00:00.000Z",
+    status: "FT",
+    statusLong: "Match Finished",
+    homeTeam: "J2/J3 EAST-A",
+    awayTeam: "J2/J3 EAST-B",
+    homeGoals: 2,
+    awayGoals: 0,
+    round: "J.League All-Star DAZN Cup · 1ª ronda",
+    venue: "MUFG Stadium (National Stadium), Tokyo",
+    isVegaltaHome: true,
+    infoUrl: JLEAGUE_ALLSTAR_2026_URL,
+  },
+  {
+    id: 9_100_004,
+    date: "2026-06-13T07:15:00.000Z",
+    status: "PEN",
+    statusLong: "Match Finished",
+    homeTeam: "J1 EAST",
+    awayTeam: "J2/J3 EAST-A",
+    homeGoals: 0,
+    awayGoals: 0,
+    round: "J.League All-Star DAZN Cup · Semifinal · 2 PK 1",
+    venue: "MUFG Stadium (National Stadium), Tokyo",
+    isVegaltaHome: false,
+    infoUrl: JLEAGUE_ALLSTAR_2026_URL,
+  },
+  {
+    id: 9_100_005,
+    date: "2026-06-13T10:35:00.000Z",
+    status: "NS",
+    statusLong: "Not Started",
+    homeTeam: "J2/J3 EAST-A",
+    awayTeam: "J2/J3 WEST-B",
+    homeGoals: null,
+    awayGoals: null,
+    round: "J.League All-Star DAZN Cup · Final",
+    venue: "MUFG Stadium (National Stadium), Tokyo",
+    isVegaltaHome: true,
+    infoUrl: JLEAGUE_ALLSTAR_2026_URL,
+  },
+  {
+    id: 9_100_001,
+    date: "2026-08-26T10:00:00.000Z",
+    status: "NS",
+    statusLong: "Not Started",
+    homeTeam: "Vegalta Sendai",
+    awayTeam: "Tochigi City",
+    homeGoals: null,
+    awayGoals: null,
+    round: "Copa del Emperador · 2ª ronda",
+    venue: "Yurtec Stadium Sendai",
+    isVegaltaHome: true,
+    infoUrl: VEGALTA_EMPEROR_CUP_MATCH_NEWS_URL,
+  },
+];
+
+function fixtureKey(fixture: SeasonFixture): string {
+  return `${fixture.date.slice(0, 10)}:${fixture.homeTeam}:${fixture.awayTeam}`;
+}
+
+function fixtureRichness(fixture: SeasonFixture): number {
+  let score = 0;
+  if (fixture.homeGoals != null && fixture.awayGoals != null) score += 4;
+  if (fixture.infoUrl) score += 2;
+  if (fixture.venue) score += 1;
+  if (fixture.round) score += 1;
+  return score;
+}
+
+function pickRicherFixture(
+  existing: SeasonFixture,
+  incoming: SeasonFixture
+): SeasonFixture {
+  return fixtureRichness(incoming) > fixtureRichness(existing)
+    ? incoming
+    : existing;
+}
+
+export function mergeOfficialFixtures(
+  fixtures: SeasonFixture[]
+): SeasonFixture[] {
+  const byKey = new Map<string, SeasonFixture>();
+
+  for (const fixture of [
+    ...fixtures,
+    ...VEGALTA_CURATED_SEASON_FIXTURES,
+    ...VEGALTA_OFFICIAL_FIXTURES,
+  ]) {
+    const key = fixtureKey(fixture);
+    const existing = byKey.get(key);
+    byKey.set(key, existing ? pickRicherFixture(existing, fixture) : fixture);
+  }
+
+  return Array.from(byKey.values()).sort(
+    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+  );
+}
