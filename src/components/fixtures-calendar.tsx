@@ -16,7 +16,7 @@ import {
   isLiveStatus,
   isUpcomingFixture,
 } from "@/lib/fixture-utils";
-import { SOFASCORE_VEGALTA_URL } from "@/lib/site-links";
+import { SOFASCORE_VEGALTA_URL, JLEAGUE_GAME_URL } from "@/lib/site-links";
 import { cn } from "@/lib/utils";
 
 type FixturesCalendarProps = {
@@ -266,7 +266,19 @@ export function FixturesCalendar({ data }: FixturesCalendarProps) {
         <p className="text-center text-xs text-portal-on-surface-variant sm:text-left">
           {updatedNote}
         </p>
+        <p className="text-center text-xs text-portal-on-surface-variant sm:text-left">
+          {dict.calendar.jleagueLiveNote}
+        </p>
         <p className="text-center text-xs sm:text-left">
+          <a
+            href={JLEAGUE_GAME_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-portal-primary underline-offset-2 hover:underline"
+          >
+            {dict.calendar.jleagueLiveLink}
+          </a>
+          {" · "}
           <a
             href={SOFASCORE_VEGALTA_URL}
             target="_blank"

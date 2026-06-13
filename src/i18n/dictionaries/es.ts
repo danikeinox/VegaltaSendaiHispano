@@ -81,6 +81,9 @@ const es: Dictionary = {
     pickDayHint: "Selecciona un día en el calendario para ver los partidos.",
     selectedDayLabel: "Partidos del {date}",
     sofascoreLink: "Ver histórico completo en SofaScore",
+    jleagueLiveLink: "Resultados en directo (J.League oficial)",
+    jleagueLiveNote:
+      "Los partidos del día se actualizan cada 5 minutos desde jleague.jp.",
   },
   communityCta: {
     title: "Forma parte de la comunidad",
