@@ -77,16 +77,38 @@ function groupByMonth(
   });
 }
 
-function OfficialScheduleLink({ url, label }: { url: string; label: string }) {
+function OfficialLinks({
+  scheduleUrl,
+  ticketsUrl,
+  scheduleLabel,
+  ticketsLabel,
+}: {
+  scheduleUrl: string;
+  ticketsUrl?: string;
+  scheduleLabel: string;
+  ticketsLabel: string;
+}) {
   return (
-    <a
-      href={url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="mt-4 inline-block text-sm font-semibold text-portal-primary underline-offset-2 hover:underline"
-    >
-      {label}
-    </a>
+    <div className="mt-4 flex flex-col items-center gap-2 sm:flex-row sm:justify-center sm:gap-4">
+      <a
+        href={scheduleUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-sm font-semibold text-portal-primary underline-offset-2 hover:underline"
+      >
+        {scheduleLabel}
+      </a>
+      {ticketsUrl && (
+        <a
+          href={ticketsUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-sm font-semibold text-portal-primary underline-offset-2 hover:underline"
+        >
+          {ticketsLabel}
+        </a>
+      )}
+    </div>
   );
 }
 
@@ -109,6 +131,7 @@ export function FixturesCalendar({ data }: FixturesCalendarProps) {
     .replace("{season}", data.season)
     .replace("{requestedSeason}", data.requestedSeason);
   const officialUrl = data.officialScheduleUrl;
+  const ticketsUrl = data.ticketsUrl;
 
   if (data.fixtures.length === 0) {
     return (
@@ -117,9 +140,11 @@ export function FixturesCalendar({ data }: FixturesCalendarProps) {
           {dict.calendar.noFixtures}
         </p>
         {officialUrl && (
-          <OfficialScheduleLink
-            url={officialUrl}
-            label={dict.calendar.officialScheduleLink}
+          <OfficialLinks
+            scheduleUrl={officialUrl}
+            ticketsUrl={ticketsUrl}
+            scheduleLabel={dict.calendar.officialScheduleLink}
+            ticketsLabel={dict.calendar.ticketsLink}
           />
         )}
       </div>
@@ -143,9 +168,11 @@ export function FixturesCalendar({ data }: FixturesCalendarProps) {
         {!hasUpcoming && officialUrl && (
           <div className="rounded-xl border border-portal-outline-variant bg-portal-surface p-4 text-sm leading-relaxed text-portal-on-surface-variant">
             <p>{dict.calendar.scheduleDisclaimer}</p>
-            <OfficialScheduleLink
-              url={officialUrl}
-              label={dict.calendar.officialScheduleLink}
+            <OfficialLinks
+              scheduleUrl={officialUrl}
+              ticketsUrl={ticketsUrl}
+              scheduleLabel={dict.calendar.officialScheduleLink}
+              ticketsLabel={dict.calendar.ticketsLink}
             />
           </div>
         )}
@@ -223,6 +250,18 @@ export function FixturesCalendar({ data }: FixturesCalendarProps) {
                   {fixture.venue && (
                     <p className="mt-3 text-xs text-portal-on-surface-variant">
                       {dict.calendar.venue}: {fixture.venue}
+                    </p>
+                  )}
+                  {fixture.infoUrl && (
+                    <p className="mt-2">
+                      <a
+                        href={fixture.infoUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs font-semibold text-portal-primary underline-offset-2 hover:underline"
+                      >
+                        {dict.calendar.matchInfoLink}
+                      </a>
                     </p>
                   )}
                 </li>

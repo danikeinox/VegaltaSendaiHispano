@@ -1,10 +1,14 @@
 import { Redis } from "@upstash/redis";
 import { unstable_cache } from "next/cache";
-import { VEGALTA_OFFICIAL_URL } from "@/lib/site-links";
+import {
+  VEGALTA_EMPEROR_CUP_SCHEDULE_URL,
+  VEGALTA_JLEAGUE_TICKETS_URL,
+} from "@/lib/site-links";
+import { mergeOfficialFixtures } from "@/lib/official-fixtures";
 
 const API_BASE = "https://v3.football.api-sports.io";
 const THESPORTSDB_BASE = "https://www.thesportsdb.com/api/v1/json/3";
-const CACHE_KEY = "football:vegalta:season:v2";
+const CACHE_KEY = "football:vegalta:season:v3";
 const CACHE_TTL_SECONDS = 86_400;
 const EMPTY_CACHE_TTL_SECONDS = 300;
 const DAILY_REQUEST_KEY_PREFIX = "football:api:requests:";
@@ -26,6 +30,7 @@ export type SeasonFixture = {
   round?: string;
   venue?: string;
   isVegaltaHome: boolean;
+  infoUrl?: string;
 };
 
 export type SeasonFixturesData = {
@@ -38,6 +43,7 @@ export type SeasonFixturesData = {
   /** True when API returned an older season than configured (free plan limit). */
   seasonLimited?: boolean;
   officialScheduleUrl?: string;
+  ticketsUrl?: string;
 };
 
 export type LastMatch = {
@@ -399,7 +405,7 @@ async function fetchVegaltaFixturesFromTheSportsDb(
 }
 
 function buildFallbackSeasonData(requestedSeason: string): SeasonFixturesData {
-  return {
+  return withOfficialLinks({
     season: requestedSeason,
     requestedSeason,
     fixtures: [],
@@ -407,7 +413,19 @@ function buildFallbackSeasonData(requestedSeason: string): SeasonFixturesData {
     provider: "none",
     updatedAt: new Date().toISOString(),
     seasonLimited: true,
-    officialScheduleUrl: VEGALTA_OFFICIAL_URL,
+  });
+}
+
+function withOfficialLinks(
+  data: Omit<SeasonFixturesData, "officialScheduleUrl" | "ticketsUrl"> & {
+    fixtures: SeasonFixture[];
+  }
+): SeasonFixturesData {
+  return {
+    ...data,
+    fixtures: mergeOfficialFixtures(data.fixtures),
+    officialScheduleUrl: VEGALTA_EMPEROR_CUP_SCHEDULE_URL,
+    ticketsUrl: VEGALTA_JLEAGUE_TICKETS_URL,
   };
 }
 
@@ -438,7 +456,7 @@ async function fetchSeasonFixturesData(): Promise<SeasonFixturesData> {
         }
       }
 
-      return {
+      return withOfficialLinks({
         season: apiResult.resolvedSeason,
         requestedSeason,
         fixtures,
@@ -446,13 +464,12 @@ async function fetchSeasonFixturesData(): Promise<SeasonFixturesData> {
         provider,
         updatedAt: new Date().toISOString(),
         seasonLimited: apiResult.seasonLimited,
-        officialScheduleUrl: VEGALTA_OFFICIAL_URL,
-      };
+      });
     }
 
     const supplemental = await fetchVegaltaFixturesFromTheSportsDb(requestedSeason);
     if (supplemental.length > 0) {
-      return {
+      return withOfficialLinks({
         season: requestedSeason,
         requestedSeason,
         fixtures: supplemental,
@@ -460,15 +477,11 @@ async function fetchSeasonFixturesData(): Promise<SeasonFixturesData> {
         provider: "thesportsdb",
         updatedAt: new Date().toISOString(),
         seasonLimited: true,
-        officialScheduleUrl: VEGALTA_OFFICIAL_URL,
-      };
+      });
     }
 
     if (apiResult?.seasonLimited) {
-      return {
-        ...buildFallbackSeasonData(requestedSeason),
-        seasonLimited: true,
-      };
+      return buildFallbackSeasonData(requestedSeason);
     }
 
     return buildFallbackSeasonData(requestedSeason);
@@ -508,7 +521,7 @@ async function writeCachedSeasonData(data: SeasonFixturesData): Promise<void> {
 
 const getCachedSeasonData = unstable_cache(
   fetchSeasonFixturesData,
-  ["vegalta-football-season-v2"],
+  ["vegalta-football-season-v3"],
   { revalidate: CACHE_TTL_SECONDS }
 );
 

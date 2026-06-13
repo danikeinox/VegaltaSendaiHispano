@@ -70,7 +70,9 @@ const es: Dictionary = {
       "Mostramos partidos de la temporada {season}. Para la {requestedSeason} y fechas actualizadas, consulta el sitio oficial del club.",
     scheduleDisclaimer:
       "El calendario puede estar incompleto. Para fechas oficiales y próximos partidos confirmados, consulta el sitio web del Vegalta Sendai.",
-    officialScheduleLink: "Sitio oficial del Vegalta Sendai",
+    officialScheduleLink: "Calendario oficial de partidos",
+    ticketsLink: "Comprar entradas (J.League Ticket)",
+    matchInfoLink: "Información del partido",
   },
   communityCta: {
     title: "Forma parte de la comunidad",

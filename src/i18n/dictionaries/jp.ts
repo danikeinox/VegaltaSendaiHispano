@@ -68,7 +68,9 @@ const jp: Dictionary = {
       "シーズン {season} の試合を表示しています。{requestedSeason} の最新日程はクラブ公式サイトをご確認ください。",
     scheduleDisclaimer:
       "日程がすべて掲載されていない場合があります。公式の試合日程はベガルタ仙台の公式サイトでご確認ください。",
-    officialScheduleLink: "ベガルタ仙台 公式サイト",
+    officialScheduleLink: "公式試合日程",
+    ticketsLink: "チケット購入（J.League Ticket）",
+    matchInfoLink: "試合情報",
   },
   communityCta: {
     title: "コミュニティの一員になろう",

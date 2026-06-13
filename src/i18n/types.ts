@@ -50,6 +50,8 @@ export type Dictionary = {
     seasonLimitedNote: string;
     scheduleDisclaimer: string;
     officialScheduleLink: string;
+    ticketsLink: string;
+    matchInfoLink: string;
   };
   communityCta: {
     title: string;
